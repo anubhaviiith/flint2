@@ -56,42 +56,41 @@ nmod_mat_sqr_bodrato(nmod_mat_t B, const nmod_mat_t A)
         nmod_mat_init(s1, m/2, m/2, A->mod.n);
         nmod_mat_init(s2, m/2, m/2, A->mod.n);
         nmod_mat_init(s3, m/2, m/2, A->mod.n);
-        nmod_mat_init(s4, m/2, m/2, A->mod.n);
         nmod_mat_init(p1, m/2, m/2, A->mod.n);
         nmod_mat_init(p2, m/2, m/2, A->mod.n);
         nmod_mat_init(p3, m/2, m/2, A->mod.n);
-        nmod_mat_init(p4, m/2, m/2, A->mod.n);
         nmod_mat_init(p5, m/2, m/2, A->mod.n);
         nmod_mat_init(p6, m/2, m/2, A->mod.n);
-        nmod_mat_init(p7, m/2, m/2, A->mod.n);
 
-        nmod_mat_window_init(window_A, A, 0, 0, m, m);
-        nmod_mat_window_init(window11, window_A, 0, 0, m/2, m/2);
-        nmod_mat_window_init(window12, window_A, 0, m/2, m/2, m);
-        nmod_mat_window_init(window21, window_A, m/2, 0, m, m/2);
-        nmod_mat_window_init(window22, window_A, m/2, m/2, m, m);
+        nmod_mat_window_init(window11, A, 0, 0, m/2, m/2);
+        nmod_mat_window_init(window12, A, 0, m/2, m/2, m);
+        nmod_mat_window_init(window21, A, m/2, 0, m, m/2);
+        nmod_mat_window_init(window22, A, m/2, m/2, m, m);
 
         nmod_mat_add(s1, window22, window12);
-        nmod_mat_sub(s2, window22, window21);
-        nmod_mat_add(s3, s2, window12);
-        nmod_mat_sub(s4, s3, window11);
-
         nmod_mat_sqr(p1, s1);
-        nmod_mat_sqr(p2, s2);
-        nmod_mat_sqr(p3, s3);    
-        nmod_mat_sqr(p4, window11);
-        nmod_mat_mul(p5, window12, window21);
-        nmod_mat_mul(p6, s4, window12);
-        nmod_mat_mul(p7, window21, s4);
 
+        nmod_mat_sub(s2, window22, window21);
+        nmod_mat_sqr(p2, s2);
+
+        nmod_mat_add(s3, s2, window12);
+        nmod_mat_sqr(p3, s3);    
+
+        nmod_mat_sub(s1, s3, window11);
+        nmod_mat_mul(p6, s1, window12);
+        nmod_mat_mul(s3, window21, s1);
+
+
+        nmod_mat_mul(p5, window12, window21);
         nmod_mat_add(s1, p3, p5);
         nmod_mat_sub(s2, p1, s1);
+        nmod_mat_sub(p3, s2, s3);
         nmod_mat_sub(s3, s1, p2);
+        nmod_mat_sqr(s1, window11);
+        nmod_mat_add(p1, s1, p5);
+        nmod_mat_add(p5, p2, s2);
+        nmod_mat_sub(p2, s3, p6);
 
-        nmod_mat_add(p1, p4, p5);
-        nmod_mat_sub(s1, s3, p6);
-        nmod_mat_sub(p3, s2, p7);
-        nmod_mat_add(s4, p2, s2);
 
         if (iseven == 1)
         {
@@ -115,7 +114,7 @@ nmod_mat_sqr_bodrato(nmod_mat_t B, const nmod_mat_t A)
             {
                 for (j = n/2; j < n; ++j)
                 {
-                    nmod_mat_entry(B, i, j) = nmod_mat_entry(s1, i, j - n/2);
+                    nmod_mat_entry(B, i, j) = nmod_mat_entry(p2, i, j - n/2);
                 }
             }
 
@@ -123,7 +122,7 @@ nmod_mat_sqr_bodrato(nmod_mat_t B, const nmod_mat_t A)
             {
                 for (j = n/2; j < n; ++j)
                 {
-                    nmod_mat_entry(B, i, j) = nmod_mat_entry(s4, i - n/2, j - n/2);
+                    nmod_mat_entry(B, i, j) = nmod_mat_entry(p5, i - n/2, j - n/2);
                 }
             }
         }
@@ -187,14 +186,14 @@ nmod_mat_sqr_bodrato(nmod_mat_t B, const nmod_mat_t A)
             {
                 for (j = m/2; j < m; ++j)
                 {
-                    nmod_mat_entry(B, i, j) = nmod_add(nmod_mat_entry(s1, i, j - m/2), nmod_mat_entry(cache_A, i, j), mod);
+                    nmod_mat_entry(B, i, j) = nmod_add(nmod_mat_entry(p2, i, j - m/2), nmod_mat_entry(cache_A, i, j), mod);
                 }
             }
             for (i = m/2; i < m; ++i)
             {
                 for (j = m/2; j < m; ++j)
                 {
-                    nmod_mat_entry(B, i, j) = nmod_add(nmod_mat_entry(s4, i - m/2, j - m/2), nmod_mat_entry(cache_A, i, j), mod);
+                    nmod_mat_entry(B, i, j) = nmod_add(nmod_mat_entry(p5, i - m/2, j - m/2), nmod_mat_entry(cache_A, i, j), mod);
                 }
             }
 
@@ -210,14 +209,11 @@ nmod_mat_sqr_bodrato(nmod_mat_t B, const nmod_mat_t A)
         nmod_mat_clear(s1);
         nmod_mat_clear(s2);
         nmod_mat_clear(s3);
-        nmod_mat_clear(s4);
         nmod_mat_clear(p1);
         nmod_mat_clear(p2);
         nmod_mat_clear(p3);
-        nmod_mat_clear(p4);
         nmod_mat_clear(p5);
         nmod_mat_clear(p6);
-        nmod_mat_clear(p7);
         
     }
 }
