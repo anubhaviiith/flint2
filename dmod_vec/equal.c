@@ -19,15 +19,21 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2010 William Hart
-    Copyright (C) 2014 Abhinav Baid
-
+   Copyright (C) 2008, 2009, 2010 William Hart
+   Copyright (C) 2014 Abhinav Baid
+   
 ******************************************************************************/
 
 #include "dmod_vec.h"
 
-double *
-_dmod_vec_init(slong len)
+int _dmod_vec_equal(const double *vec1, const double *vec2, slong len)
 {
-    return (double *) flint_malloc(len * sizeof(double));
+    slong i;
+    if (vec1 == vec2)
+        return 1;
+    for (i = 0; i < len; i++)
+        if (vec1[i] != vec2[i])
+            return 0;
+
+    return 1;
 }

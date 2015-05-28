@@ -19,15 +19,16 @@
 =============================================================================*/
 /******************************************************************************
 
+    Copyright (C) 2014 Abhinav Baid
 
 ******************************************************************************/
 
 #include "dmod_vec.h"
 
-void _dmod_vec_randtest(double *f, flint_rand_t state, slong len, slong minexp, slong maxexp)
+void _dmod_vec_randtest(double *f, flint_rand_t state, slong len, slong minexp,
+                slong maxexp)
 {
     slong i;
-
     for (i = 0; i < len; i++)
         f[i] = d_randtest_signed(state, minexp, maxexp);
 }

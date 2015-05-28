@@ -38,38 +38,54 @@ main(void)
     int i, result;
     FLINT_TEST_INIT(state);
 
-    flint_printf("dot....");
+    flint_printf("scalar_addmul....");
     fflush(stdout);
 
     for (i = 0; i < 10000 * flint_test_multiplier(); i++)
     {
-        double *a, *b;
-        double res1, res2, res3;
+        double *a, *b, *bcopy, *res;
         slong len = n_randint(state, 100);
+        
+        slong x = n_randint(state, 100); 
         
         if (!len)
             continue;
 
         a = _dmod_vec_init(len);
         b = _dmod_vec_init(len);
+        bcopy = _dmod_vec_init(len);
+
         _dmod_vec_randtest(a, state, len, 0, 0);
         _dmod_vec_randtest(b, state, len, 0, 0);
+        
+        _dmod_vec_copy(b, bcopy, len);  
+        
+        _dmod_vec_scalar_addmul(a, b, x, len); 
+ 
+        _dmod_vec_scalar_mul(a, x, len);
 
-        res1 = _dmod_vec_dot(a, b, len - 1);
-        res2 = _dmod_vec_dot(a + len - 1, b + len - 1, 1);
-        res3 = _dmod_vec_dot(a, b, len);
+        _dmod_vec_sub(b, a, len);
         
-        result = fabs(res1 + res2 - res3) < DMOD_VEC_SP_EPS;
-        
-        if (!result)
+        /*result = _dmod_vec_equal(bcopy, b, len);
+        */
+        slong z;
+        for (z=0;z<len;++z)
+        {
+            if(bcopy[z]!=b[z])
+            {
+                printf("%lf %lf\n",bcopy[z], b[z]);
+                break;
+            }
+        }
+        if (result == 0)
         {
             flint_printf("FAIL:\n");
-            printf("%g\n", fabs(res1 + res2 - res3));
             abort();
         }
-
+        
         _dmod_vec_clear(a);
         _dmod_vec_clear(b);
+        _dmod_vec_clear(bcopy);
     }
 
     FLINT_TEST_CLEANUP(state);

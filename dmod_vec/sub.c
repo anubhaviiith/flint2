@@ -20,14 +20,16 @@
 /******************************************************************************
 
     Copyright (C) 2010 William Hart
+    Copyright (C) 2010 Fredrik Johansson
     Copyright (C) 2014 Abhinav Baid
 
 ******************************************************************************/
 
-#include "dmod_vec.h"
+#include "d_vec.h"
 
-double *
-_dmod_vec_init(slong len)
+void _dmod_vec_sub(double *vec1, const double *vec2, slong len2)
 {
-    return (double *) flint_malloc(len * sizeof(double));
+    slong i;
+    for (i = 0; i < len2; i++)
+        vec1[i] = vec1[i] - vec2[i];
 }

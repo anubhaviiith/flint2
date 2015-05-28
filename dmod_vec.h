@@ -43,12 +43,27 @@ FLINT_DLL void _dmod_vec_clear(double * vec);
 
 FLINT_DLL void _dmod_vec_randtest(double * f, flint_rand_t state, slong len, slong minexp, slong maxexp);
 
-/*  Dot product and norm  **************************************/
+/*  Dot product  **************************************/
 
 FLINT_DLL double _dmod_vec_dot(const double * vec1, const double * vec2, slong len2);
 
-FLINT_DLL void _dmod_vec_add(double *res, const double * vec1, const double * vec2, slong len2);
+/* Substraction **************************************/
 
+FLINT_DLL void  _dmod_vec_sub(double * vec1, const double * vec2, slong len2);
+
+/* Is equal  **************************************/
+
+FLINT_DLL int  _dmod_vec_equal(const double * vec1, const double * vec2, slong len2);
+
+/* Scalar mul and scalar addmul **************************************/
+
+FLINT_DLL void _dmod_vec_scalar_mul(double * vec1, const double alpha, slong len2);
+
+FLINT_DLL void _dmod_vec_scalar_addmul(const double * vec1, double * vec2, const double alpha, slong len2);
+
+/* Copy  **************************************/
+
+FLINT_DLL void _dmod_vec_copy(const double * vec1, double * vec2, slong len2);
 
 #ifdef __cplusplus
 }

@@ -19,15 +19,14 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2010 William Hart
-    Copyright (C) 2014 Abhinav Baid
-
 ******************************************************************************/
 
-#include "dmod_vec.h"
 
-double *
-_dmod_vec_init(slong len)
+#include <cblas.h>
+#include "dmod_vec.h"
+#include<stdio.h>
+
+void _dmod_vec_copy(const double *vec1, double *vec2, slong N)
 {
-    return (double *) flint_malloc(len * sizeof(double));
+    cblas_dcopy(N, vec1, 1, vec2, 1); 
 }
