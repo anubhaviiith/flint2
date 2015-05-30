@@ -26,12 +26,28 @@
 #define DMOD_VEC_H
 
 #include <math.h>
+#include <gmp.h>
 #include "double_extras.h"
 #include "flint.h"
+#include "ulong_extras.h"
 
 #ifdef __cplusplus
  extern "C" {
 #endif
+
+typedef struct
+{
+   mp_limb_t n;
+   mp_limb_t ninv;
+} dmod_t;
+
+
+static __inline__
+void dmod_init(dmod_t * mod, mp_limb_t n)
+{
+   mod->n = n;
+   mod->ninv = n_precompute_inverse(n);
+}
 
 /*  Memory management  *******************************************************/
 
@@ -45,7 +61,7 @@ FLINT_DLL void _dmod_vec_randtest(double * f, flint_rand_t state, slong len, slo
 
 /*  Dot product  **************************************/
 
-FLINT_DLL double _dmod_vec_dot(const double * vec1, const double * vec2, slong len2);
+FLINT_DLL mp_limb_t _dmod_vec_dot(const double * vec1, const double * vec2, slong len2, dmod_t mod);
 
 /* Substraction **************************************/
 

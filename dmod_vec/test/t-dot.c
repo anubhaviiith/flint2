@@ -44,20 +44,28 @@ main(void)
     for (i = 0; i < 10000 * flint_test_multiplier(); i++)
     {
         double *a, *b;
-        double res1, res2, res3;
-        slong len = n_randint(state, 100);
+        mp_limb_t res1, res2, res3;
         
+        dmod_t mod;
+        mp_limb_t m;
+
+        slong len = n_randint(state, 100);
+        m = n_randtest_not_zero(state);
+        
+        dmod_init(&mod, m);
+
         if (!len)
             continue;
 
         a = _dmod_vec_init(len);
         b = _dmod_vec_init(len);
+
         _dmod_vec_randtest(a, state, len, 0, 0);
         _dmod_vec_randtest(b, state, len, 0, 0);
 
-        res1 = _dmod_vec_dot(a, b, len - 1);
-        res2 = _dmod_vec_dot(a + len - 1, b + len - 1, 1);
-        res3 = _dmod_vec_dot(a, b, len);
+        res1 = _dmod_vec_dot(a, b, len - 1, mod);
+        res2 = _dmod_vec_dot(a + len - 1, b + len - 1, 1, mod);
+        res3 = _dmod_vec_dot(a, b, len, mod);
         
         result = fabs(res1 + res2 - res3) < DMOD_VEC_SP_EPS;
         
