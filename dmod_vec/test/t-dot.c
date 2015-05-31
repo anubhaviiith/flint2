@@ -30,10 +30,7 @@
 #include "d_vec.h"
 #include "ulong_extras.h"
 
-#define DMOD_VEC_SP_EPS (1e-14)
-
-int
-main(void)
+int main(void)
 {
     int i, result;
     FLINT_TEST_INIT(state);
@@ -44,7 +41,7 @@ main(void)
     for (i = 0; i < 10000 * flint_test_multiplier(); i++)
     {
         double *a, *b;
-        mp_limb_t res1, res2, res3;
+        mp_limb_t res1, sum = 0;
         
         dmod_t mod;
         mp_limb_t m;
@@ -63,19 +60,18 @@ main(void)
         _dmod_vec_randtest(a, state, len, 0, 0);
         _dmod_vec_randtest(b, state, len, 0, 0);
 
-        res1 = _dmod_vec_dot(a, b, len - 1, mod);
-        res2 = _dmod_vec_dot(a + len - 1, b + len - 1, 1, mod);
-        res3 = _dmod_vec_dot(a, b, len, mod);
+        res1 = _dmod_vec_dot(a, b, len, mod);
         
-        result = fabs(res1 + res2 - res3) < DMOD_VEC_SP_EPS;
-        
-        if (!result)
+        slong i;
+        for (i = 0; i < len; i++)
         {
-            flint_printf("FAIL:\n");
-            printf("%g\n", fabs(res1 + res2 - res3));
-            abort();
-        }
+            sum = sum + (a[i] * b[i]);
 
+        }
+        sum = n_mod2_precomp(sum, mod.n, mod.ninv);
+        
+        flint_printf("%wu\n", res1);
+        
         _dmod_vec_clear(a);
         _dmod_vec_clear(b);
     }
