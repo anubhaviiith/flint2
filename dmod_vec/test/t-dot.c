@@ -41,9 +41,10 @@ int main(void)
     for (i = 0; i < 10000 * flint_test_multiplier(); i++)
     {
         double *a, *b;
-        mp_limb_t res1, sum = 0;
+        double res1 = 0, sum = 0;
         
         dmod_t mod;
+
         mp_limb_t m;
 
         slong len = n_randint(state, 100);
@@ -66,12 +67,15 @@ int main(void)
         for (i = 0; i < len; i++)
         {
             sum = sum + (a[i] * b[i]);
-
         }
-        sum = n_mod2_precomp(sum, mod.n, mod.ninv);
+        sum = n_mod2_precomp_double(sum, mod.n, mod.ninv);
         
-        flint_printf("%wu\n", res1);
-        
+        flint_printf("%lf %lf\n", res1, sum);
+        if (res1 != sum)
+        {
+            flint_printf("FAIL\n");
+            abort();
+        }
         _dmod_vec_clear(a);
         _dmod_vec_clear(b);
     }

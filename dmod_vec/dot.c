@@ -27,16 +27,12 @@
 #include <stdio.h>
 
 
-mp_limb_t _dmod_vec_dot(const double *vec1, const double *vec2, slong N, dmod_t mod)
+double _dmod_vec_dot(const double *vec1, const double *vec2, slong N, dmod_t mod)
 {
-    mp_limb_t sum = 0;
-    slong i;
-    for (i = 0; i < N; i++)
-    {
-        sum += (vec1[i] * vec2[i]);
-    }
-    sum = n_mod_precomp(sum, mod.n, mod.ninv);
-    /*sum = cblas_ddot(N, vec1, mod, vec2, mod); 
-    */
+    double sum = 0;
+
+    sum = cblas_ddot(N, vec1, 1, vec2, 1); 
+    sum = n_mod2_precomp_double(sum, mod.n, mod.ninv);
+
     return sum;
 }

@@ -38,7 +38,7 @@
 typedef struct
 {
    mp_limb_t n;
-   mp_limb_t ninv;
+   double ninv;
 } dmod_t;
 
 
@@ -47,6 +47,46 @@ void dmod_init(dmod_t * mod, mp_limb_t n)
 {
    mod->n = n;
    mod->ninv = n_precompute_inverse(n);
+}
+
+static __inline__
+double n_mod2_precomp_double(double a, mp_limb_t n, double npre)
+{
+    double quot;
+    double rem;
+
+    if (a < n)
+        return a;
+    if ((slong) n < WORD(0))
+        return a - n;
+
+    if (n == 1)
+    {
+        quot = a;
+        rem = 0;
+    } 
+    else
+    {
+        quot = (a * npre);
+        rem  = a - quot * n;
+    }
+    
+    if (rem < (slong) (-n))
+        quot -= ((-rem) * npre);
+    else if (rem >= n)
+        quot += (rem * npre);
+    else if (rem < WORD(0))
+        return rem + n;
+    else
+        return rem;
+    
+    rem = a - quot * n;
+    if (rem >= (slong) n)
+        return rem - n;
+    else if (rem < WORD(0))
+        return rem + n;
+    else
+        return rem;
 }
 
 /*  Memory management  *******************************************************/
@@ -61,7 +101,7 @@ FLINT_DLL void _dmod_vec_randtest(double * f, flint_rand_t state, slong len, slo
 
 /*  Dot product  **************************************/
 
-FLINT_DLL mp_limb_t _dmod_vec_dot(const double * vec1, const double * vec2, slong len2, dmod_t mod);
+FLINT_DLL double _dmod_vec_dot(const double * vec1, const double * vec2, slong len2, dmod_t mod);
 
 /* Substraction **************************************/
 
