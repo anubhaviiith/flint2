@@ -37,27 +37,35 @@
 
 typedef struct
 {
-   mp_limb_t n;
+   double n;
    double ninv;
+   ulong b;
 } dmod_t;
 
 
-static __inline__
-void dmod_init(dmod_t * mod, mp_limb_t n)
+static __inline__ 
+double n_precompute_inverse_double(double n)
 {
-   mod->n = n;
-   mod->ninv = n_precompute_inverse(n);
+   return (double) 1 / n;
 }
 
 static __inline__
-double n_mod2_precomp_double(double a, mp_limb_t n, double npre)
+void dmod_init(dmod_t * mod, double n)
+{
+   mod->n = n;
+   mod->ninv = n_precompute_inverse(n);
+   mod->b = FLINT_BIT_COUNT(n);
+}
+
+static __inline__
+double n_mod2_precomp_double(double a, double n, double npre)
 {
     double quot;
     double rem;
 
     if (a < n)
         return a;
-    if ((slong) n < WORD(0))
+    if (n < WORD(0))
         return a - n;
 
     if (n == 1)
@@ -71,7 +79,7 @@ double n_mod2_precomp_double(double a, mp_limb_t n, double npre)
         rem  = a - quot * n;
     }
     
-    if (rem < (slong) (-n))
+    if (rem < (-n))
         quot -= ((-rem) * npre);
     else if (rem >= n)
         quot += (rem * npre);
@@ -81,7 +89,7 @@ double n_mod2_precomp_double(double a, mp_limb_t n, double npre)
         return rem;
     
     rem = a - quot * n;
-    if (rem >= (slong) n)
+    if (rem >=  n)
         return rem - n;
     else if (rem < WORD(0))
         return rem + n;
