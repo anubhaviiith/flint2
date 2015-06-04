@@ -25,14 +25,13 @@
 #include <cblas.h>
 #include "dmod_vec.h"
 #include <stdio.h>
+#include "fmpz.h"
 
 
 double _dmod_vec_dot(const double *vec1, const double *vec2, slong N, dmod_t mod)
 {
-    double sum = 0;
-
-    sum = cblas_ddot(N, vec1, 1, vec2, 1); 
+    double sum;
+    sum = cblas_ddot(N, vec1, 1, vec2, 1);
     sum = n_mod2_precomp_double(sum, mod.n, mod.ninv);
-
     return sum;
 }

@@ -25,31 +25,35 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <gmp.h>
+
 #include "flint.h"
 #include "dmod_vec.h"
 #include "d_vec.h"
 #include "ulong_extras.h"
 
+#include "fmpz.h"
+#include "fmpz_vec.h"
+
+
 int main(void)
 {
-    int i, result;
+    int i, j, result;
     FLINT_TEST_INIT(state);
 
     flint_printf("dot....");
     fflush(stdout);
 
-    for (i = 0; i < 10000 * flint_test_multiplier(); i++)
+    for (i = 0; i < 1000 * flint_test_multiplier(); i++)
     {
         double *a, *b;
-        double res1 = 0, sum = 0;
+        double m, result1 = 0, result2 = 0; 
+        
+        slong len = n_randint(state, 10);
+
+        m = n_randtest_not_zero(state);
+        m = 5;
         
         dmod_t mod;
-
-        mp_limb_t m;
-
-        slong len = n_randint(state, 100);
-        m = n_randtest_not_zero(state);
-        
         dmod_init(&mod, m);
 
         if (!len)
@@ -61,23 +65,30 @@ int main(void)
         _dmod_vec_randtest(a, state, len, 0, 0);
         _dmod_vec_randtest(b, state, len, 0, 0);
 
-        res1 = _dmod_vec_dot(a, b, len, mod);
+        /*Code to be tested */
+        result1 = _dmod_vec_dot(a, b, len, mod); /* returns double */
         
-        slong i;
-        for (i = 0; i < len; i++)
+        /*Test */
+
+        for (j = 0; j < len; ++j)
         {
-            sum = sum + (a[i] * b[i]);
+            a[j] = n_mod2_precomp_double(a[j], mod.n, mod.ninv);
+            b[j] = n_mod2_precomp_double(b[j], mod.n, mod.ninv);
+
+            if ( j % (FLINT_FLOG2(FLINT_D_BITS - (2 * mod.n))) == 0)
+                result2 = n_mod2_precomp_double(result2, mod.n, mod.ninv);
+            result2 += a[j]*b[j];
         }
-        sum = n_mod2_precomp_double(sum, mod.n, mod.ninv);
         
-        flint_printf("%lf %lf\n", res1, sum);
-        if (res1 != sum)
+        if (result1 != result2)
         {
             flint_printf("FAIL\n");
             abort();
         }
+
         _dmod_vec_clear(a);
         _dmod_vec_clear(b);
+        
     }
 
     FLINT_TEST_CLEANUP(state);
