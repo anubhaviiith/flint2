@@ -31,7 +31,22 @@
 double _dmod_vec_dot(const double *vec1, const double *vec2, slong N, dmod_t mod)
 {
     double sum;
-    sum = cblas_ddot(N, vec1, 1, vec2, 1);
+    slong i;
+    double *a, *b;
+
+    a = _dmod_vec_init(N);
+    b = _dmod_vec_init(N);
+
+    for (i = 0; i < N; i++)
+    {
+        a[i] = n_mod2_precomp_double(vec1[i], mod.n, mod.ninv);
+        b[i] = n_mod2_precomp_double(vec2[i], mod.n, mod.ninv);
+    }
+    sum = cblas_ddot(N, a, 1, b, 1);
     sum = n_mod2_precomp_double(sum, mod.n, mod.ninv);
+    
+    _dmod_vec_clear(a);
+    _dmod_vec_clear(b);
+
     return sum;
 }
