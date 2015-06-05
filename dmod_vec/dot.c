@@ -30,20 +30,30 @@
 
 double _dmod_vec_dot(const double *vec1, const double *vec2, slong N, dmod_t mod)
 {
-    double sum;
-    slong i;
+    double sum = 0;
+    slong i, ptr = 0;
     double *a, *b;
 
+    ulong window = n_powmod_precomp(2,(FLINT_D_BITS - (2 * mod.b)), mod.n, mod.ninv);
+    
     a = _dmod_vec_init(N);
     b = _dmod_vec_init(N);
 
     for (i = 0; i < N; i++)
     {
-        a[i] = n_mod2_precomp_double(vec1[i], mod.n, mod.ninv);
-        b[i] = n_mod2_precomp_double(vec2[i], mod.n, mod.ninv);
+        a[ptr] = dmod_precomp(vec1[i], mod.n, mod.ninv);
+        b[ptr] = dmod_precomp(vec2[i], mod.n, mod.ninv);
+        ptr++;
+        if (i % window == 0)
+        {
+            sum = dmod_precomp(sum, mod.n, mod.ninv);
+            sum += cblas_ddot(ptr ,a, 1, b, 1);
+            ptr = 0;
+        }
     }
-    sum = cblas_ddot(N, a, 1, b, 1);
-    sum = n_mod2_precomp_double(sum, mod.n, mod.ninv);
+
+    sum = dmod_precomp(sum, mod.n, mod.ninv);
+    sum += cblas_ddot(ptr ,a, 1, b, 1);
     
     _dmod_vec_clear(a);
     _dmod_vec_clear(b);

@@ -58,16 +58,14 @@ void dmod_init(dmod_t * mod, double n)
 }
 
 static __inline__
-double n_mod2_precomp_double(double a, double n, double npre)
+double dmod_precomp(double a, double n, double npre)
 {
     double quot;
     double rem;
 
     if (a < n)
         return a;
-    if (n < WORD(0))
-        return a - n;
-
+    
     if (n == 1)
     {
         quot = a;
