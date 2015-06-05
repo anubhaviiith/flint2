@@ -48,10 +48,10 @@ int main(void)
         double *a, *b;
         double m, result1 = 0, result2 = 0; 
         
-        slong len = n_randint(state, 15);
+        slong len = n_randint(state, 155);
 
         m = n_randtest_not_zero(state);
-        m = 5;
+        m = 108800;
         
         dmod_t mod;
         dmod_init(&mod, m);
@@ -76,8 +76,10 @@ int main(void)
             b[j] = n_mod2_precomp_double(b[j], mod.n, mod.ninv);
 
             result2 += a[j]*b[j];
-            if ( j % (n_powmod_precomp(2,(FLINT_D_BITS - (2 * mod.n)), mod.n, mod.ninv)) == 0)
+            if ( j % (n_powmod_precomp(2,(FLINT_D_BITS - (2 * mod.b)), mod.n, mod.ninv)) == 0)
+            {
                 result2 = n_mod2_precomp_double(result2, mod.n, mod.ninv);
+            }
         }
         
         if (result1 != result2)
