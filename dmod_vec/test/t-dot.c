@@ -34,7 +34,7 @@
 #include "fmpz.h"
 #include "fmpz_vec.h"
 
-#define EPSILON 0.000000000000001
+#define EPSILON 0.000000000001
 
 int main(void)
 {
@@ -49,9 +49,10 @@ int main(void)
         double *a, *b;
         double m, result1 = 0, result2 = 0; 
         
-        slong len = n_randint(state, 40);
+        slong len = n_randint(state, 100);
 
-        m = n_randint(state, 67108864);
+        m = (n_powmod_precomp(2,(FLINT_D_BITS - FLINT_FLOG2(len))/2 , 1, 1) - 1);
+
         
         dmod_t mod;
         dmod_init(&mod, m);
@@ -83,10 +84,8 @@ int main(void)
             result2 += a[j]*b[j];
         }
         
-        flint_printf("%lf %lf\n", result1, result2);
         if ( fabs(result1 - result2) > EPSILON)
         {
-            printf("%lf\n", fabs(result1 - result2));
             flint_printf("FAIL\n");
             abort();
         }
