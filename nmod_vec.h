@@ -46,6 +46,7 @@ typedef struct
    mp_limb_t n;
    mp_limb_t ninv;
    mp_bitcnt_t norm;
+   mp_limb_t b;
 } nmod_t;
 
 
@@ -171,6 +172,7 @@ void nmod_init(nmod_t * mod, mp_limb_t n)
    mod->n = n;
    mod->ninv = n_preinvert_limb(n);
    count_leading_zeros(mod->norm, n);
+   mod->b = FLINT_BIT_COUNT(n);
 }
 
 static __inline__

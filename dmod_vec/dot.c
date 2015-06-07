@@ -28,29 +28,45 @@
 #include "fmpz.h"
 
 
-double _dmod_vec_dot(const double *vec1, const double *vec2, slong N, dmod_t mod)
+double _dmod_vec_dot(const double *vec1, const double *vec2, slong N, ulong window, dmod_t mod)
 {
     double sum = 0;
-    slong i, ptr = 0;
+    slong i, j, ptr = 0;
     double *a, *b;
+    mp_limb_t res = 0;
 
-    ulong window = n_powmod_precomp(2,(FLINT_D_BITS - (2 * mod.b)), mod.n, mod.ninv);
-    
     a = _dmod_vec_init(N);
     b = _dmod_vec_init(N);
-
+    printf("%lld\n", window); 
     for (i = 0; i < N; i++)
     {
-        a[ptr] = dmod_precomp(vec1[i], mod.n, mod.ninv);
-        b[ptr] = dmod_precomp(vec2[i], mod.n, mod.ninv);
+        a[ptr] = vec1[i];
+        b[ptr] = vec2[i];
         ptr++;
         if (i % window == 0)
         {
+            sum += cblas_ddot(ptr ,a , 1, b, 1);
             sum = dmod_precomp(sum, mod.n, mod.ninv);
-            sum += cblas_ddot(ptr ,a, 1, b, 1);
+            res = dmod_precomp(res, mod.n, mod.ninv);
+            printf("ptr = %lld i = %lld res = %lld sum = %lf\n", ptr, i, res, sum);
+            for (j = 0; j < ptr; ++j)
+            {
+                printf("%lld ", a[j]);
+            }
+            printf("\n");
+            for (j = 0; j < ptr; ++j)
+            {
+                printf("%lld ", b[j]);
+            }
+            printf("\n");
+
+
             ptr = 0;
         }
+        res += vec1[i]*vec2[i]; 
     }
+    
+    printf("%lld %lld %lld\n", res, ptr, N);
 
     sum = dmod_precomp(sum, mod.n, mod.ninv);
     sum += cblas_ddot(ptr ,a, 1, b, 1);

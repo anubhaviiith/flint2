@@ -19,15 +19,28 @@
 =============================================================================*/
 /******************************************************************************
 
-
 ******************************************************************************/
 
-#include "dmod_vec.h"
 
-void
-_dmod_vec_add(double *res, const double *vec1, const double *vec2, slong len2)
+#include <cblas.h>
+#include "dmod_vec.h"
+#include "nmod_vec.h"
+#include <stdio.h>
+#include "fmpz.h"
+#include "ulong_extras.h"
+
+mp_limb_t _umod_vec_dot(mp_srcptr vec1, mp_srcptr vec2, slong N, ulong window, nmod_t mod)
 {
-    ulong i;
-    for (i = 0; i < len2; i++)
-        res[i] = vec1[i] + vec2[i];
+    slong i, j, ptr = 0;
+    mp_limb_t res = 0;
+
+    for (i = 0; i < N; i++)
+    {
+        if (i % window == 0)
+        {
+            res = n_mod2_precomp(res, mod.n, mod.ninv);
+        }
+        res += vec1[i]*vec2[i]; 
+    }
+    return res;
 }

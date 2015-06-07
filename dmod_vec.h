@@ -30,7 +30,7 @@
 #include "double_extras.h"
 #include "flint.h"
 #include "ulong_extras.h"
-
+#include "nmod_vec.h"
 #ifdef __cplusplus
  extern "C" {
 #endif
@@ -103,11 +103,13 @@ FLINT_DLL void _dmod_vec_clear(double * vec);
 
 /*  Randomisation  ***********************************************************/
 
-FLINT_DLL void _dmod_vec_randtest(double * f, flint_rand_t state, slong len, slong minexp, slong maxexp);
+FLINT_DLL void _dmod_vec_randtest(double * f, flint_rand_t state, slong len, dmod_t mod);
+FLINT_DLL void _umod_vec_randtest(mp_ptr f, flint_rand_t state, slong len, nmod_t mod);
 
 /*  Dot product  **************************************/
 
-FLINT_DLL double _dmod_vec_dot(const double * vec1, const double * vec2, slong len2, dmod_t mod);
+FLINT_DLL double _dmod_vec_dot(const double * vec1, const double * vec2, slong len2, ulong window, dmod_t mod);
+FLINT_DLL mp_limb_t _umod_vec_dot(mp_srcptr vec1, mp_srcptr vec2, slong len2, ulong window, nmod_t mod);
 
 /* Substraction **************************************/
 
@@ -116,6 +118,9 @@ FLINT_DLL void  _dmod_vec_sub(double * vec1, const double * vec2, slong len2);
 /* Is equal  **************************************/
 
 FLINT_DLL int  _dmod_vec_equal(const double * vec1, const double * vec2, slong len2);
+
+FLINT_DLL double  _dmod_dot_fmpztest(const double * vec1, const double * vec2, slong len2, dmod_t mod);
+FLINT_DLL mp_limb_t  _umod_dot_fmpztest(mp_srcptr vec1, mp_srcptr vec2, slong len2, ulong window, nmod_t mod);
 
 /* Scalar mul and scalar addmul **************************************/
 
