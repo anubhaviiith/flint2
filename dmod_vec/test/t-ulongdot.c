@@ -107,13 +107,14 @@ int main(void)
         fmpz_clear(p);
         fmpz_clear(q);
         
-        /*printf("%lld %lld\n", result1, result2);
-        */
+        printf("%lld %lld\n", result1, result2);
+        
         if(result1 != result2)
         {
             printf("FAIL");
             abort();
         }
+        
         _nmod_vec_clear(a);
         _nmod_vec_clear(b);
     }
