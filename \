@@ -91,29 +91,9 @@ double dmod_mulmod_precomp(double c, double d, umod_t mod)
         rem -= mod.n;
     else if(rem < 0)
         rem += mod.n;
+    
     return rem;
 }
-
-static __inline__
-double dmod_mod_precomp(double c, umod_t mod)
-{
-    slong quot;
-    slong rem;
-    
-    if (c < mod.n)
-        return c;
-
-    quot = (c * mod.ninv);
-    rem  = c - quot * mod.n;
-    
-    if (rem >= mod.n)
-        rem -= 0.5 * mod.n;
-    else if(rem < 0)
-        rem += 0.5 * mod.n;
-    return rem;
-}
-
-
 /*  Memory management  *******************************************************/
 
 FLINT_DLL double * _dmod_vec_init(slong len);
@@ -139,7 +119,7 @@ FLINT_DLL void  _dmod_vec_sub(double * vec1, const double * vec2, slong len2);
 FLINT_DLL int  _dmod_vec_equal(const double * vec1, const double * vec2, slong len2);
 
 FLINT_DLL double  _dmod_dot_fmpztest(const double * vec1, const double * vec2, slong len2, dmod_t mod);
-FLINT_DLL mp_limb_t  _umod_dot_fmpztest(mp_srcptr vec1, mp_srcptr vec2, slong len2, umod_t mod);
+FLINT_DLL mp_limb_t  _umod_dot_fmpztest(mp_srcptr vec1, mp_srcptr vec2, slong len2, ulong window, umod_t mod);
 
 /* Scalar mul and scalar addmul **************************************/
 

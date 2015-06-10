@@ -40,7 +40,7 @@ int main(void)
     slong i, j;
     FLINT_TEST_INIT(state);
 
-    flint_printf("dot....");
+    flint_printf("mulmod....");
     fflush(stdout);
 
     nmod_t mod1;
@@ -48,72 +48,51 @@ int main(void)
 
     for (i = 0; i < 100 * flint_test_multiplier(); i++)
     {
-        mp_ptr a, b;
-        mp_limb_t m, result1, result2; 
+        slong m, result1, result2; 
         
-        ulong len = n_randint(state, 1000);
+        mp_limb_t a = n_randint(state, DBL_MAX);
+        mp_limb_t b = n_randint(state, DBL_MAX);
+        
         m = n_randint(state, n_powmod(2, FLINT_D_BITS/2 - 1, mod1.n));
         
-
         umod_t mod;
         umod_init(&mod, m);
         
-        /*
-        gmp_printf("n = %Mu %Mu\n", m, mod.b);
-        */
-        mp_limb_t window = n_powmod(2, FLINT_D_BITS - 2*mod.b, mod1.n);
-        /*
-        gmp_printf("window = %Mu\n", window);
-        */  
-        if (!len)
-            continue;
 
-        a = _nmod_vec_init(len);
-        b = _nmod_vec_init(len);
+        double c = n_mod2_precomp(a, mod.n, mod.ninv);
+        double d = n_mod2_precomp(b, mod.n, mod.ninv);
 
-        _umod_vec_randtest(a, state, len, mod);
-        _umod_vec_randtest(b, state, len, mod);
- 
-        /*for( j = 0; j < len; ++j)
-        {
-            gmp_printf("a = %Mu b = %Mu\n", a[j], b[j]);
-        }*/
+        
+        fmpz_t product, p, q;
 
-        /*Code to be tested */
-        result1 = _umod_vec_dot(a, b, len, window, mod); /* returns double */
-
-        /* fmpz test */
-
-        fmpz_t sum, p, q;
-
-        fmpz_init(sum);
+        fmpz_init(product);
         fmpz_init(p);
         fmpz_init(q);
 
-        slong j;
+        fmpz_set_d(p, c);
+        fmpz_set_d(q, d);
 
-        for (j = 0; j < len; j++)
-        {
-            fmpz_set_ui(p, a[j]);
-            fmpz_set_ui(q, b[j]);
-            fmpz_addmul(sum, p, q);
-        }
+        fmpz_mul(product, p, q);
 
-        fmpz_mod_ui(sum, sum, mod.n);
+        fmpz_mod_ui(product, product, mod.n);
 
-        result2 = fmpz_get_ui(sum); 
-
-        fmpz_clear(sum);
-        fmpz_clear(p);
-        fmpz_clear(q);
+        result1 = fmpz_get_d(product);  
+        
+        result2 = dmod_mulmod_precomp(c, d, mod);
+        
+        /*
+        flint_printf("%lld %lld\n", result1, result2);
+        */
 
         if(result1 != result2)
         {
             printf("FAIL");
             abort();
         }
-        _nmod_vec_clear(a);
-        _nmod_vec_clear(b);
+        
+        fmpz_clear(product);
+        fmpz_clear(p);
+        fmpz_clear(q);
     }
 
     FLINT_TEST_CLEANUP(state);

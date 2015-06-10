@@ -46,8 +46,8 @@ double _dmod_vec_dot(const double *vec1, const double *vec2, slong N, ulong wind
         if (i % window == 0)
         {
             sum += cblas_ddot(ptr ,a , 1, b, 1);
-            sum = dmod_precomp(sum, mod.n, mod.ninv);
-            res = dmod_precomp(res, mod.n, mod.ninv);
+            sum = n_mod2_precomp(sum, mod.n, mod.ninv);
+            res = n_mod2_precomp(res, mod.n, mod.ninv);
             printf("ptr = %lld i = %lld res = %lld sum = %lf\n", ptr, i, res, sum);
             for (j = 0; j < ptr; ++j)
             {
@@ -68,7 +68,7 @@ double _dmod_vec_dot(const double *vec1, const double *vec2, slong N, ulong wind
     
     printf("%lld %lld %lld\n", res, ptr, N);
 
-    sum = dmod_precomp(sum, mod.n, mod.ninv);
+    sum = n_mod2_precomp(sum, mod.n, mod.ninv);
     sum += cblas_ddot(ptr ,a, 1, b, 1);
     
     _dmod_vec_clear(a);
