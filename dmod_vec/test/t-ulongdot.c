@@ -106,7 +106,9 @@ int main(void)
         fmpz_clear(sum);
         fmpz_clear(p);
         fmpz_clear(q);
-
+        
+        /*printf("%lld %lld\n", result1, result2);
+        */
         if(result1 != result2)
         {
             printf("FAIL");

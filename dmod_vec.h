@@ -106,10 +106,14 @@ double dmod_mod_precomp(double c, umod_t mod)
     quot = (c * mod.ninv);
     rem  = c - quot * mod.n;
     
-    if (rem >= mod.n)
+    /*if (rem >= mod.n)
         rem -= 0.5 * mod.n;
     else if(rem < 0)
+    {
+        printf("*");
         rem += 0.5 * mod.n;
+    }*/
+    
     return rem;
 }
 

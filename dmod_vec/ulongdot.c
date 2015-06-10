@@ -38,10 +38,10 @@ mp_limb_t _umod_vec_dot(mp_srcptr vec1, mp_srcptr vec2, slong N, ulong window, u
     {
         if (i % window == 0)
         {
-            res = dmod_mod_precomp(res, mod);
+            res = n_mod2_precomp(res, mod.n, mod.ninv);
         }
         res += vec1[i]*vec2[i]; 
     }
-    res = dmod_mod_precomp(res, mod);
+    res = n_mod2_precomp(res, mod.n, mod.ninv);
     return res;
 }
