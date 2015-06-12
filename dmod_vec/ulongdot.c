@@ -29,9 +29,9 @@
 #include "fmpz.h"
 #include "ulong_extras.h"
 
-mp_limb_t _umod_vec_dot(mp_srcptr vec1, mp_srcptr vec2, slong N, ulong window, umod_t mod)
+mp_limb_t _dmod_vec_dot(mp_srcptr vec1, mp_srcptr vec2, slong N, ulong window, dmod_t mod)
 {
-    slong i, j, ptr = 0;
+    slong i;
     mp_limb_t res = 0;
 
     for (i = 0; i < N; i++)
@@ -40,6 +40,7 @@ mp_limb_t _umod_vec_dot(mp_srcptr vec1, mp_srcptr vec2, slong N, ulong window, u
         {
             res = n_mod2_precomp(res, mod.n, mod.ninv);
         }
+        
         res += vec1[i]*vec2[i]; 
     }
     res = n_mod2_precomp(res, mod.n, mod.ninv);

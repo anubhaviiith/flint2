@@ -30,13 +30,13 @@
 #include "ulong_extras.h"
 #include "nmod_vec.h"
 
-void _umod_vec_randtest(mp_ptr vec, flint_rand_t state, slong len, nmod_t mod)
+void _dmod_vec_randtest(mp_ptr vec, flint_rand_t state, slong len, nmod_t mod)
 {
     slong i;
 
     for (i = 0; i < len; i++)
     {
-        mp_limb_t val = n_randint(state, DBL_MAX);
+        mp_limb_t val = n_randint(state, INT_MAX);
         vec[i] = val % mod.n;
     } 
 }

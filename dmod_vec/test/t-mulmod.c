@@ -43,47 +43,36 @@ int main(void)
     flint_printf("mulmod....");
     fflush(stdout);
 
-    nmod_t mod1;
-    nmod_init(&mod1, DBL_MAX);
-
     for (i = 0; i < 100 * flint_test_multiplier(); i++)
     {
-        slong m, result1, result2; 
+        fmpz_t a, b, m, product;
         
-        mp_limb_t a = n_randint(state, DBL_MAX);
-        mp_limb_t b = n_randint(state, DBL_MAX);
-        
-        m = n_randint(state, n_powmod(2, FLINT_D_BITS/2 - 1, mod1.n));
-        
-        umod_t mod;
-        umod_init(&mod, m);
-        
-
-        double c = n_mod2_precomp(a, mod.n, mod.ninv);
-        double d = n_mod2_precomp(b, mod.n, mod.ninv);
-
-        
-        fmpz_t product, p, q;
-
+        fmpz_init(a);
+        fmpz_init(b);
+        fmpz_init(m);
         fmpz_init(product);
-        fmpz_init(p);
-        fmpz_init(q);
 
-        fmpz_set_d(p, c);
-        fmpz_set_d(q, d);
-
-        fmpz_mul(product, p, q);
-
+        fmpz_randtest_not_zero(a, state, FLINT_BITS);
+        fmpz_randtest_not_zero(b, state, FLINT_BITS);
+        fmpz_randtest_not_zero(m, state, FLINT_D_BITS/2);
+       
+        ulong m_d = fmpz_get_ui(m);
+        dmod_t mod;
+        dmod_init(&mod, m_d);
+        
+        fmpz_mod_ui(a, a, mod.n);
+        fmpz_mod_ui(b, b, mod.n);
+    
+        fmpz_mul(product, a, b);
         fmpz_mod_ui(product, product, mod.n);
 
-        result1 = fmpz_get_d(product);  
-        
-        result2 = dmod_mulmod_precomp(c, d, mod);
-        
-        /*
-        flint_printf("%lld %lld\n", result1, result2);
-        */
+        double result1 = fmpz_get_d(product); 
 
+        double c = fmpz_get_d(a);
+        double d = fmpz_get_d(b);
+
+        double result2 = dmod_mulmod_precomp(c, d, mod);
+        
         if(result1 != result2)
         {
             printf("FAIL");
@@ -91,8 +80,9 @@ int main(void)
         }
         
         fmpz_clear(product);
-        fmpz_clear(p);
-        fmpz_clear(q);
+        fmpz_clear(a);
+        fmpz_clear(b);
+        fmpz_clear(m);
     }
 
     FLINT_TEST_CLEANUP(state);

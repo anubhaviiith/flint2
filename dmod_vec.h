@@ -37,49 +37,27 @@
 
 typedef struct
 {
-   double n;
-   double ninv;
-   ulong b;
-} dmod_t;
-
-typedef struct
-{
    mp_limb_t n;
    double ninv;
    mp_limb_t b;
-} umod_t;
+} dmod_t;
 
-
-static __inline__
-void umod_init(umod_t * mod, mp_limb_t n)
-{
-   mod->n = n;
-   mod->ninv = n_precompute_inverse(n);
-   mod->b = FLINT_BIT_COUNT(n);
-}
-
-
-static __inline__ 
-double n_precompute_inverse_double(double n)
-{
-   return (double) 1 / n;
-}
 
 static __inline__
 void dmod_init(dmod_t * mod, double n)
 {
    mod->n = n;
-   mod->ninv = n_precompute_inverse(n);
+   mod->ninv = (double)1/(double)n;
    mod->b = FLINT_BIT_COUNT(n);
 }
 
 
 static __inline__
-double dmod_mulmod_precomp(double c, double d, umod_t mod)
+double dmod_mulmod_precomp(double c, double d, dmod_t mod)
 {
-    slong quot;
-    slong rem;
-    slong val = c*d;
+    ulong quot;
+    double rem;
+    double val = c*d;
     
     if (val < mod.n)
         return val;
@@ -95,7 +73,7 @@ double dmod_mulmod_precomp(double c, double d, umod_t mod)
 }
 
 static __inline__
-double dmod_mod_precomp(double c, umod_t mod)
+double dmod_mod_precomp(double c, dmod_t mod)
 {
     slong quot;
     slong rem;
@@ -126,13 +104,11 @@ FLINT_DLL void _dmod_vec_clear(double * vec);
 
 /*  Randomisation  ***********************************************************/
 
-FLINT_DLL void _dmod_vec_randtest(double * f, flint_rand_t state, slong len, dmod_t mod);
-FLINT_DLL void _umod_vec_randtest(mp_ptr f, flint_rand_t state, slong len, umod_t mod);
+FLINT_DLL void _dmod_vec_randtest(mp_ptr f, flint_rand_t state, slong len, dmod_t mod);
 
 /*  Dot product  **************************************/
 
-FLINT_DLL double _dmod_vec_dot(const double * vec1, const double * vec2, slong len2, ulong window, dmod_t mod);
-FLINT_DLL mp_limb_t _umod_vec_dot(mp_srcptr vec1, mp_srcptr vec2, slong len2, ulong window, umod_t mod);
+FLINT_DLL mp_limb_t _dmod_vec_dot(mp_srcptr vec1, mp_srcptr vec2, slong len2, ulong window, dmod_t mod);
 
 /* Substraction **************************************/
 
@@ -142,8 +118,7 @@ FLINT_DLL void  _dmod_vec_sub(double * vec1, const double * vec2, slong len2);
 
 FLINT_DLL int  _dmod_vec_equal(const double * vec1, const double * vec2, slong len2);
 
-FLINT_DLL double  _dmod_dot_fmpztest(const double * vec1, const double * vec2, slong len2, dmod_t mod);
-FLINT_DLL mp_limb_t  _umod_dot_fmpztest(mp_srcptr vec1, mp_srcptr vec2, slong len2, umod_t mod);
+FLINT_DLL mp_limb_t  _dmod_dot_fmpztest(mp_srcptr vec1, mp_srcptr vec2, slong len2, dmod_t mod);
 
 /* Scalar mul and scalar addmul **************************************/
 
