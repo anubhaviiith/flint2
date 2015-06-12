@@ -37,7 +37,7 @@
 
 typedef struct
 {
-   mp_limb_t n;
+   double n;
    double ninv;
    mp_limb_t b;
 } dmod_t;
@@ -66,17 +66,21 @@ double dmod_mulmod_precomp(double c, double d, dmod_t mod)
     rem  = val - quot * mod.n;
     
     if (rem >= mod.n)
+    {
         rem -= mod.n;
-    else if(rem < 0)
+    }
+    else if(rem < 0.0)
+    {
         rem += mod.n;
+    }
     return rem;
 }
 
 static __inline__
 double dmod_mod_precomp(double c, dmod_t mod)
 {
-    slong quot;
-    slong rem;
+    ulong quot;
+    double rem;
     
     if (c < mod.n)
         return c;
@@ -84,15 +88,16 @@ double dmod_mod_precomp(double c, dmod_t mod)
     quot = (c * mod.ninv);
     rem  = c - quot * mod.n;
     
-    /*if (rem >= mod.n)
-        rem -= 0.5 * mod.n;
-    else if(rem < 0)
+    if(rem < 0.0)
     {
-        printf("*");
-        rem += 0.5 * mod.n;
-    }*/
-    
+        rem += mod.n;
+    }
+    else if (rem >= mod.n)
+    {
+        rem -= mod.n;
+    }
     return rem;
+
 }
 
 

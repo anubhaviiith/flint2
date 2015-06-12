@@ -45,18 +45,23 @@ int main(void)
 
     for (i = 0; i < 100 * flint_test_multiplier(); i++)
     {
-        fmpz_t a, b, m, product;
+        ulong limit_ulong, m_d;
+        fmpz_t a, b, product, base, limit;
         
         fmpz_init(a);
         fmpz_init(b);
-        fmpz_init(m);
         fmpz_init(product);
+        fmpz_init(base);
+        fmpz_init(limit);
 
-        fmpz_randtest_not_zero(a, state, FLINT_BITS);
-        fmpz_randtest_not_zero(b, state, FLINT_BITS);
-        fmpz_randtest_not_zero(m, state, FLINT_D_BITS/2);
+        fmpz_randtest_unsigned(a, state, FLINT_BITS);
+        fmpz_randtest_unsigned(b, state, FLINT_BITS);
        
-        ulong m_d = fmpz_get_ui(m);
+        fmpz_set_ui(base, 2);        
+        fmpz_pow_ui(limit, base, FLINT_D_BITS/2);
+        limit_ulong = fmpz_get_ui(limit);
+        m_d = n_randint(state, limit_ulong);
+        
         dmod_t mod;
         dmod_init(&mod, m_d);
         
@@ -82,7 +87,8 @@ int main(void)
         fmpz_clear(product);
         fmpz_clear(a);
         fmpz_clear(b);
-        fmpz_clear(m);
+        fmpz_clear(base);
+        fmpz_clear(limit);
     }
 
     FLINT_TEST_CLEANUP(state);

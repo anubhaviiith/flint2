@@ -1,0 +1,60 @@
+/*=============================================================================
+
+    This file is part of FLINT.
+
+    FLINT is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    FLINT is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with FLINT; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+
+=============================================================================*/
+/******************************************************************************
+
+
+******************************************************************************/
+
+*******************************************************************************
+
+    Modulus
+
+*******************************************************************************
+
+double dmod_mulmod_precomp(double c, double d, dmod_t mod)
+    Returns the moduli of the multiplication of 2 doubles c and d. We require
+    \code{c < 2^(FLINT_D_BITS/2)} and \code{d < 2^(FLINT_D_BITS/2)} bits.
+    The quotient of the modulus is estimated by computing the product \code {(c*d)*ninv}.
+    This value differs from the actual value of the quotient \code{(c*d)/n} by 
+    a factor e which is the summation of errors from rounding \code{c*d} and the
+    rounding error in ninv. The value of the double ninv has an error of 0.5 ULP 
+    where the value of 1 ULP = $2^(-52)$. This error is amplified by the factor of 
+    \code{c*d}. This gives us a maximal error of $(0.5 * 2^(-52) * 2^52)$ which is equal to $0.5$. 
+    Another contributor to the error is the rounding error of \code{c * d}. 
+    This is equal to 0.5 ULP. Where the value of 1 ULP = $1$. Thus the error contribution 
+    from the rounding error of \code{c * d} is $0.5$. 
+    This gives a total error of 1 in the computation of the quotient.
+    Thus we imply that the value of q lies in the range $[q'-1, q'+1]$ where \code{q}
+    is equal to the value \code{a*ninv} and \code{q'} is equal to a/n. Since we trunctate 
+    the values to ulong, it is easy to see that the value of \code{q} can be either of the 
+    3 values \code{q'-1}, \code{q'}, \code{q'+1}. 
+    Thus we have adjusted the remainder accordingly to give the correct moduli.
+
+
+double dmod_mod_precomp(double a, dmod_t mod)
+    Returns \code{a mod n} where \code{n} is a double value stored in the structure
+    dmod_t. \code{a < 2^(FLINT_D_BITS)}.
+    The value of the moduli is calculated by the estimating the value of \code{a * ninv}
+    For the approximation the error is due to the rounding error in ninv which is of 0.5 ULP.
+    The value of 1 ULP = $2^(-52)$ for this case and the value of \code{a < 2^(FLINT_D_BITS)}. Thus,
+    this gives a error of 0.5 for the product of ninv and a. The value of the quotient is truncated 
+    to integer. If the value of code{rem < 0.0} or \code{rem >= n}, means that an error is 
+    prevelant. The error will be of $+1$ or $-1$ after truncation of quot to an integer. 
+    The remainder is thus adjusted appropriately to give the correct value of the moduli.
