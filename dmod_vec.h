@@ -31,6 +31,7 @@
 #include "flint.h"
 #include "ulong_extras.h"
 #include "nmod_vec.h"
+#include <math.h>
 #ifdef __cplusplus
  extern "C" {
 #endif
@@ -40,6 +41,7 @@ typedef struct
    double n;
    double ninv;
    mp_limb_t b;
+   mp_limb_t window;
 } dmod_t;
 
 
@@ -47,8 +49,9 @@ static __inline__
 void dmod_init(dmod_t * mod, double n)
 {
    mod->n = n;
-   mod->ninv = (double)1/(double)n;
+   mod->ninv = (double)1/n;
    mod->b = FLINT_BIT_COUNT(n);
+   mod->window = pow(2, FLINT_D_BITS - 2*(FLINT_BIT_COUNT(n)));
 }
 
 
@@ -113,7 +116,7 @@ FLINT_DLL void _dmod_vec_randtest(mp_ptr f, flint_rand_t state, slong len, dmod_
 
 /*  Dot product  **************************************/
 
-FLINT_DLL double _dmod_vec_dot(const double * vec1, const double * vec2, slong len2, ulong window, dmod_t mod);
+FLINT_DLL double _dmod_vec_dot(const double * vec1, const double * vec2, slong len2, dmod_t mod);
 
 /* Substraction **************************************/
 

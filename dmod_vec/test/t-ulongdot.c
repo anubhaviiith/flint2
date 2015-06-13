@@ -29,7 +29,6 @@
 #include "dmod_vec.h"
 #include "fmpz_vec.h"
 #include "ulong_extras.h"
-
 #include "fmpz.h"
 #include "nmod_vec.h"
 
@@ -46,11 +45,11 @@ int main(void)
         fmpz *a, *b;
         double *c, *d;
 
-        mp_limb_t limit_ulong, m_d, win, len;
-        fmpz_t m, window, base, limit, sum;
+        mp_limb_t limit_ulong, m_d, len;
+        fmpz_t m, base, limit, sum;
+        
         double result1, result2; 
         fmpz_init(m);
-        fmpz_init(window);
         fmpz_init(limit);
         fmpz_init(base);
         fmpz_init(sum);
@@ -62,9 +61,6 @@ int main(void)
         
         dmod_t mod;
         dmod_init(&mod, m_d);
-        
-        fmpz_pow_ui(window, base, FLINT_D_BITS - 2*mod.b);
-        win = fmpz_get_ui(window);
         
         len = n_randint(state, 1000);
         
@@ -92,7 +88,7 @@ int main(void)
             d[j] = fmpz_get_d(b + j);
         }
         
-        result1 = _dmod_vec_dot(c, d, len, win, mod); 
+        result1 = _dmod_vec_dot(c, d, len, mod); 
         
         _fmpz_vec_dot(sum, a, b, len);
         fmpz_mod_ui(sum, sum, mod.n);
@@ -110,7 +106,6 @@ int main(void)
         _dmod_vec_clear(c);
         _dmod_vec_clear(d);
     
-        fmpz_clear(window);  
         fmpz_clear(m);
         fmpz_clear(limit);
         fmpz_clear(base);

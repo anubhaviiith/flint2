@@ -29,44 +29,30 @@
 #include "fmpz.h"
 #include "ulong_extras.h"
 
-double _dmod_vec_dot(const double *vec1, const double *vec2, slong N, ulong window, dmod_t mod)
+double _dmod_vec_dot(const double *vec1, const double *vec2, slong N, dmod_t mod)
 {
-    slong i, j, last_i = 0, start;
+    slong i, j, last_i = 0;
     double res1 = 0.0, val;
-    double *v1;
-    double *v2;
 
-    v1 = _dmod_vec_init(window);
-    v2 = _dmod_vec_init(window);
-
-    for (i = 0; i < N; i+=window)
+    for (i = 0; i < N; i+=mod.window)
     {
         if (i != 0)
         {
-            start = i - window;
-            for (j = i - window; j < i; j++)
-            {
-                v1[j - start] = vec1[j];
-                v2[j - start] = vec2[j];
-            } 
-            val = cblas_ddot(window, v1, 1, v2, 1); 
+            val = cblas_ddot(mod.window, vec1 + i - mod.window, 1, vec2 + i - mod.window, 1); 
             val = dmod_mod_precomp(val, mod);
 
             res1 += val; 
-            last_i = i;
-
             res1 = dmod_mod_precomp(res1, mod);
+            
+            last_i = i;
         }
     }
-    for (j = last_i; j < N; j++)
-    {
-        v1[j - last_i] = vec1[j];
-        v2[j - last_i] = vec2[j];
-    } 
     
-    val = cblas_ddot(N - last_i, v1, 1, v2, 1);  
+    val = cblas_ddot(N - last_i, vec1 + last_i, 1, vec2 + last_i, 1);  
     val = dmod_mod_precomp(val, mod);
+    
     res1 += val;
     res1 = dmod_mod_precomp(res1, mod);
+    
     return res1;
 }

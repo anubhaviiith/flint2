@@ -28,6 +28,6 @@
 
 void _dmod_vec_scalar_mul(double *vec1, const double alpha, slong N )
 {
-    
+
     cblas_dscal(N, alpha, vec1, 1); 
 }
