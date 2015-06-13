@@ -113,7 +113,7 @@ FLINT_DLL void _dmod_vec_randtest(mp_ptr f, flint_rand_t state, slong len, dmod_
 
 /*  Dot product  **************************************/
 
-FLINT_DLL mp_limb_t _dmod_vec_dot(mp_srcptr vec1, mp_srcptr vec2, slong len2, ulong window, dmod_t mod);
+FLINT_DLL double _dmod_vec_dot(const double * vec1, const double * vec2, slong len2, ulong window, dmod_t mod);
 
 /* Substraction **************************************/
 

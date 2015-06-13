@@ -44,11 +44,11 @@ int main(void)
     for (i = 0; i < 100 * flint_test_multiplier(); i++)
     {
         fmpz *a, *b;
-        mp_ptr c, d;
+        double *c, *d;
 
-        mp_limb_t result1, result2, limit_ulong, m_d, win, len;
+        mp_limb_t limit_ulong, m_d, win, len;
         fmpz_t m, window, base, limit, sum;
-
+        double result1, result2; 
         fmpz_init(m);
         fmpz_init(window);
         fmpz_init(limit);
@@ -74,30 +74,30 @@ int main(void)
         a = _fmpz_vec_init(len);
         b = _fmpz_vec_init(len);
 
-        c = _nmod_vec_init(len);
-        d = _nmod_vec_init(len);
+        c = _dmod_vec_init(len);
+        d = _dmod_vec_init(len);
         
 
         for (j = 0; j < len; j++)
         {
             fmpz_randtest_not_zero(a + j, state, FLINT_BITS);
             fmpz_mod_ui(a + j, a + j, mod.n);
-            c[j] = fmpz_get_ui(a + j);
+            c[j] = fmpz_get_d(a + j);
 
         }
         for (j = 0; j < len; j++)
         {
             fmpz_randtest_not_zero(b + j, state, FLINT_BITS);
             fmpz_mod_ui(b + j, b + j, mod.n);
-            d[j] = fmpz_get_ui(b + j);
+            d[j] = fmpz_get_d(b + j);
         }
         
         result1 = _dmod_vec_dot(c, d, len, win, mod); 
         
         _fmpz_vec_dot(sum, a, b, len);
         fmpz_mod_ui(sum, sum, mod.n);
-        result2 = fmpz_get_ui(sum); 
-        
+        result2 = fmpz_get_d(sum); 
+
         if(result1 != result2)
         {
             printf("FAIL");
@@ -107,8 +107,8 @@ int main(void)
         _fmpz_vec_clear(a, len);
         _fmpz_vec_clear(b, len);
         
-        _nmod_vec_clear(c);
-        _nmod_vec_clear(d);
+        _dmod_vec_clear(c);
+        _dmod_vec_clear(d);
     
         fmpz_clear(window);  
         fmpz_clear(m);
