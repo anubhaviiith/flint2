@@ -106,10 +106,13 @@ int main(void)
         
         _fmpz_vec_scalar_addmul_fmpz(a, b, len, x);
 
+        fmpz_set_ui(mod_fmpz, mod.n);
+        _fmpz_vec_scalar_mod_fmpz(ans, a, len, mod_fmpz);
+
         for (j = 0; j < len; j++)
         {    
             fmpz_set_d(result + j, c[j]);
-            if(fmpz_equal(a + j, result + j) == 0)
+            if(fmpz_equal(ans + j, result + j) == 0)
             {
                 printf("FAIL");
                 abort();

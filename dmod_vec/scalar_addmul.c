@@ -26,7 +26,12 @@
 #include "dmod_vec.h"
 #include<stdio.h>
 
-void _dmod_vec_scalar_addmul(const double *vec1, double *vec2, const double alpha, slong N, dmod_t mod)
+void _dmod_vec_scalar_addmul(double *vec1, const double *vec2, const double alpha, slong N, dmod_t mod)
 {
-    cblas_daxpy(N, alpha, vec2, 1, vec1, 1); 
+    slong i;
+    cblas_daxpy(N, alpha, vec2, 1, vec1, 1);
+    for (i = 0; i < N; i++)
+    {
+        vec1[i] = dmod_mod_precomp(vec1[i], mod);
+    }
 }

@@ -28,5 +28,10 @@
 
 void _dmod_vec_scalar_mul(double *vec1, const double alpha, slong N, dmod_t mod)
 {
+    slong i;
     cblas_dscal(N, alpha, vec1, 1); 
+    for (i = 0 ; i < N; i++)
+    {
+        vec1[i] = dmod_mod_precomp(vec1[i], mod);
+    }
 }
