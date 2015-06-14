@@ -46,13 +46,14 @@ int main(void)
         double *c, *d;
 
         mp_limb_t limit_ulong, m_d, len;
-        fmpz_t m, base, limit, sum;
+        fmpz_t m, base, limit, sum, sum1;
         
         double result1, result2; 
         fmpz_init(m);
         fmpz_init(limit);
         fmpz_init(base);
         fmpz_init(sum);
+        fmpz_init(sum1);
         
         fmpz_set_ui(base, 2);        
         fmpz_pow_ui(limit, base, FLINT_D_BITS/2);
@@ -90,11 +91,11 @@ int main(void)
         
         result1 = _dmod_vec_dot(c, d, len, mod); 
         
+        fmpz_set_d(sum1, result1);
         _fmpz_vec_dot(sum, a, b, len);
         fmpz_mod_ui(sum, sum, mod.n);
-        result2 = fmpz_get_d(sum); 
 
-        if(result1 != result2)
+        if(fmpz_equal(sum, sum1) == 0)
         {
             printf("FAIL");
             abort();
@@ -110,6 +111,7 @@ int main(void)
         fmpz_clear(limit);
         fmpz_clear(base);
         fmpz_clear(sum);
+        fmpz_clear(sum1);
 
     }
 

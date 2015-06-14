@@ -46,18 +46,23 @@ int main(void)
     for (i = 0; i < 100 * flint_test_multiplier(); i++)
     {
         ulong limit_ulong, m_d;
-        fmpz_t a, b, product, base, limit;
+        fmpz_t a, b, p2, product, base, limit, limit_a;
         
         fmpz_init(a);
         fmpz_init(b);
         fmpz_init(product);
         fmpz_init(base);
         fmpz_init(limit);
+        fmpz_init(limit_a);
+        fmpz_init(p2);
 
-        fmpz_randtest_unsigned(a, state, FLINT_BITS);
-        fmpz_randtest_unsigned(b, state, FLINT_BITS);
-       
         fmpz_set_ui(base, 2);        
+        
+        fmpz_pow_ui(limit_a, base, FLINT_D_BITS);
+        
+        fmpz_randm(a, state, limit_a);
+        fmpz_randm(b, state, limit_a);
+       
         fmpz_pow_ui(limit, base, FLINT_D_BITS/2);
         limit_ulong = fmpz_get_ui(limit);
         m_d = n_randint(state, limit_ulong);
@@ -71,14 +76,14 @@ int main(void)
         fmpz_mul(product, a, b);
         fmpz_mod_ui(product, product, mod.n);
 
-        double result1 = fmpz_get_d(product); 
-
         double c = fmpz_get_d(a);
         double d = fmpz_get_d(b);
 
         double result2 = dmod_mulmod_precomp(c, d, mod);
         
-        if(result1 != result2)
+        fmpz_set_d(p2, result2); 
+        
+        if(fmpz_equal(product, p2) == 0)
         {
             printf("FAIL");
             abort();
@@ -89,6 +94,8 @@ int main(void)
         fmpz_clear(b);
         fmpz_clear(base);
         fmpz_clear(limit);
+        fmpz_clear(limit_a);
+        fmpz_clear(p2);
     }
 
     FLINT_TEST_CLEANUP(state);

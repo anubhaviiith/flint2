@@ -46,16 +46,17 @@ int main(void)
     for (i = 0; i < 100 * flint_test_multiplier(); i++)
     {
         ulong limit_ulong, m_d;
-        fmpz_t a, b, m, product, base, limit;
+        fmpz_t a, b, val2, m, product, base, limit;
         
         fmpz_init(a);
         fmpz_init(m);
         fmpz_init(base);
         fmpz_init(limit);
+        fmpz_init(val2);
 
         fmpz_randtest_unsigned(a, state, FLINT_D_BITS);
        
-        fmpz_set_ui(base, 2);        
+        fmpz_set_ui(base, 2);      
         fmpz_pow_ui(limit, base, FLINT_D_BITS);
         limit_ulong = fmpz_get_ui(limit);
         m_d = n_randint(state, limit_ulong);
@@ -66,10 +67,11 @@ int main(void)
         double c = fmpz_get_d(a);
         double result2 = dmod_mod_precomp(c, mod);
         
+        fmpz_set_d(val2, result2);
+
         fmpz_mod_ui(a, a, mod.n);
 
-        double result1 = fmpz_get_d(a); 
-        if(result1 != result2)
+        if(fmpz_equal(val2, a) == 0)
         {
             printf("FAIL");
             abort();
@@ -79,6 +81,7 @@ int main(void)
         fmpz_clear(m);
         fmpz_clear(base);
         fmpz_clear(limit);
+        fmpz_clear(val2);
     }
 
     FLINT_TEST_CLEANUP(state);

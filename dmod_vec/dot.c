@@ -31,28 +31,27 @@
 
 double _dmod_vec_dot(const double *vec1, const double *vec2, slong N, dmod_t mod)
 {
-    slong i, j, last_i = 0;
+    slong i, j;
     double res1 = 0.0, val;
-
-    for (i = 0; i < N; i+=mod.window)
+    ulong window = mod.window;
+    for (i = 0; i < N; i += window)
     {
         if (i != 0)
         {
-            val = cblas_ddot(mod.window, vec1 + i - mod.window, 1, vec2 + i - mod.window, 1); 
+            val = cblas_ddot(window, vec1 + i - window, 1, vec2 + i - window, 1); 
             val = dmod_mod_precomp(val, mod);
 
             res1 += val; 
             res1 = dmod_mod_precomp(res1, mod);
-            
-            last_i = i;
         }
     }
     
-    val = cblas_ddot(N - last_i, vec1 + last_i, 1, vec2 + last_i, 1);  
-    val = dmod_mod_precomp(val, mod);
-    
-    res1 += val;
-    res1 = dmod_mod_precomp(res1, mod);
-    
+    if (i - window < N)
+    {
+        val = cblas_ddot(N - (i - window), vec1 + i - window, 1, vec2 + i - window, 1);  
+        val = dmod_mod_precomp(val, mod);
+        res1 += val;
+        res1 = dmod_mod_precomp(res1, mod);
+    }
     return res1;
 }
