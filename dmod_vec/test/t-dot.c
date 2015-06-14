@@ -94,7 +94,7 @@ int main(void)
         fmpz_set_d(sum1, result1);
         _fmpz_vec_dot(sum, a, b, len);
         fmpz_mod_ui(sum, sum, mod.n);
-
+    
         if(fmpz_equal(sum, sum1) == 0)
         {
             printf("FAIL");

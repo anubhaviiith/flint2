@@ -45,25 +45,32 @@ int main(void)
         fmpz *a, *ans, *result, *result1;
         double *c;
 
-        mp_limb_t limit_ulong, m_d, len;
-        fmpz_t m, base, limit, sum, sum1, x, limit_x, mod_fmpz;
+        mp_limb_t limit_ulong, m_d, len, limit_low_ulong;
+        fmpz_t m, base, limit, sum, sum1, x, limit_x, mod_fmpz, limit_low;
         
         double alpha;
 
         fmpz_init(m);
         fmpz_init(x);
         fmpz_init(limit);
+        fmpz_init(limit_low);
         fmpz_init(limit_x);
         fmpz_init(base);
         fmpz_init(sum);
         fmpz_init(sum1);
         fmpz_init(mod_fmpz);
-
+        
         fmpz_set_ui(base, 2);        
         fmpz_pow_ui(limit, base, FLINT_D_BITS/2);
-        limit_ulong = fmpz_get_ui(limit);
-        m_d = n_randint(state, limit_ulong);
+        fmpz_pow_ui(limit_low, base, FLINT_D_BITS/4);
         
+        limit_ulong = fmpz_get_ui(limit);
+        limit_low_ulong = fmpz_get_ui(limit_low);
+
+        if (n_randint(state, 2))
+            m_d = n_randint(state, limit_ulong);
+        else
+            m_d = n_randint(state, limit_low_ulong);
         fmpz_pow_ui(limit_x, base, FLINT_D_BITS);
         fmpz_randm(x, state, limit_x);
 
@@ -119,6 +126,7 @@ int main(void)
     
         fmpz_clear(m);
         fmpz_clear(limit);
+        fmpz_clear(limit_low);
         fmpz_clear(limit_x);
         fmpz_clear(x);
         fmpz_clear(base);
