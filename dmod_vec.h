@@ -132,7 +132,7 @@ FLINT_DLL mp_limb_t  _dmod_dot_fmpztest(mp_srcptr vec1, mp_srcptr vec2, slong le
 
 FLINT_DLL void _dmod_vec_scalar_mul(double * vec1, const double alpha, slong len2, dmod_t mod);
 
-FLINT_DLL void _dmod_vec_scalar_addmul(const double * vec1, double * vec2, const double alpha, slong len2);
+FLINT_DLL void _dmod_vec_scalar_addmul(const double * vec1, double * vec2, const double alpha, slong len2, dmod_t mod);
 
 /* Copy  **************************************/
 

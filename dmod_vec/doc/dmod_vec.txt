@@ -34,7 +34,7 @@ double dmod_mulmod_precomp(double c, double d, dmod_t mod)
     The quotient of the modulus is estimated by computing the product \code {(c*d)*ninv}.
     This value differs from the actual value of the quotient \code{(c*d)/n} by 
     a factor e which is the summation of errors from rounding \code{c*d} and the
-    rounding error in ninv. The value of the double ninv has an error of 0.5 ULP 
+    rounding error in ninv. The value of the double ninv has a maximum error of 0.5 ULP. 
     where the value of 1 ULP = $2^(-52)$. This error is amplified by the factor of 
     \code{c*d}. This gives us a maximal error of $(0.5 * 2^(-52) * 2^52)$ which is equal to $0.5$. 
     Another contributor to the error is the rounding error of \code{c * d}. 
