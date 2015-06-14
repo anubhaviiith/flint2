@@ -29,7 +29,7 @@
 *******************************************************************************
 
 double dmod_mulmod_precomp(double c, double d, dmod_t mod)
-    Returns the moduli of the multiplication of 2 doubles c and d. We require
+    Returns \code {(c*d) modulo n}. We require
     \code{c < 2^(FLINT_D_BITS/2)} and \code{d < 2^(FLINT_D_BITS/2)} bits.
     The quotient of the modulus is estimated by computing the product \code {(c*d)*ninv}.
     This value differs from the actual value of the quotient \code{(c*d)/n} by 

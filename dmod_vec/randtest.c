@@ -32,11 +32,23 @@
 
 void _dmod_vec_randtest(mp_ptr vec, flint_rand_t state, slong len, nmod_t mod)
 {
-    slong i;
+    slong i, sparseness;
 
-    for (i = 0; i < len; i++)
+    if (n_randint(state, 2))
     {
-        mp_limb_t val = n_randint(state, INT_MAX);
-        vec[i] = val % mod.n;
-    } 
+        for (i = 0; i < len; i++)
+            vec[i] = n_randtest(state) % mod.n;
+    }
+    else
+    {
+        sparseness = 1 + n_randint(state, FLINT_MAX(2, len));
+
+        for (i = 0; i < len; i++)
+        {
+            if (n_randint(state, sparseness))
+                vec[i] = 0;
+            else
+                vec[i] = n_randtest(state) % mod.n;
+        }
+    }
 }

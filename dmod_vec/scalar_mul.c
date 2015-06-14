@@ -24,10 +24,9 @@
 
 #include <cblas.h>
 #include "dmod_vec.h"
-#include<stdio.h>
+#include <stdio.h>
 
-void _dmod_vec_scalar_mul(double *vec1, const double alpha, slong N )
+void _dmod_vec_scalar_mul(double *vec1, const double alpha, slong N, dmod_t mod)
 {
-
     cblas_dscal(N, alpha, vec1, 1); 
 }
