@@ -72,7 +72,7 @@ double dmod_mod_precomp(double a, dmod_t mod)
     error of 0.5 for $ \code{a} * \code{mod.ninv} $. 
     If the value of $ \code{rem} < 0.0 $ or $ \code{rem} \geq \code{mod.n} $, 
     means that an error is prevelant. The error will be of $+1$ or $-1$ after 
-    truncation of quot to an integer. The remainder is thus adjusted appropriately 
+    truncation of the quotient to an integer. The remainder is thus adjusted appropriately 
     to give the correct value of $a$ modulo \code{mod.n}.
   
 
@@ -87,7 +87,7 @@ double dmod_mulmod_precomp(double c, double d, dmod_t mod)
     The modulus is computed by estimating the quotient, $ \code{q} =  ( (c * d) * \code{mod.ninv}) $
     where \code{mod.ninv} is the precomputed inverse of \code{mod.n}.
     This difference comes from a summation of the rounding error in the product $(c*d) * \code{mod.ninv}$
-    and a 0.5 ULP error from the error in the value of \code{mod.ninv}. The largest value 
+    and a 0.5 ULP error from the rounding error in the value of \code{mod.ninv}. The largest value 
     of 1 ULP = $2^(-52)$ for \code{mod.ninv}. This error is amplified by the factor of 
     $c * d$. This gives us a maximal error of $(0.5 * 2^(-52) * 2^52)$ which is equal to $0.5$. 
     The rounding error from the product $(c*d) * \code{mod.ninv}$ also comes out to be equal to $0.5$. 
