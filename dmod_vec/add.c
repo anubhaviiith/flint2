@@ -26,16 +26,12 @@
 #include "dmod_vec.h"
 #include<stdio.h>
 
-void _dmod_vec_add(double *result, double *vec1, double *vec2, slong N, dmod_t mod)
+void _dmod_vec_add(double *result, const double *vec1, const double *vec2, slong N, dmod_t mod)
 {
     slong i;
     
-    cblas_daxpy(N, 1, vec2, 1, vec1, 1);
-    cblas_dcopy(N, vec1, 1, result, 1); 
-    cblas_daxpy(N, -1, vec2, 1, vec1, 1);
-    
     for (i = 0; i < N; i++)
     {
-        result[i] = dmod_mod_precomp(result[i], mod);
+        result[i] = dmod_add(vec1[i], vec2[i], mod);;
     }
 }

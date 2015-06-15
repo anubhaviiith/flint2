@@ -143,8 +143,8 @@ FLINT_DLL double _dmod_vec_dot(const double * vec1, const double * vec2, slong l
 
 /* Substraction and Addition**************************************/
 
-FLINT_DLL void  _dmod_vec_sub(double * result, double *vec1, double * vec2, slong len2, dmod_t mod);
-FLINT_DLL void  _dmod_vec_add(double * result, double *vec1, double * vec2, slong len2, dmod_t mod);
+FLINT_DLL void  _dmod_vec_sub(double * result, const double *vec1, const double * vec2, slong len2, dmod_t mod);
+FLINT_DLL void  _dmod_vec_add(double * result, const double *vec1, const double * vec2, slong len2, dmod_t mod);
 
 /* Is equal  **************************************/
 

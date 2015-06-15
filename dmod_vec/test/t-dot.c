@@ -48,7 +48,7 @@ int main(void)
         mp_limb_t limit_ulong, m_d, len;
         fmpz_t m, base, limit, sum, sum1;
         
-        double result1, result2; 
+        double result1; 
         fmpz_init(m);
         fmpz_init(limit);
         fmpz_init(base);

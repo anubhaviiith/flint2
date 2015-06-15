@@ -37,7 +37,7 @@
 
 int main(void)
 {
-    slong i, j;
+    slong i;
     FLINT_TEST_INIT(state);
 
     flint_printf("mulmod....");
@@ -46,6 +46,7 @@ int main(void)
     for (i = 0; i < 100 * flint_test_multiplier(); i++)
     {
         ulong limit_ulong, m_d;
+        double c, d, result2;
         fmpz_t a, b, p2, product, base, limit, limit_a;
         
         fmpz_init(a);
@@ -76,10 +77,10 @@ int main(void)
         fmpz_mul(product, a, b);
         fmpz_mod_ui(product, product, mod.n);
 
-        double c = fmpz_get_d(a);
-        double d = fmpz_get_d(b);
+        c = fmpz_get_d(a);
+        d = fmpz_get_d(b);
 
-        double result2 = dmod_mulmod_precomp(c, d, mod);
+        result2 = dmod_mulmod_precomp(c, d, mod);
         
         fmpz_set_d(p2, result2); 
         

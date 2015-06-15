@@ -46,8 +46,9 @@ int main(void)
     for (i = 0; i < 100 * flint_test_multiplier(); i++)
     {
         ulong limit_ulong, m_d;
-        fmpz_t a, b, val2, m, product, base, limit;
-        
+        fmpz_t a, val2, m, base, limit;
+        double c, result2;
+
         fmpz_init(a);
         fmpz_init(m);
         fmpz_init(base);
@@ -64,8 +65,8 @@ int main(void)
         dmod_t mod;
         dmod_init(&mod, m_d);
     
-        double c = fmpz_get_d(a);
-        double result2 = dmod_mod_precomp(c, mod);
+        c = fmpz_get_d(a);
+        result2 = dmod_mod_precomp(c, mod);
         
         fmpz_set_d(val2, result2);
 
