@@ -26,7 +26,7 @@
 #include "dmod_vec.h"
 #include<stdio.h>
 
-void _dmod_vec_sub(double *result, double *vec1, const double *vec2, slong N, dmod_t mod)
+void _dmod_vec_sub(double *result, double *vec1, double *vec2, slong N, dmod_t mod)
 {
     slong i;
     
