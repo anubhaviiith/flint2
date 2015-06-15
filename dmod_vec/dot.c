@@ -32,35 +32,23 @@
 double _dmod_vec_dot(const double *vec1, const double *vec2, slong N, dmod_t mod)
 {
     slong i, j;
-    double res1 = 0.0, val;
-    ulong window = mod.window;
-    for (i = 0; i < N; i += window)
-    {
-        if (i != 0)
-        {
-            val = cblas_ddot(window, vec1 + i - window, 1, vec2 + i - window, 1); 
-            val = dmod_mod_precomp(val, mod);
-
-            res1 += val;
-            if (res1 > mod.n)
-                res1 -= mod.n;
-            else if (res1 < 0.0)
-                res1 += mod.n;
-
-        }
-    }
+    double res1 = 0.0, val = 0;
+    slong window = mod.window;
     
-    if (i - window < N)
+    for (i = 0; i < (N - window); i += window)
     {
-        val = cblas_ddot(N - (i - window), vec1 + i - window, 1, vec2 + i - window, 1);  
+        val = cblas_ddot(window, vec1 + i, 1, vec2 + i, 1); 
         val = dmod_mod_precomp(val, mod);
-        res1 += val;
-        if (res1 > mod.n)
-            res1 -= mod.n;
-        else if (res1 < 0.0)
-            res1 += mod.n;
 
+        res1 = dmod_add(res1, val, mod);
 
+    }
+    if (i < N)
+    {
+        val = cblas_ddot(N - i, vec1 + i, 1, vec2 + i, 1);  
+        val = dmod_mod_precomp(val, mod);
+
+        res1 = dmod_add(res1, val, mod);
     }
     return res1;
 }

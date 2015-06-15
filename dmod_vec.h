@@ -30,7 +30,6 @@
 #include "double_extras.h"
 #include "flint.h"
 #include "ulong_extras.h"
-#include "nmod_vec.h"
 #include <math.h>
 #ifdef __cplusplus
  extern "C" {
@@ -52,6 +51,30 @@ void dmod_init(dmod_t * mod, double n)
    mod->ninv = (double)1/n;
    mod->b = FLINT_BIT_COUNT(n);
    mod->window = pow(2, FLINT_D_BITS - 2*(FLINT_BIT_COUNT(n)));
+}
+
+static __inline__
+double dmod_add(double val1, double val2, dmod_t mod)
+{
+    double result;
+    result = val1 + val2;
+    if (result >= mod.n)
+        result -= mod.n;
+    else if (result < 0.0)
+        result += mod.n;
+    return result;
+}
+
+static __inline__
+double dmod_sub(double val1, double val2, dmod_t mod)
+{
+    double result;
+    result = val1 - val2;
+    if (result >= mod.n)
+        result -= mod.n;
+    else if (result < 0.0)
+        result += mod.n;
+    return result;
 }
 
 
@@ -118,9 +141,10 @@ FLINT_DLL void _dmod_vec_randtest(mp_ptr f, flint_rand_t state, slong len, dmod_
 
 FLINT_DLL double _dmod_vec_dot(const double * vec1, const double * vec2, slong len2, dmod_t mod);
 
-/* Substraction **************************************/
+/* Substraction and Addition**************************************/
 
-FLINT_DLL void  _dmod_vec_sub(double * vec1, const double * vec2, slong len2);
+FLINT_DLL void  _dmod_vec_sub(double * result, double *vec1, const double * vec2, slong len2, dmod_t mod);
+FLINT_DLL void  _dmod_vec_add(double * result, double *vec1, const double * vec2, slong len2, dmod_t mod);
 
 /* Is equal  **************************************/
 

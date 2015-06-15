@@ -88,13 +88,13 @@ int main(void)
             fmpz_mod_ui(b + j, b + j, mod.n);
             d[j] = fmpz_get_d(b + j);
         }
-        
         result1 = _dmod_vec_dot(c, d, len, mod); 
         
         fmpz_set_d(sum1, result1);
         _fmpz_vec_dot(sum, a, b, len);
         fmpz_mod_ui(sum, sum, mod.n);
     
+        
         if(fmpz_equal(sum, sum1) == 0)
         {
             printf("FAIL");
