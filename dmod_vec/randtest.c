@@ -28,16 +28,16 @@
 #include <float.h>
 #include "flint.h"
 #include "ulong_extras.h"
-#include "nmod_vec.h"
+#include "dmod_vec.h"
 
-void _dmod_vec_randtest(mp_ptr vec, flint_rand_t state, slong len, nmod_t mod)
+void _dmod_vec_randtest(double *vec, flint_rand_t state, slong len, dmod_t mod)
 {
     slong i, sparseness;
 
     if (n_randint(state, 2))
     {
         for (i = 0; i < len; i++)
-            vec[i] = n_randtest(state) % mod.n;
+            vec[i] = n_randint(state, mod.n);
     }
     else
     {
@@ -48,7 +48,7 @@ void _dmod_vec_randtest(mp_ptr vec, flint_rand_t state, slong len, nmod_t mod)
             if (n_randint(state, sparseness))
                 vec[i] = 0;
             else
-                vec[i] = n_randtest(state) % mod.n;
+                vec[i] = n_randint(state, mod.n);
         }
     }
 }

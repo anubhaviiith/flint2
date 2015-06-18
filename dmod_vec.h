@@ -39,18 +39,29 @@ typedef struct
 {
    double n;
    double ninv;
-   mp_limb_t b;
+   mp_limb_t nbits;
    mp_limb_t window;
 } dmod_t;
 
+
+static __inline__
+double * _dmod_vec_init(slong len)
+{
+    return (double *) flint_malloc(len * sizeof(double));
+}
+
+static __inline__
+void _dmod_vec_clear(double *vec)
+{
+    flint_free(vec);
+}
 
 static __inline__
 void dmod_init(dmod_t * mod, double n)
 {
    mod->n = n;
    mod->ninv = (double)1/n;
-   mod->b = FLINT_BIT_COUNT(n);
-   mod->window = pow(2, FLINT_D_BITS - 2*(FLINT_BIT_COUNT(n)));
+   mod->nbits = FLINT_BIT_COUNT(n);
 }
 
 static __inline__
@@ -60,8 +71,6 @@ double dmod_add(double val1, double val2, dmod_t mod)
     result = val1 + val2;
     if (result >= mod.n)
         result -= mod.n;
-    else if (result < 0.0)
-        result += mod.n;
     return result;
 }
 
@@ -70,16 +79,15 @@ double dmod_sub(double val1, double val2, dmod_t mod)
 {
     double result;
     result = val1 - val2;
-    if (result >= mod.n)
-        result -= mod.n;
-    else if (result < 0.0)
+    
+    if (result < 0.0)
         result += mod.n;
     return result;
 }
 
 
 static __inline__
-double dmod_mulmod_precomp(double c, double d, dmod_t mod)
+double dmod_mul(double c, double d, dmod_t mod)
 {
     ulong quot;
     double rem;
@@ -103,7 +111,7 @@ double dmod_mulmod_precomp(double c, double d, dmod_t mod)
 }
 
 static __inline__
-double dmod_mod_precomp(double c, dmod_t mod)
+double dmod_reduce(double c, dmod_t mod)
 {
     ulong quot;
     double rem;
@@ -125,7 +133,14 @@ double dmod_mod_precomp(double c, dmod_t mod)
     return rem;
 
 }
-
+static __inline__
+double dmod_neg(double a, dmod_t mod)
+{
+   if (a)
+      return mod.n - a;
+   else
+      return 0;
+}
 
 /*  Memory management  *******************************************************/
 
@@ -135,7 +150,7 @@ FLINT_DLL void _dmod_vec_clear(double * vec);
 
 /*  Randomisation  ***********************************************************/
 
-FLINT_DLL void _dmod_vec_randtest(mp_ptr f, flint_rand_t state, slong len, dmod_t mod);
+FLINT_DLL void _dmod_vec_randtest(double *f, flint_rand_t state, slong len, dmod_t mod);
 
 /*  Dot product  **************************************/
 
@@ -150,13 +165,11 @@ FLINT_DLL void  _dmod_vec_add(double * result, const double *vec1, const double 
 
 FLINT_DLL int  _dmod_vec_equal(const double * vec1, const double * vec2, slong len2);
 
-FLINT_DLL mp_limb_t  _dmod_dot_fmpztest(mp_srcptr vec1, mp_srcptr vec2, slong len2, dmod_t mod);
-
 /* Scalar mul and scalar addmul **************************************/
 
-FLINT_DLL void _dmod_vec_scalar_mul(double * vec1, const double alpha, slong len2, dmod_t mod);
+FLINT_DLL void _dmod_vec_scalar_mul_dmod(double * vec1, const double alpha, slong len2, dmod_t mod);
 
-FLINT_DLL void _dmod_vec_scalar_addmul(double * vec1, const double * vec2, const double alpha, slong len2, dmod_t mod);
+FLINT_DLL void _dmod_vec_scalar_addmul_dmod(double * vec1, const double * vec2, const double alpha, slong len2, dmod_t mod);
 
 /* Copy  **************************************/
 

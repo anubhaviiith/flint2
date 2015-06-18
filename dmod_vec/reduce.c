@@ -19,19 +19,19 @@
 =============================================================================*/
 /******************************************************************************
 
+    Copyright (C) 2010 William Hart
+
 ******************************************************************************/
 
-
-#include <cblas.h>
+#include <gmp.h>
+#include <stdlib.h>
+#include "flint.h"
+#include "ulong_extras.h"
 #include "dmod_vec.h"
-#include <stdio.h>
 
-void _dmod_vec_scalar_mul(double *vec1, const double alpha, slong N, dmod_t mod)
+void _dmod_vec_reduce(double *res, const double *vec, slong len, dmod_t mod)
 {
-    slong i;
-    cblas_dscal(N, alpha, vec1, 1); 
-    for (i = 0 ; i < N; i++)
-    {
-        vec1[i] = dmod_mod_precomp(vec1[i], mod);
-    }
+   slong i;
+   for (i = 0 ; i < len; i++)
+	  res[i] = dmod_reduce(vec[i], mod);
 }

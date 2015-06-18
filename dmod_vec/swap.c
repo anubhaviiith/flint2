@@ -19,37 +19,18 @@
 =============================================================================*/
 /******************************************************************************
 
+    Copyright (C) 2010 William Hart
+
 ******************************************************************************/
 
-
-#include <cblas.h>
-#include "dmod_vec.h"
-#include "nmod_vec.h"
-#include <stdio.h>
-#include "fmpz.h"
+#include <gmp.h>
+#include <stdlib.h>
+#include "flint.h"
 #include "ulong_extras.h"
-#include <math.h>
+#include "dmod_vec.h"
+#include <cblas.h>
 
-double _dmod_vec_dot(const double *vec1, const double *vec2, slong N, dmod_t mod)
+void _dmod_vec_swap(double *vec1, double *vec2, slong len, dmod_t mod)
 {
-    slong i, j;
-    double res1 = 0.0, val = 0;
-    slong window = pow(2, FLINT_D_BITS - 2*(FLINT_BIT_COUNT(mod.n)));
-    
-    for (i = 0; i < (N - window); i += window)
-    {
-        val = cblas_ddot(window, vec1 + i, 1, vec2 + i, 1); 
-        val = dmod_reduce(val, mod);
-
-        res1 = dmod_add(res1, val, mod);
-
-    }
-    if (i < N)
-    {
-        val = cblas_ddot(N - i, vec1 + i, 1, vec2 + i, 1);  
-        val = dmod_reduce(val, mod);
-
-        res1 = dmod_add(res1, val, mod);
-    }
-    return res1;
+    cblas_dswap(len, vec1, 1, vec2, 1);
 }

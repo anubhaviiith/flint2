@@ -60,7 +60,7 @@ _dmod_mat_set_mod(dmod_mat_t mat, double n)
 {
     mat->mod.n = n;
     mat->mod.ninv = (double)1/n;
-    mat->mod.b = FLINT_BIT_COUNT(n);
+    mat->mod.nbits = FLINT_BIT_COUNT(n);
 }
 
 static __inline__

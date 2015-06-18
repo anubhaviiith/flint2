@@ -80,7 +80,7 @@ int main(void)
         c = fmpz_get_d(a);
         d = fmpz_get_d(b);
 
-        result2 = dmod_mulmod_precomp(c, d, mod);
+        result2 = dmod_mul(c, d, mod);
         
         fmpz_set_d(p2, result2); 
         

@@ -66,7 +66,7 @@ int main(void)
         dmod_init(&mod, m_d);
     
         c = fmpz_get_d(a);
-        result2 = dmod_mod_precomp(c, mod);
+        result2 = dmod_reduce(c, mod);
         
         fmpz_set_d(val2, result2);
 

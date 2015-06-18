@@ -102,7 +102,7 @@ int main(void)
 
         alpha = fmpz_get_d(x);
         
-        _dmod_vec_scalar_addmul(c, d, alpha, len, mod); 
+        _dmod_vec_scalar_addmul_dmod(c, d, alpha, len, mod); 
         
         _fmpz_vec_scalar_addmul_fmpz(a, b, len, x);
 

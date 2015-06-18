@@ -20,14 +20,18 @@
 /******************************************************************************
 
     Copyright (C) 2010 William Hart
-    Copyright (C) 2014 Abhinav Baid
 
 ******************************************************************************/
 
+#include <gmp.h>
+#include <stdlib.h>
+#include "flint.h"
+#include "ulong_extras.h"
 #include "dmod_vec.h"
 
-double *
-_dmod_vec_init(slong len)
+void _dmod_vec_neg(double *res, const double *vec, slong len, dmod_t mod)
 {
-    return (double *) flint_malloc(len * sizeof(double));
+    slong i;
+    for (i = 0 ; i < len; i++)
+        res[i] = dmod_neg(vec[i], mod);
 }

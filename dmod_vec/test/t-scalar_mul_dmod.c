@@ -99,7 +99,7 @@ int main(void)
         }
         alpha = fmpz_get_d(x);
         
-        _dmod_vec_scalar_mul(c, alpha, len, mod); 
+        _dmod_vec_scalar_mul_dmod(c, alpha, len, mod); 
         
         _fmpz_vec_scalar_mul_fmpz(ans, a, len, x);
         

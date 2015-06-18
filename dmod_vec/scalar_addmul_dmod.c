@@ -19,15 +19,19 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2010 William Hart
-    Copyright (C) 2014 Abhinav Baid
-   
 ******************************************************************************/
 
-#include "dmod_vec.h"
 
-void
-_dmod_vec_clear(double *vec)
+#include <cblas.h>
+#include "dmod_vec.h"
+#include<stdio.h>
+
+void _dmod_vec_scalar_addmul_dmod(double *vec1, const double *vec2, const double alpha, slong N, dmod_t mod)
 {
-    flint_free(vec);
+    slong i;
+    cblas_daxpy(N, alpha, vec2, 1, vec1, 1);
+    for (i = 0; i < N; i++)
+    {
+        vec1[i] = dmod_reduce(vec1[i], mod);
+    }
 }
