@@ -19,41 +19,23 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2011, 2012 Sebastian Pancratz
- 
+    Copyright (C) 2015 Tommy Hofmann
+
 ******************************************************************************/
 
-#include "padic.h"
+#define FQ_POLY_FACTOR_INLINES_C
 
-int padic_div_exact(padic_t rop, const padic_t op1, const padic_t op2)
+#define ulong ulongxx /* interferes with system includes */
+#include <stdlib.h>
+#include <stdio.h>
+#undef ulong
+#include <gmp.h>
+#include "flint.h"
+#include "ulong_extras.h"
+#include "fq.h"
+#include "fq_poly.h"
+
+void fq_poly_factor_get_poly(fq_poly_t z, fq_poly_factor_t fac, slong i, fq_ctx_t ctx)
 {
-    int res = 1;
-
-    if (padic_is_zero(op2))
-    {
-        flint_printf("Exception (padic_div_exact).  op2 is zero.\n");
-        abort();
-    }
-
-    if (padic_is_zero(op1))
-    {
-        padic_zero(rop);
-    }
-    else
-    {
-        fmpz_t r;
-   
-        fmpz_init(r);
-       
-        fmpz_tdiv_qr(padic_unit(rop), r, padic_unit(op1), padic_unit(op2));
-
-        res = fmpz_is_zero(r);
-
-        fmpz_clear(r);
-
-        padic_val(rop) = padic_val(op1) - padic_val(op2);
-    }
-
-    return res;
+    fq_poly_set(z, fac->poly + i, ctx);
 }
-

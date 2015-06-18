@@ -19,39 +19,31 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2011 Jan Tuitman
-    Copyright (C) 2011, 2012 Sebastian Pancratz
-    Copyright (C) 2014 William Hart
+    Copyright (C) 2015 William Hart
+    Copyright (C) 2015 Fredrik Johansson
+    Copyright (C) 2015 Kushagra Singh
 
 ******************************************************************************/
 
-#include "padic.h"
+#include <gmp.h>
+#define ulong ulongxx /* interferes with system includes */
+#include <math.h>
+#undef ulong
+#include "flint.h"
+#include "ulong_extras.h"
 
-int padic_sqrt_exact(padic_t rop, const padic_t op)
+mp_limb_t
+n_cbrtrem(mp_limb_t* remainder, mp_limb_t n)
 {
-    fmpz_t r;
-    int res = 1;
-
-    if (padic_is_zero(op))
+    mp_limb_t base;
+    
+    if (!n)
     {
-        padic_zero(rop);
-        return 1;
-    }
-    if (padic_val(op) & WORD(1))
-    {
+        *remainder = 0;
         return 0;
     }
 
-    padic_val(rop) = padic_val(op) / 2;
-
-    fmpz_init(r);
-
-    fmpz_sqrtrem(padic_unit(rop), r, padic_unit(op));
-
-    res = fmpz_is_zero(r);
-
-    fmpz_clear(r);
-
-    return res;
+    base = n_cbrt(n);
+    *remainder = n - base * base * base;
+    return base;
 }
-

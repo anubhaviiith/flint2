@@ -19,21 +19,50 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2009 William Hart
-    Copyright (C) 2014 Abhinav Baid
+    Copyright (C) 2015 William Hart
+    Copyright (C) 2015 Fredrik Johansson
+    Copyright (C) 2015 Kushagra Singh
 
 ******************************************************************************/
 
 #include <gmp.h>
+#define ulong ulongxx /* interferes with system includes */
+#include <math.h>
+#include <float.h>
+#undef ulong
 #include "flint.h"
 #include "ulong_extras.h"
-#include "fmpz.h"
+#include "longlong.h"
 
-void
-fmpz_get_mpf(mpf_t x, const fmpz_t f)
-{
-    if (!COEFF_IS_MPZ(*f))
-        flint_mpf_set_si(x, *f);      /* set x to small value */
-    else
-        mpf_set_z(x, COEFF_TO_PTR(*f)); /* set x to large value */
+double
+n_cbrt_estimate(double a)
+{ 
+    typedef union { 
+        slong      uword_val;
+#if FLINT64
+        double     double_val;
+#else
+        float      double_val;
+#endif
+    } uni;
+
+    uni alias;
+    ulong n, hi, lo;
+
+#ifdef FLINT64
+    const mp_limb_t mul_factor = UWORD(6148914691236517205);
+    slong s = UWORD(4607182418800017408);      /* ((1 << 10) - 1) << 52 */
+#else
+    const mp_limb_t mul_factor = UWORD(1431655765);
+    slong s = UWORD(1065353216);               /* ((1 << 7) - 1 << 23)  */
+#endif
+
+    alias.double_val = a;
+    n = alias.uword_val;
+    n -= s;
+    umul_ppmm(hi, lo, n, mul_factor);
+    n = hi;
+    n += s;
+    alias.uword_val = n;
+    return alias.double_val;
 }

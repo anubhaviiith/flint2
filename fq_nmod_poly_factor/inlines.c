@@ -19,40 +19,23 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2011, 2012 Sebastian Pancratz
-    Copyright (C) 2014 William Hart
+    Copyright (C) 2015 Tommy Hofmann
 
 ******************************************************************************/
 
-#include "padic.h"
+#define FQ_NMOD_POLY_FACTOR_INLINES_C
 
-int padic_pow_exact_si(padic_t rop, const padic_t op, slong e)
+#define ulong ulongxx /* interferes with system includes */
+#include <stdlib.h>
+#include <stdio.h>
+#undef ulong
+#include <gmp.h>
+#include "flint.h"
+#include "ulong_extras.h"
+#include "fq_nmod.h"
+#include "fq_nmod_poly.h"
+
+void fq_nmod_poly_factor_get_poly(fq_nmod_poly_t z, fq_nmod_poly_factor_t fac, slong i, fq_nmod_ctx_t ctx)
 {
-    if (e == 0)
-    {
-        padic_one(rop);
-    }
-    else if (padic_is_zero(op))
-    {
-        padic_zero(rop);
-    }
-    else
-    {
-        if (e > 0)
-        {
-            fmpz_pow_ui(padic_unit(rop), padic_unit(op), e);
-        }
-        else  /* e < 0 */
-        {
-            if (fmpz_is_one(padic_unit(op)))
-               fmpz_one(padic_unit(rop));
-            else
-               return 0;
-        }
-
-        padic_val(rop) = e * padic_val(op);
-    }
-
-    return 1;
+    fq_nmod_poly_set(z, fac->poly + i, ctx);
 }
-

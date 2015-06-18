@@ -19,24 +19,51 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2011, 2012 Sebastian Pancratz
-    Copyright (C) 2014 William Hart
- 
+    Copyright (C) 2015 William Hart
+    Copyright (C) 2015 Fredrik Johansson
+    Copyright (C) 2015 Kushagra Singh
+
 ******************************************************************************/
 
-#include "padic.h"
+#include <gmp.h>
+#define ulong ulongxx /* interferes with system includes */
+#include <math.h>
+#undef ulong
+#include "flint.h"
+#include "ulong_extras.h"
 
-void padic_mul_exact(padic_t rop, const padic_t op1, const padic_t op2, 
-               const padic_ctx_t ctx)
+mp_limb_t
+n_cbrt_binary_search(mp_limb_t x)
 {
-    if (padic_is_zero(op1) || padic_is_zero(op2))
-    {
-        padic_zero(rop);
-    }
-    else
-    {
-        fmpz_mul(padic_unit(rop), padic_unit(op1), padic_unit(op2));
-        padic_val(rop) = padic_val(op1) + padic_val(op2);
-    }
-}
+    mp_limb_t low, high, mid, p, upper_limit;
 
+    /* upper_limit is the max cube root possible for one word */
+
+#ifdef FLINT64
+    upper_limit = 2642245;  /* 2642245 < (2^64)^(1/3) */
+#else
+    upper_limit = 1626;     /* 1626 < (2^32)^(1/3) */
+#endif
+
+    low = 0;
+    high = UWORD(1) << ((FLINT_BIT_COUNT(x) + 2) / 3);
+
+    if (high > upper_limit) /* cube cannot be greater than upper_limit */
+        high = upper_limit;
+
+    /* binary search for cube root */
+        
+    while (low < high)
+    {
+        mid = (high + low) / 2;
+        p = mid + 1;
+        p = p * p * p;
+        if (p == x)
+            return mid + 1;
+        else if (p > x)
+            high = mid;
+        else
+            low = mid + 1;
+    }
+    return low;
+}

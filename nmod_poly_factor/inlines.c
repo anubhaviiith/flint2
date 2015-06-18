@@ -19,48 +19,23 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2011, 2012 Sebastian Pancratz
- 
+    Copyright (C) 2015 Tommy Hofmann
+
 ******************************************************************************/
 
-#include "padic.h"
+#define NMOD_POLY_FACTOR_INLINES_C
 
-int padic_div_exact_fmpz(padic_t rop, const padic_t op1, const fmpz_t op2,
-                                   const padic_ctx_t ctx)
+#define ulong ulongxx /* interferes with system includes */
+#include <stdlib.h>
+#include <stdio.h>
+#undef ulong
+#include <gmp.h>
+#include "flint.h"
+#include "ulong_extras.h"
+#include "nmod_poly.h"
+
+void nmod_poly_factor_get_nmod_poly(nmod_poly_t z, nmod_poly_factor_t fac, slong i)
 {
-    int res = 1;
-
-    if (fmpz_is_zero(op2))
-    {
-        flint_printf("Exception (padic_div_exact_fmpz).  op2 is zero.\n");
-        abort();
-    }
-
-    if (fmpz_sgn(op2) < 0)
-       return 0;
-
-    if (padic_is_zero(op1))
-    {
-        padic_zero(rop);
-    }
-    else if (!fmpz_is_one(op2))
-    {
-        fmpz_t r;
-        slong val;
-
-        fmpz_init(r);
-       
-        val = fmpz_remove(r, op2, ctx->p);
-
-        fmpz_tdiv_qr(padic_unit(rop), r, padic_unit(op1), r);
-
-        res = fmpz_is_zero(r);
-
-        fmpz_clear(r);
-
-        padic_val(rop) = padic_val(op1) - val;
-    }
-
-    return res;
+    nmod_poly_set(z, fac->p + i);
 }
 

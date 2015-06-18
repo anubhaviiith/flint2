@@ -20,20 +20,28 @@
 /******************************************************************************
 
     Copyright (C) 2009 William Hart
-    Copyright (C) 2014 Abhinav Baid
+    Copyright (C) 2015 Tommy Hofmann
 
 ******************************************************************************/
 
+#define NMOD_MAT_INLINES_C
+
+#define ulong ulongxx /* interferes with system includes */
+#include <stdlib.h>
+#undef ulong
 #include <gmp.h>
 #include "flint.h"
 #include "ulong_extras.h"
-#include "fmpz.h"
+#include "nmod_mat.h"
 
-void
-fmpz_get_mpf(mpf_t x, const fmpz_t f)
+mp_limb_t nmod_mat_get_entry(nmod_mat_t mat, slong i, slong j)
 {
-    if (!COEFF_IS_MPZ(*f))
-        flint_mpf_set_si(x, *f);      /* set x to small value */
-    else
-        mpf_set_z(x, COEFF_TO_PTR(*f)); /* set x to large value */
+  mp_limb_t x;
+  x = nmod_mat_entry(mat, i, j);
+  return x;
+}
+
+void nmod_mat_set_entry(nmod_mat_t mat, slong i, slong j, mp_limb_t x)
+{
+  nmod_mat_entry(mat, i, j) = x;
 }
