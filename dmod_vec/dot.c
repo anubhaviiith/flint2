@@ -32,6 +32,7 @@
 
 double _dmod_vec_dot(const double *vec1, const double *vec2, slong N, dmod_t mod)
 {
+    #if HAVE_BLAS
     slong i, j;
     double res1 = 0.0, val = 0;
     slong window = pow(2, FLINT_D_BITS - 2*(FLINT_BIT_COUNT(mod.n)));
@@ -52,4 +53,5 @@ double _dmod_vec_dot(const double *vec1, const double *vec2, slong N, dmod_t mod
         res1 = dmod_add(res1, val, mod);
     }
     return res1;
+    #endif
 }

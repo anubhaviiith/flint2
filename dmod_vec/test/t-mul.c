@@ -37,70 +37,44 @@
 
 int main(void)
 {
+    #if HAVE_BLAS
     slong i;
     FLINT_TEST_INIT(state);
 
     flint_printf("mulmod....");
     fflush(stdout);
 
+    dmod_t mod;
+   
     for (i = 0; i < 100 * flint_test_multiplier(); i++)
     {
-        ulong limit_ulong, m_d;
-        double c, d, result2;
-        fmpz_t a, b, p2, product, base, limit, limit_a;
+        ulong m_d, limit_n, a, b;
+        double c, d, result1, result2;
         
-        fmpz_init(a);
-        fmpz_init(b);
-        fmpz_init(product);
-        fmpz_init(base);
-        fmpz_init(limit);
-        fmpz_init(limit_a);
-        fmpz_init(p2);
+        limit_n = pow(2, FLINT_D_BITS/2);
 
-        fmpz_set_ui(base, 2);        
+        a = n_randint(state, limit_n);
+        b = n_randint(state, limit_n);
+
+        m_d = n_randint(state, limit_n);
         
-        fmpz_pow_ui(limit_a, base, FLINT_D_BITS);
-        
-        fmpz_randm(a, state, limit_a);
-        fmpz_randm(b, state, limit_a);
-       
-        fmpz_pow_ui(limit, base, FLINT_D_BITS/2);
-        limit_ulong = fmpz_get_ui(limit);
-        m_d = n_randint(state, limit_ulong);
-        
-        dmod_t mod;
         dmod_init(&mod, m_d);
         
-        fmpz_mod_ui(a, a, mod.n);
-        fmpz_mod_ui(b, b, mod.n);
-    
-        fmpz_mul(product, a, b);
-        fmpz_mod_ui(product, product, mod.n);
+        c = (double)a;
+        d = (double)b;
 
-        c = fmpz_get_d(a);
-        d = fmpz_get_d(b);
-
+        result1 = n_mulmod_precomp(a, b, mod.n, mod.ninv);
         result2 = dmod_mul(c, d, mod);
-        
-        fmpz_set_d(p2, result2); 
-        
-        if(fmpz_equal(product, p2) == 0)
+
+        if (result1 != result2)
         {
             printf("FAIL");
             abort();
         }
-        
-        fmpz_clear(product);
-        fmpz_clear(a);
-        fmpz_clear(b);
-        fmpz_clear(base);
-        fmpz_clear(limit);
-        fmpz_clear(limit_a);
-        fmpz_clear(p2);
     }
-
     FLINT_TEST_CLEANUP(state);
 
     flint_printf("PASS\n");
     return 0;
+    #endif
 }

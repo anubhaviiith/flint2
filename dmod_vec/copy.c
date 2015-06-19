@@ -28,5 +28,7 @@
 
 void _dmod_vec_copy(const double *vec1, double *vec2, slong N)
 {
+    #if HAVE_BLAS
     cblas_dcopy(N, vec1, 1, vec2, 1); 
+    #endif
 }

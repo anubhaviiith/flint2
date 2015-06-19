@@ -37,56 +37,44 @@
 
 int main(void)
 {
+    #if HAVE_BLAS
     slong i, j;
     FLINT_TEST_INIT(state);
 
     flint_printf("mod....");
     fflush(stdout);
 
+    dmod_t mod;
+
     for (i = 0; i < 100 * flint_test_multiplier(); i++)
     {
-        ulong limit_ulong, m_d;
-        fmpz_t a, val2, m, base, limit;
-        double c, result2;
+        ulong limit_ulong, m_d, a;
+        double result1, result2, c;
 
-        fmpz_init(a);
-        fmpz_init(m);
-        fmpz_init(base);
-        fmpz_init(limit);
-        fmpz_init(val2);
-
-        fmpz_randtest_unsigned(a, state, FLINT_D_BITS);
-       
-        fmpz_set_ui(base, 2);      
-        fmpz_pow_ui(limit, base, FLINT_D_BITS);
-        limit_ulong = fmpz_get_ui(limit);
+        limit_ulong = pow(2, FLINT_D_BITS);
+        
+        a = n_randint(state, limit_ulong); 
         m_d = n_randint(state, limit_ulong);
         
-        dmod_t mod;
         dmod_init(&mod, m_d);
     
-        c = fmpz_get_d(a);
-        result2 = dmod_reduce(c, mod);
+        c = (double)a;
+
+        result1 = dmod_reduce(c, mod);
         
-        fmpz_set_d(val2, result2);
+        result2 = n_mod2_precomp(a, mod.n, mod.ninv);
 
-        fmpz_mod_ui(a, a, mod.n);
-
-        if(fmpz_equal(val2, a) == 0)
+        if (result1 != result2)
         {
             printf("FAIL");
             abort();
         }
         
-        fmpz_clear(a);
-        fmpz_clear(m);
-        fmpz_clear(base);
-        fmpz_clear(limit);
-        fmpz_clear(val2);
     }
 
     FLINT_TEST_CLEANUP(state);
 
     flint_printf("PASS\n");
     return 0;
+    #endif
 }

@@ -28,6 +28,7 @@
 
 int _dmod_vec_equal(const double *vec1, const double *vec2, slong len)
 {
+    #if HAVE_BLAS
     slong i;
     if (vec1 == vec2)
         return 1;
@@ -36,4 +37,5 @@ int _dmod_vec_equal(const double *vec1, const double *vec2, slong len)
             return 0;
 
     return 1;
+    #endif
 }

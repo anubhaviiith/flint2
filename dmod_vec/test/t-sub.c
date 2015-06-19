@@ -34,105 +34,77 @@
 
 int main(void)
 {
+    #if HAVE_BLAS
     slong i, j;
     FLINT_TEST_INIT(state);
 
     flint_printf("sub....");
     fflush(stdout);
 
+    dmod_t mod;
+    nmod_t modn;
+
     for (i = 0; i < 100 * flint_test_multiplier(); i++)
     {
-        fmpz *a, *b, *result1, *result2, *ans;
-        double *c, *d, *result1_d;
+        mp_ptr a, b, result2;
+        double *c, *d, *result1;
 
         mp_limb_t limit_ulong, m_d, len;
-        fmpz_t m, base, limit, sum, sum1, mod_fmpz;
-        
-        fmpz_init(m);
-        fmpz_init(limit);
-        fmpz_init(base);
-        fmpz_init(sum);
-        fmpz_init(sum1);
-        fmpz_init(mod_fmpz);
-        
-        fmpz_set_ui(base, 2);        
-        fmpz_pow_ui(limit, base, FLINT_D_BITS/2);
-        limit_ulong = fmpz_get_ui(limit);
+       
+        limit_ulong = pow(2, FLINT_D_BITS - 1);
         m_d = n_randint(state, limit_ulong);
         
-        dmod_t mod;
         dmod_init(&mod, m_d);
+        nmod_init(&modn, m_d);
         
         len = n_randint(state, 1000);
         
         if (!len)
             continue;
 
-        a = _fmpz_vec_init(len);
-        b = _fmpz_vec_init(len);
-        result1 = _fmpz_vec_init(len);
-        result2 = _fmpz_vec_init(len);
-        ans = _fmpz_vec_init(len);
+        a = _nmod_vec_init(len);
+        b = _nmod_vec_init(len);
+        result2 = _nmod_vec_init(len);
 
         c = _dmod_vec_init(len);
         d = _dmod_vec_init(len);
-        result1_d = _dmod_vec_init(len);
+        result1 = _dmod_vec_init(len);
         
-
+        _nmod_vec_randtest(a, state, len, modn);
+        _nmod_vec_randtest(b, state, len, modn);
+        
         for (j = 0; j < len; j++)
         {
-            fmpz_randtest_not_zero(a + j, state, FLINT_BITS);
-            fmpz_mod_ui(a + j, a + j, mod.n);
-            c[j] = fmpz_get_d(a + j);
+            c[j] = (double)a[j];
+            d[j] = (double)b[j];
+        }
+        
+        _nmod_vec_sub(result2, a, b, len, modn);
 
-        }
-        for (j = 0; j < len; j++)
-        {
-            fmpz_randtest_not_zero(b + j, state, FLINT_BITS);
-            fmpz_mod_ui(b + j, b + j, mod.n);
-            d[j] = fmpz_get_d(b + j);
-        }
-        
-        _fmpz_vec_sub(result2, a, b, len);
-        fmpz_set_ui(mod_fmpz, mod.n);
-        _fmpz_vec_scalar_mod_fmpz(ans, result2, len, mod_fmpz);
-        
-        _dmod_vec_sub(result1_d, c, d, len, mod); 
+        _dmod_vec_sub(result1, c, d, len, mod); 
         
        
         for (j = 0; j < len; j++)
         {    
-            fmpz_set_d(result1 + j, result1_d[j]);
-            
-            if(fmpz_equal(result1 + j, ans + j) == 0)
+            if(result1[j] != (double)result2[j])
             {
                 printf("FAIL");
                 abort();
             }
         }
    
-
-        _fmpz_vec_clear(a, len);
-        _fmpz_vec_clear(b, len);
-        _fmpz_vec_clear(result1, len);
-        _fmpz_vec_clear(result2, len);
-        _fmpz_vec_clear(ans, len);
-        
         _dmod_vec_clear(c);
         _dmod_vec_clear(d);
-        _dmod_vec_clear(result1_d);
-    
-        fmpz_clear(m);
-        fmpz_clear(limit);
-        fmpz_clear(base);
-        fmpz_clear(sum);
-        fmpz_clear(sum1);
-        fmpz_clear(mod_fmpz);
+        _dmod_vec_clear(result1);
 
-    }
+        _nmod_vec_clear(a);
+        _nmod_vec_clear(b);
+        _nmod_vec_clear(result2);
+   }
 
     FLINT_TEST_CLEANUP(state);
 
     flint_printf("PASS\n");
     return 0;
+    #endif
 }

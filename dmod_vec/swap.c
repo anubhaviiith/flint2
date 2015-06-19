@@ -32,5 +32,7 @@
 
 void _dmod_vec_swap(double *vec1, double *vec2, slong len, dmod_t mod)
 {
+    #if HAVE_BLAS
     cblas_dswap(len, vec1, 1, vec2, 1);
+    #endif
 }

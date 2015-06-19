@@ -34,109 +34,71 @@
 
 int main(void)
 {
+    #if HAVE_BLAS
     slong i, j;
     FLINT_TEST_INIT(state);
 
     flint_printf("scalar_mul....");
     fflush(stdout);
 
+    dmod_t mod;
+    nmod_t modn;
+
     for (i = 0; i < 100 * flint_test_multiplier(); i++)
     {
-        fmpz *a, *ans, *result, *result1;
+        mp_ptr a, ans;
+        mp_limb_t limit_ulong, m_d, len, x;
         double *c;
-
-        mp_limb_t limit_ulong, m_d, len, limit_low_ulong;
-        fmpz_t m, base, limit, sum, sum1, x, limit_x, mod_fmpz, limit_low;
-        
         double alpha;
 
-        fmpz_init(m);
-        fmpz_init(x);
-        fmpz_init(limit);
-        fmpz_init(limit_low);
-        fmpz_init(limit_x);
-        fmpz_init(base);
-        fmpz_init(sum);
-        fmpz_init(sum1);
-        fmpz_init(mod_fmpz);
-        
-        fmpz_set_ui(base, 2);        
-        fmpz_pow_ui(limit, base, FLINT_D_BITS/2);
-        fmpz_pow_ui(limit_low, base, FLINT_D_BITS/4);
-        
-        limit_ulong = fmpz_get_ui(limit);
-        limit_low_ulong = fmpz_get_ui(limit_low);
+        limit_ulong = pow(2, FLINT_D_BITS/2);
 
-        if (n_randint(state, 2))
-            m_d = n_randint(state, limit_ulong);
-        else
-            m_d = n_randint(state, limit_low_ulong);
-        fmpz_pow_ui(limit_x, base, FLINT_D_BITS);
-        fmpz_randm(x, state, limit_x);
+        m_d = n_randint(state, limit_ulong);
+        x = n_randint(state, limit_ulong);
 
-        dmod_t mod;
         dmod_init(&mod, m_d);
-        
-        fmpz_mod_ui(x, x, mod.n);
+        nmod_init(&modn, m_d);
         
         len = n_randint(state, 1000);
         
         if (!len)
             continue;
 
-        a = _fmpz_vec_init(len);
-        ans = _fmpz_vec_init(len);
-        result = _fmpz_vec_init(len);
-        result1 = _fmpz_vec_init(len);
+        ans = _nmod_vec_init(len);
+        a = _nmod_vec_init(len);
         c = _dmod_vec_init(len);
-        
+       
+        _nmod_vec_randtest(a, state, len, modn);
+
         for (j = 0; j < len; j++)
         {
-            fmpz_randtest_not_zero(a + j, state, FLINT_BITS);
-            fmpz_mod_ui(a + j, a + j, mod.n);
-            c[j] = fmpz_get_d(a + j);
-
+            c[j] = (double)a[j];
         }
-        alpha = fmpz_get_d(x);
+
+        alpha = (double)x;
         
-        _dmod_vec_scalar_mul_dmod(c, alpha, len, mod); 
-        
-        _fmpz_vec_scalar_mul_fmpz(ans, a, len, x);
-        
-        fmpz_set_ui(mod_fmpz, mod.n);
-        _fmpz_vec_scalar_mod_fmpz(result1, ans, len, mod_fmpz);
+        _dmod_vec_scalar_mul_dmod(c, alpha, len, mod);
+        _nmod_vec_scalar_mul_nmod(ans, a, len, x, modn);
         
         for (j = 0; j < len; j++)
-        {    
-            fmpz_set_d(result + j, c[j]);
+        {   
             
-            if(fmpz_equal(result1 + j, result + j) == 0)
+            if(c[j] != (double)ans[j])
             {
                 printf("FAIL");
                 abort();
             }
+            
         }
    
-        _fmpz_vec_clear(a, len);
-        _fmpz_vec_clear(ans, len);
-        _fmpz_vec_clear(result, len);
-        _fmpz_vec_clear(result1, len);
-        
         _dmod_vec_clear(c);
-    
-        fmpz_clear(m);
-        fmpz_clear(limit);
-        fmpz_clear(limit_low);
-        fmpz_clear(limit_x);
-        fmpz_clear(x);
-        fmpz_clear(base);
-        fmpz_clear(sum);
-        fmpz_clear(sum1);
-        fmpz_clear(mod_fmpz);
+        _nmod_vec_clear(ans);
+        _nmod_vec_clear(a);
     }
 
     FLINT_TEST_CLEANUP(state);
 
     flint_printf("PASS\n");
     return 0;
+    #endif
 }

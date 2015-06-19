@@ -28,11 +28,13 @@
 
 void _dmod_vec_sub(double *result, const double *vec1, const double *vec2, slong N, dmod_t mod)
 {
+    #if HAVE_BLAS
     slong i;
     
     for (i = 0; i < N; i++)
     {
         result[i] = dmod_sub(vec1[i], vec2[i], mod);
     }
+    #endif
 
 }

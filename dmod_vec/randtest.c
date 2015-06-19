@@ -32,6 +32,7 @@
 
 void _dmod_vec_randtest(double *vec, flint_rand_t state, slong len, dmod_t mod)
 {
+    #if HAVE_BLAS
     slong i, sparseness;
 
     if (n_randint(state, 2))
@@ -51,4 +52,5 @@ void _dmod_vec_randtest(double *vec, flint_rand_t state, slong len, dmod_t mod)
                 vec[i] = n_randint(state, mod.n);
         }
     }
+    #endif
 }

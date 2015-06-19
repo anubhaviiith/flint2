@@ -28,10 +28,12 @@
 
 void _dmod_vec_scalar_mul_dmod(double *vec1, const double alpha, slong N, dmod_t mod)
 {
+    #if HAVE_BLAS
     slong i;
     cblas_dscal(N, alpha, vec1, 1); 
     for (i = 0 ; i < N; i++)
     {
         vec1[i] = dmod_reduce(vec1[i], mod);
     }
+    #endif
 }
