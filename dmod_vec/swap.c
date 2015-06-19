@@ -30,7 +30,7 @@
 #include "dmod_vec.h"
 #include <cblas.h>
 
-void _dmod_vec_swap(double *vec1, double *vec2, slong len, dmod_t mod)
+void _dmod_vec_swap(double *vec1, double *vec2, slong len)
 {
     #if HAVE_BLAS
     cblas_dswap(len, vec1, 1, vec2, 1);

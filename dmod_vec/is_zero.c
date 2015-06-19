@@ -19,21 +19,21 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2010 William Hart
-
+   Copyright (C) 2008, 2009, 2010 William Hart
+   Copyright (C) 2014 Abhinav Baid
+   
 ******************************************************************************/
 
-#include <gmp.h>
-#include <stdlib.h>
-#include "flint.h"
-#include "ulong_extras.h"
 #include "dmod_vec.h"
 
-void _dmod_vec_neg(double *res, const double *vec, slong len, dmod_t mod)
+int _dmod_vec_is_zero(const double *vec1, slong len)
 {
     #if HAVE_BLAS
     slong i;
-    for (i = 0 ; i < len; i++)
-        res[i] = dmod_neg(vec[i], mod);
+    for (i = 0; i < len; i++)
+        if (vec1[i] != 0)
+            return 0;
+
+    return 1;
     #endif
 }

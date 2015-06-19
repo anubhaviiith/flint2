@@ -133,15 +133,6 @@ double dmod_reduce(double c, dmod_t mod)
     return rem;
 
 }
-static __inline__
-double dmod_neg(double a, dmod_t mod)
-{
-   if (a)
-      return mod.n - a;
-   else
-      return 0;
-}
-
 /*  Memory management  *******************************************************/
 
 FLINT_DLL double * _dmod_vec_init(slong len);
@@ -156,24 +147,31 @@ FLINT_DLL void _dmod_vec_randtest(double *f, flint_rand_t state, slong len, dmod
 
 FLINT_DLL double _dmod_vec_dot(const double * vec1, const double * vec2, slong len2, dmod_t mod);
 
-/* Substraction and Addition**************************************/
+/* Arithematic Operations**************************************/
 
 FLINT_DLL void  _dmod_vec_sub(double * result, const double *vec1, const double * vec2, slong len2, dmod_t mod);
+
 FLINT_DLL void  _dmod_vec_add(double * result, const double *vec1, const double * vec2, slong len2, dmod_t mod);
 
-/* Is equal  **************************************/
-
-FLINT_DLL int  _dmod_vec_equal(const double * vec1, const double * vec2, slong len2);
-
-/* Scalar mul and scalar addmul **************************************/
+FLINT_DLL void _dmod_vec_reduce(double *res, const double *vec, slong len, dmod_t mod);
 
 FLINT_DLL void _dmod_vec_scalar_mul_dmod(double * vec1, const double alpha, slong len2, dmod_t mod);
 
 FLINT_DLL void _dmod_vec_scalar_addmul_dmod(double * vec1, const double * vec2, const double alpha, slong len2, dmod_t mod);
 
-/* Copy  **************************************/
+
+/* Compare **************************************/
+
+FLINT_DLL int  _dmod_vec_equal(const double * vec1, const double * vec2, slong len2);
+
+FLINT_DLL int  _dmod_vec_is_zero(const double * vec1, slong len2);
+
+
+/* Copy and swap **************************************/
 
 FLINT_DLL void _dmod_vec_copy(const double * vec1, double * vec2, slong len2);
+
+FLINT_DLL void _dmod_vec_swap(double *vec1, double *vec2, slong len);
 
 #ifdef __cplusplus
 }
