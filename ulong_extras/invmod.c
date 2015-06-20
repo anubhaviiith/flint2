@@ -32,12 +32,13 @@ n_invmod(mp_limb_t x, mp_limb_t y)
 {
     mp_limb_signed_t v1 = UWORD(0);
     mp_limb_signed_t v2 = UWORD(1);
-    mp_limb_signed_t t2;
-    mp_limb_t u3, v3;
-    mp_limb_t quot, rem;
+    mp_limb_signed_t t2 = 0;
+    mp_limb_t u3 = 0, v3 = 0;
+    mp_limb_t quot = 0, rem = 0;
 
     u3 = y, v3 = x;
 
+    gmp_printf("%Mu %Mu %Mu %Mu %Mu %Mu %Mu\n", v1, v2, t2, u3, v3, quot, rem); 
     if (v3 > u3)
     {
         rem = u3;
@@ -47,7 +48,9 @@ n_invmod(mp_limb_t x, mp_limb_t y)
         v1 = t2;
         v3 = rem;
     }
-
+    
+    
+    gmp_printf("%Mu %Mu %Mu %Mu %Mu %Mu %Mu\n", v1, v2, t2, u3, v3, quot, rem); 
     if ((mp_limb_signed_t) (y & x) < WORD(0))  /* y and x both have top bit set */
     {
         quot = u3 - v3;
@@ -58,6 +61,7 @@ n_invmod(mp_limb_t x, mp_limb_t y)
         v3 = quot;
     }
 
+    gmp_printf("%Mu %Mu %Mu %Mu %Mu %Mu %Mu\n", v1, v2, t2, u3, v3, quot, rem); 
     while ((mp_limb_signed_t) (v3 << 1) < WORD(0))  /* second value has second msb set */
     {
         quot = u3 - v3;
@@ -87,6 +91,7 @@ n_invmod(mp_limb_t x, mp_limb_t y)
         }
     }
 
+    gmp_printf("%Mu %Mu %Mu %Mu %Mu %Mu %Mu\n", v1, v2, t2, u3, v3, quot, rem); 
     while (v3)
     {
         if (u3 < (v3 << 2))  /* overflow not possible due to top 2 bits of v3 not being set */
@@ -129,8 +134,10 @@ n_invmod(mp_limb_t x, mp_limb_t y)
         }
     }
 
+    gmp_printf("%Mu %Mu %Mu %Mu %Mu %Mu %Mu\n", v1, v2, t2, u3, v3, quot, rem); 
     if (v1 < WORD(0))
         v1 += y;
 
+    gmp_printf("%Mu %Mu %Mu %Mu %Mu %Mu %Mu\n", v1, v2, t2, u3, v3, quot, rem); 
     return v1;
 }

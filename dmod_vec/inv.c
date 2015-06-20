@@ -19,56 +19,19 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2009 William Hart
 
 ******************************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <gmp.h>
+#include <stdlib.h>
 #include "flint.h"
 #include "ulong_extras.h"
+#include "dmod_vec.h"
 
-int main(void)
+void _dmod_vec_inv(double *res, const double *vec, slong len, dmod_t mod)
 {
-   int i, result;
-   FLINT_TEST_INIT(state);
-   
+    slong i;
+    for (i = 0 ; i < len; i++)
+        res[i] = dmod_inv(vec[i], mod);
 
-   flint_printf("invmod....");
-   fflush(stdout);
-   
-   for (i = 0; i < 10000 * flint_test_multiplier(); i++) 
-   {
-      mp_limb_t a, b, t, r, binv, ph, pl;
-     
-      gmp_printf("%Mu %Mu\n", UWORD(0), UWORD(1));
-      do
-      {
-         a = n_randtest(state);
-         b = n_randtest(state);
-      } while ((a >= b) || (n_gcd(b, a) != UWORD(1)));
-      a = 10;
-      b = 7;
-      t = n_invmod(a, b);
-      
-      binv = n_preinvert_limb(b);
-      umul_ppmm(ph, pl, t, a);
-      r = n_ll_mod_preinv(ph, pl, b, binv);
-
-      result = (((r == UWORD(0)) && (b == UWORD(1))) || (r == UWORD(1)));
-
-      if (!result)
-      {
-         flint_printf("FAIL:\n");
-         flint_printf("a = %wu, b = %wu, r = %wd\n", a, b, r); 
-         abort();
-      }
-      break;
-   }
-
-   FLINT_TEST_CLEANUP(state);
-   
-   flint_printf("PASS\n");
-   return 0;
 }

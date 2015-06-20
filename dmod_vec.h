@@ -134,6 +134,22 @@ double dmod_reduce(double c, dmod_t mod)
     return rem;
 
 }
+
+static __inline__
+double dmod_neg(double a, dmod_t mod)
+{
+   if (a)
+      return mod.n - a;
+   else
+      return 0;
+}
+
+static __inline__
+double dmod_inv(double a, dmod_t mod)
+{
+    return n_invmod(a, mod.n);
+}
+
 /*  Memory management  *******************************************************/
 
 FLINT_DLL double * _dmod_vec_init(slong len);
