@@ -41,15 +41,13 @@ int main(void)
    for (i = 0; i < 10000 * flint_test_multiplier(); i++) 
    {
       mp_limb_t a, b, t, r, binv, ph, pl;
-     
-      gmp_printf("%Mu %Mu\n", UWORD(0), UWORD(1));
+      
       do
       {
          a = n_randtest(state);
          b = n_randtest(state);
       } while ((a >= b) || (n_gcd(b, a) != UWORD(1)));
-      a = 10;
-      b = 7;
+
       t = n_invmod(a, b);
       
       binv = n_preinvert_limb(b);
@@ -57,14 +55,12 @@ int main(void)
       r = n_ll_mod_preinv(ph, pl, b, binv);
 
       result = (((r == UWORD(0)) && (b == UWORD(1))) || (r == UWORD(1)));
-
       if (!result)
       {
          flint_printf("FAIL:\n");
          flint_printf("a = %wu, b = %wu, r = %wd\n", a, b, r); 
          abort();
       }
-      break;
    }
 
    FLINT_TEST_CLEANUP(state);
