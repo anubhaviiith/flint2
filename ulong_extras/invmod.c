@@ -34,8 +34,8 @@ n_invmod(mp_limb_t x, mp_limb_t y)
     mp_limb_signed_t v2 = UWORD(1);
     mp_limb_signed_t t2;
     mp_limb_t u3, v3;
-    mp_limb_t quot, rem;
-    
+    mp_limb_t quot, rem; 
+
     u3 = y, v3 = x;
 
     if (v3 > u3)
