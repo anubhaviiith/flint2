@@ -52,7 +52,7 @@ int main(void)
 
         mp_limb_t limit_ulong, m_d, len;
         
-        limit_ulong = pow(2, FLINT_D_BITS/2);
+        limit_ulong = pow(2, FLINT_D_BITS);
         m_d = n_randint(state, limit_ulong);
         
         dmod_init(&mod, m_d);
@@ -80,7 +80,7 @@ int main(void)
         _nmod_vec_neg(result2, a, len, modn); 
 
         for (j = 0; j < len; j++)
-        { 
+        {   
             if(result1[j] != (double)result2[j])
             {
                 printf("FAIL");

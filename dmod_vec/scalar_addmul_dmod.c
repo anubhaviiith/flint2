@@ -28,12 +28,12 @@
 #include "dmod_vec.h"
 #include<stdio.h>
 
-void _dmod_vec_scalar_addmul_dmod(double *vec1, const double *vec2, const double alpha, slong N, dmod_t mod)
+void _dmod_vec_scalar_addmul_dmod(double *vec1, const double *vec2, const double alpha, slong len, dmod_t mod)
 {
     #if HAVE_BLAS
     slong i;
-    cblas_daxpy(N, alpha, vec2, 1, vec1, 1);
-    for (i = 0; i < N; i++)
+    cblas_daxpy(len, alpha, vec2, 1, vec1, 1);
+    for (i = 0; i < len; i++)
     {
         vec1[i] = dmod_reduce(vec1[i], mod);
     }

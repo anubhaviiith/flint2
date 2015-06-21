@@ -19,23 +19,47 @@
 =============================================================================*/
 /******************************************************************************
 
-   Copyright (C) 2008, 2009, 2010 William Hart
-   Copyright (C) 2014 Abhinav Baid
-   
+    Copyright (C) 2009 William Hart
+
 ******************************************************************************/
 
-#include "dmod_vec.h"
+#include <gmp.h>
+#include "flint.h"
+#include "ulong_extras.h"
 
-int _dmod_vec_equal(const double *vec1, const double *vec2, slong len)
+double d_invmod1(double x, double y)
 {
-    #if HAVE_BLAS
-    slong i;
-    if (vec1 == vec2)
-        return 1;
-    for (i = 0; i < len; i++)
-        if (vec1[i] != vec2[i])
-            return 0;
+    double v1 = 0;
+    double v2 = 1;
+    double t2;
+    double u3, v3;
+    ulong quot, rem;
+    
+    u3 = y, v3 = x;
 
-    #endif
-    return 1;
+    if (v3 > u3)
+    {
+        rem = u3;
+        u3 = v3;
+        t2 = v2;
+        v2 = v1;
+        v1 = t2;
+        v3 = rem;
+    }
+
+    while (v3)
+    {
+        quot = u3 / v3;
+        rem = u3 - v3 * quot;
+        u3 = v3;
+        t2 = v2;
+        v2 = v1 - quot * v2;
+        v1 = t2;
+        v3 = rem;
+    }
+
+    if (v1 < 0.0)
+        v1 += y;
+     
+    return v1;
 }

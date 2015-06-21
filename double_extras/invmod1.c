@@ -27,8 +27,7 @@
 #include "flint.h"
 #include "ulong_extras.h"
 
-mp_limb_t
-n_invmod(mp_limb_t x, mp_limb_t y)
+mp_limb_t d_invmod(mp_limb_t x, mp_limb_t y)
 {
     mp_limb_signed_t v1 = UWORD(0);
     mp_limb_signed_t v2 = UWORD(1);

@@ -54,28 +54,29 @@ double dmod_add(double a, double b, dmod_t mod)
 
     Returns $a + b$ modulo \code{mod.n}. It is assumed that $a$ and $b$ 
     are already reduced modulo \code{mod.n}. We assume that 
-    $ \code{mod.n} <  2^(FLINT_D_BITS - 1) $
+    $ mod.n <  2^(FLINT_D_BITS - 1) $
 
 double dmod_sub(double a, double b, dmod_t mod)
 
     Returns $a - b$ modulo \code{mod.n}. It is assumed that $a$ and $b$ 
     are already reduced modulo \code{mod.n}. We assume that 
-    $ \code{mod.n} <  2^(FLINT_D_BITS - 1) $
+    $ mod.n <  2^(FLINT_D_BITS - 1) $
 
 
 double dmod_reduce(double a, dmod_t mod)
     
     Returns $a$ modulo \code{mod.n}. It is assumed that \code{mod.n} 
-    is no more than \code{2 ^ FLINT_D_BITS} bits. We require 
+    is no more than \code{2 ^ FLINT_D_BITS}. We require 
     $ 0 \leq a \leq (2 ^ FLINT_D_BITS) $ 
     
-    $a$ modulo \code{mod.n} is calculated by the estimating the quotient which is $ a * \code{mod.ninv} $
+    $a$ modulo \code{mod.n} is calculated by estimating the approximate quotient which is $ a * mod.ninv $
     where \code{mod.ninv} is the precomputed inverse of \code{mod.n}.
     The error in the quotient is due to the rounding error in \code{mod.ninv} which is of 0.5 ULP.
     The largest value of 1 ULP = $2^(-52)$ for \code{mod.ninv}. Thus, this gives a maximal 
-    error of 0.5 for $ \code{a} * \code{mod.ninv} $. 
-    If the value of $ \code{rem} < 0.0 $ or $ \code{rem} \geq \code{mod.n} $, 
-    means that an error is prevelant. The error will be of $+1$ or $-1$ after 
+    error of 1 for $ a * mod.ninv $. 
+    If the value of $ rem < 0.0 $ or $ rem \geq mod.n $, 
+    means that a correction needs to be applied. In this case the approximate quotient 
+    could differ from the actual quotient by $+1$ or $-1$ after 
     truncation of the quotient to an integer. The remainder is thus adjusted appropriately 
     to give the correct value of $a$ modulo \code{mod.n}.
   
@@ -83,19 +84,24 @@ double dmod_reduce(double a, dmod_t mod)
 double dmod_mul(double c, double d, dmod_t mod)
     
     Returns $c * d$  modulo \code{mod.n}. It is assumed that \code{mod.n} 
-    is no more than \code{2 ^ FLINT_D_BITS/2} bits. It is assumed that 
+    is no more than \code{2 ^ FLINT_D_BITS/2}. It is assumed that 
     $c$ and $d$ are already reduced modulo \code{mod.n} and 
     $ 0 \leq c,d \leq (2 ^ FLINT_D_BITS/2) $ 
 
-    The modulus is computed by estimating the quotient, $ \code{q} =  ( (c * d) * \code{mod.ninv}) $
+    The modulus is computed by estimating the quotient , $ q = ((c * d) * mod.ninv) $
     where \code{mod.ninv} is the precomputed inverse of \code{mod.n}.
-    This difference comes from a summation of the rounding error in the product $(c*d) * \code{mod.ninv}$
+    This difference comes from a summation of the rounding error in the product $(c*d) * mod.ninv$
     and a 0.5 ULP error from the rounding error in the value of \code{mod.ninv}. The largest value 
     of 1 ULP = $2^(-52)$ for \code{mod.ninv}. This error is amplified by the factor of 
     $c * d$. This gives us a maximal error of $(0.5 * 2^(-52) * 2^52)$ which is equal to $0.5$. 
-    The rounding error from the product $(c*d) * \code{mod.ninv}$ also comes out to be equal to $0.5$. 
+    The rounding error from the product $ (c*d) * mod.ninv $ also comes out to be equal to $0.5$. 
     This gives a total error of $+1$ or $-1$ after truncation of quotient, \code{q} to an integer.
 
+double dmod_neg(double a, dmod_t mod)
+
+    Returns $-a$ modulo \code{mod.n}. It is assumed that $a$ is already 
+    reduced modulo \code{mod.n} and \code{mod.n} 
+    is no more than \code{2 ^ FLINT_D_BITS}.
 
 
 *******************************************************************************
@@ -104,11 +110,11 @@ double dmod_mul(double c, double d, dmod_t mod)
 
 *******************************************************************************
 
-double _dmod_vec_dot(const double * vec1, const double * vec2, slong len2, dmod_t mod);
+double _dmod_vec_dot(const double * vec1, const double * vec2, slong len, dmod_t mod);
     
     Returns the dot product of (\code{vec1}, \code{len}) and
     (\code{vec2}, \code{len}). We assume that 
-    $ \code{mod.n} < 2^(FLINT_D_BITS/2) $ and \code{vec1}, \code{vec2}
+    $ mod.n < 2^(FLINT_D_BITS/2) $ and \code{vec1}, \code{vec2}
     are already reduced modulo \code{mod.n}
 
 *******************************************************************************
@@ -122,7 +128,7 @@ void _dmod_vec_add(double *res, const double *vec1,
 
     Sets \code{(res, len)} to the sum of \code{(vec1, len)} 
     and \code{(vec2, len)}. We assume that 
-    $ \code{mod.n} < 2^(FLINT_D_BITS - 1) $ and \code{vec1}, \code{vec2}
+    $ mod.n < 2^(FLINT_D_BITS - 1) $ and \code{vec1}, \code{vec2}
     are already reduced modulo \code{mod.n}
 
 
@@ -131,7 +137,7 @@ void _dmod_vec_sub(double *res, const double *vec1,
 
     Sets \code{(res, len)} to the difference of \code{(vec1, len)} 
     and \code{(vec2, len)}.We assume that 
-    $ \code{mod.n} < 2^(FLINT_D_BITS - 1) $ and \code{vec1}, \code{vec2}
+    $ mod.n < 2^(FLINT_D_BITS - 1) $ and \code{vec1}, \code{vec2}
     are already reduced modulo \code{mod.n}
 
 
@@ -139,7 +145,7 @@ void _dmod_vec_scalar_addmul(double * vec1, const double * vec2,
                         const double alpha, slong len, dmod_t mod);
     
     Adds \code{(vec2, len)} times $alpha$ to the vector \code{(vec1, len)}.
-    We assume that $ \code{mod.n} < 2^(FLINT_D_BITS/2) $ and \code{vec2}, \code{alpha}
+    We assume that $ mod.n < 2^(FLINT_D_BITS/2) $ and \code{vec2}, \code{alpha}
     are already reduced modulo \code{mod.n}
 
 
@@ -147,7 +153,7 @@ void _dmod_vec_scalar_mul(double * vec1, const double alpha,
                         slong len, dmod_t mod);
     
     Sets \code{(vec1, len)} to \code{(vec1, len)} multiplied by $alpha$.
-    We assume that $ \code{mod.n} < 2^(FLINT_D_BITS/2) $ and \code{vec1}, \code{alpha}
+    We assume that $ mod.n < 2^(FLINT_D_BITS/2) $ and \code{vec1}, \code{alpha}
     are already reduced modulo \code{mod.n}
 
 
@@ -156,6 +162,9 @@ void _dmod_vec_reduce(double *res, const double *vec, slong len, dmod_t mod);
     Reduces the entries of \code{(vec, len)} modulo \code{mod.n} and set 
     \code{res} to the result.
 
+void _dmod_vec_neg(double *res, const double *vec, slong len, dmod_t mod)
+
+    Sets \code{(res, len)} to the negation of \code{(vec, len)}.
 
 
 *******************************************************************************
@@ -175,9 +184,9 @@ void _dmod_vec_randtest(double *vec, flint_rand_t state, slong len, dmod_t mod);
 
 *******************************************************************************
 
-int  _dmod_vec_is_zero(const double * vec1, slong len2);
+int  _dmod_vec_is_zero(const double * vec1, slong len);
     
-    Returns $1$ if the given vector \code{vec1} of length \code{len2} 
+    Returns $1$ if the given vector \code{vec1} of length \code{len} 
     has all zeroes. Else returns $0$.
 
 void _dmod_vec_swap(double *vec1, double *vec2, slong len);
@@ -185,12 +194,12 @@ void _dmod_vec_swap(double *vec1, double *vec2, slong len);
     Swaps the vectors \code{vec1} and \code{vec2} of length $len$ by actually
     swapping the entries.
 
-int  _dmod_vec_equal(const double * vec1, const double * vec2, slong len2);
+int  _dmod_vec_equal(const double * vec1, const double * vec2, slong len);
 
-    Returns $1$ if \code{(vec1, len2)} is equal to \code{(vec2, len2)}, 
+    Returns $1$ if \code{(vec1, len)} is equal to \code{(vec2, len)}, 
     otherwise returns $0$.
 
-void _dmod_vec_copy(const double * vec1, double * vec2, slong len2);
+void _dmod_vec_copy(const double * vec1, double * vec2, slong len);
     
     Sets \code{(vec2, len)} to \code{(vec1, len)}
 

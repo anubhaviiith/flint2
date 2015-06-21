@@ -28,9 +28,9 @@
 #include "dmod_vec.h"
 #include<stdio.h>
 
-void _dmod_vec_copy(const double *vec1, double *vec2, slong N)
+void _dmod_vec_copy(const double *vec1, double *vec2, slong len)
 {
     #if HAVE_BLAS
-    cblas_dcopy(N, vec1, 1, vec2, 1); 
+    cblas_dcopy(len, vec1, 1, vec2, 1); 
     #endif
 }

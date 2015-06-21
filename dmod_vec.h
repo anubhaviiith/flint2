@@ -144,12 +144,6 @@ double dmod_neg(double a, dmod_t mod)
       return 0;
 }
 
-static __inline__
-double dmod_inv(double a, dmod_t mod)
-{
-    return n_invmod(a, mod.n);
-}
-
 /*  Memory management  *******************************************************/
 
 FLINT_DLL double * _dmod_vec_init(slong len);

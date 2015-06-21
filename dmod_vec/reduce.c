@@ -32,8 +32,8 @@
 void _dmod_vec_reduce(double *res, const double *vec, slong len, dmod_t mod)
 {
     #if HAVE_BLAS
-   slong i;
-   for (i = 0 ; i < len; i++)
-	  res[i] = dmod_reduce(vec[i], mod);
+    slong i;
+    for (i = 0 ; i < len; i++)
+        res[i] = dmod_reduce(vec[i], mod);
     #endif
 }

@@ -32,14 +32,14 @@
 #include "ulong_extras.h"
 #include <math.h>
 
-double _dmod_vec_dot(const double *vec1, const double *vec2, slong N, dmod_t mod)
+double _dmod_vec_dot(const double *vec1, const double *vec2, slong len, dmod_t mod)
 {
+    double res1 = 0.0;
     #if HAVE_BLAS
-    slong i, j;
-    double res1 = 0.0, val = 0;
-    slong window = pow(2, FLINT_D_BITS - 2*(FLINT_BIT_COUNT(mod.n)));
-    
-    for (i = 0; i < (N - window); i += window)
+    slong i;
+    double val = 0;
+    slong window = (1UL << (FLINT_D_BITS - 2*mod.nbits));
+    for (i = 0; i < (len - window); i += window)
     {
         val = cblas_ddot(window, vec1 + i, 1, vec2 + i, 1); 
         val = dmod_reduce(val, mod);
@@ -47,13 +47,13 @@ double _dmod_vec_dot(const double *vec1, const double *vec2, slong N, dmod_t mod
         res1 = dmod_add(res1, val, mod);
 
     }
-    if (i < N)
+    if (i < len)
     {
-        val = cblas_ddot(N - i, vec1 + i, 1, vec2 + i, 1);  
+        val = cblas_ddot(len - i, vec1 + i, 1, vec2 + i, 1);  
         val = dmod_reduce(val, mod);
 
         res1 = dmod_add(res1, val, mod);
     }
-    return res1;
     #endif
+    return res1;
 }

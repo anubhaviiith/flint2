@@ -28,11 +28,11 @@
 #include "dmod_vec.h"
 #include<stdio.h>
 
-void _dmod_vec_add(double *result, const double *vec1, const double *vec2, slong N, dmod_t mod)
+void _dmod_vec_add(double *result, const double *vec1, const double *vec2, slong len, dmod_t mod)
 {
     #if HAVE_BLAS
     slong i; 
-    for (i = 0; i < N; i++)
+    for (i = 0; i < len; i++)
     {
         result[i] = dmod_add(vec1[i], vec2[i], mod);;
     }

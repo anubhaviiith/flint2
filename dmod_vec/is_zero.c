@@ -33,6 +33,6 @@ int _dmod_vec_is_zero(const double *vec1, slong len)
         if (vec1[i] != 0)
             return 0;
 
-    return 1;
     #endif
+    return 1;
 }
