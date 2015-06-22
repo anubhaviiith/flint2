@@ -23,56 +23,18 @@
 
 ******************************************************************************/
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <limits.h>
 #include <gmp.h>
 #include "flint.h"
-#include "dmod_mat.h"
-#include "dmod_vec.h"
-#include "ulong_extras.h"
+#include "nmod_mat.h"
+#include "nmod_vec.h"
 
-int
-main(void)
+void _dmod_mat_add(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
 {
-    slong m, n, i, j, k, rep, rand;
-    FLINT_TEST_INIT(state);
+    slong i;
     
-
-    flint_printf("mul ....");
-    fflush(stdout);
-
-    for (rep = 0; rep < 100 * flint_test_multiplier(); rep++)
+    for (i = 0; i < C->nrows; i++)
     {
-        dmod_mat_t A, B, C;
-        
-        m = n_randint(state, 50);
-        n = n_randint(state, 50);
-        k = n_randint(state, 50);
-        rand = n_randint(state, 50);
-            
-        dmod_t mod;
-
-        dmod_init(&mod, rand); 
-
-        _dmod_mat_init(C, m, n, mod);
-        _dmod_mat_init(A, m, k, mod);
-        _dmod_mat_init(B, k, n, mod);
-         
-        _dmod_mat_randtest(A, state, m, k, mod);
-        _dmod_mat_randtest(B, state, k, n, mod);
-        
-        _dmod_mat_mul(C, A, B, mod); 
-        
-        
-        _dmod_mat_clear(A);
-        _dmod_mat_clear(B);
-        _dmod_mat_clear(C);
-        break;
+        _dmod_vec_add(C->rows[i], A->rows[i], B->rows[i], C->ncols, C->mod);
     }
-
-    FLINT_TEST_CLEANUP(state);
-    
-    flint_printf("PASS\n");
-    return 0;
 }

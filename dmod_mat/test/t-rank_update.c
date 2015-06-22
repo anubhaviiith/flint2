@@ -19,72 +19,61 @@
 =============================================================================*/
 /******************************************************************************
 
+    Copyright (C) 2010 Fredrik Johansson
 
 ******************************************************************************/
 
-#ifndef DMOD_MAT_H
-#define DMOD_MAT_H
-
-#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
 #include <gmp.h>
-#include "double_extras.h"
 #include "flint.h"
-#include "ulong_extras.h"
-#include <math.h>
+#include "dmod_mat.h"
 #include "dmod_vec.h"
+#include "ulong_extras.h"
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-
-
-typedef struct
+int
+main(void)
 {
-    slong nrows;
-    slong ncols;
-    double *rows;
-    dmod_t mod;
-}dmod_mat_struct;
-
-
-typedef dmod_mat_struct dmod_mat_t[1];
-
-#define dmod_mat_nrows(mat) ((mat)->nrows)
-#define dmod_mat_ncols(mat) ((mat)->ncols)
-#define MATRIX_IDX(n, i, j) (i*n + j)
-#define dmod_mat_entry(mat,i,j) ((mat)->rows[ MATRIX_IDX( dmod_mat_cols(mat) , i, j) ])
-
-static __inline__
-void
-_dmod_mat_set_mod(dmod_mat_t mat, double n)
-{
-    mat->mod.n = n;
-    mat->mod.ninv = (double)1/n;
-    mat->mod.nbits = FLINT_BIT_COUNT(n);
-}
-
-static __inline__
-void
-_dmod_mat_print(dmod_mat_t mat)
-{
-    slong i, j, m, n; 
-    m = dmod_mat_nrows(mat);
-    n = dmod_mat_ncols(mat);
+    slong m, n, i, j, k, rep, rand;
+    FLINT_TEST_INIT(state);
     
-    for (i = 0; i < m; i++)
+
+    flint_printf("rank-1....");
+    fflush(stdout);
+
+    for (rep = 0; rep < 100 * flint_test_multiplier(); rep++)
     {
-        for (j = 0; j < n; j++)
-        {
-            flint_printf("%lf ", (mat->rows[ MATRIX_IDX(n, i, j) ]));
-        }
-        flint_printf("\n");
+        dmod_mat_t A;
+        double *x, *y; 
+
+        m = n_randint(state, 50);
+        n = n_randint(state, 50);
+        
+        rand = n_randint(state, 10);
+            
+        dmod_t mod;
+        dmod_init(&mod, rand); 
+
+        _dmod_mat_init(A, m, n, mod);
+        x = _dmod_vec_init(m);  
+        y = _dmod_vec_init(m);  
+                
+        _dmod_mat_randtest(A, state, m, n, mod);
+        _dmod_vec_randtest(x, state, m, mod);
+        _dmod_vec_randtest(y, state, n, mod);
+        
+        _dmod_mat_rank_update(A, x, y, m, n, mod); 
+        
+        _dmod_mat_clear(A);
+        _dmod_vec_clear(x);
+        _dmod_vec_clear(y);
+
+        break;
     }
+
+    FLINT_TEST_CLEANUP(state);
+    
+    flint_printf("PASS\n");
+    return 0;
 }
-
-FLINT_DLL void _dmod_mat_init(dmod_mat_t A, slong m, slong n, dmod_t mod);
-#ifdef __cplusplus
-}
-#endif
-
-#endif
-

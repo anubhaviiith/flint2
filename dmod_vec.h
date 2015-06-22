@@ -131,7 +131,6 @@ double dmod_reduce(double c, dmod_t mod)
         rem -= mod.n;
     }
     return rem;
-
 }
 static __inline__
 double dmod_neg(double a, dmod_t mod)

@@ -19,72 +19,34 @@
 =============================================================================*/
 /******************************************************************************
 
+    Copyright (C) 2010 William Hart
 
 ******************************************************************************/
 
-#ifndef DMOD_MAT_H
-#define DMOD_MAT_H
-
-#include <math.h>
 #include <gmp.h>
-#include "double_extras.h"
+#include <stdlib.h>
+#include <float.h>
 #include "flint.h"
 #include "ulong_extras.h"
-#include <math.h>
 #include "dmod_vec.h"
+#include <cblas.h>
+#include "dmod_mat.h"
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-
-
-typedef struct
+void _dmod_mat_mul_vec(double *res, dmod_mat_t A, const double *x, slong lenx, dmod_t mod)
 {
-    slong nrows;
-    slong ncols;
-    double *rows;
-    dmod_t mod;
-}dmod_mat_struct;
+    slong m, n, i;
 
-
-typedef dmod_mat_struct dmod_mat_t[1];
-
-#define dmod_mat_nrows(mat) ((mat)->nrows)
-#define dmod_mat_ncols(mat) ((mat)->ncols)
-#define MATRIX_IDX(n, i, j) (i*n + j)
-#define dmod_mat_entry(mat,i,j) ((mat)->rows[ MATRIX_IDX( dmod_mat_cols(mat) , i, j) ])
-
-static __inline__
-void
-_dmod_mat_set_mod(dmod_mat_t mat, double n)
-{
-    mat->mod.n = n;
-    mat->mod.ninv = (double)1/n;
-    mat->mod.nbits = FLINT_BIT_COUNT(n);
-}
-
-static __inline__
-void
-_dmod_mat_print(dmod_mat_t mat)
-{
-    slong i, j, m, n; 
-    m = dmod_mat_nrows(mat);
-    n = dmod_mat_ncols(mat);
+    m = A->nrows;
+    n = A->ncols;
+    
+    if (A->ncols != lenx)
+        return;
+    
+    cblas_dgemv(101, 111, m, n, 1, A->rows, n, x, 1, 0, res, 1); 
     
     for (i = 0; i < m; i++)
     {
-        for (j = 0; j < n; j++)
-        {
-            flint_printf("%lf ", (mat->rows[ MATRIX_IDX(n, i, j) ]));
-        }
-        flint_printf("\n");
+        res[i] = dmod_reduce(res[i], mod);
     }
+
 }
-
-FLINT_DLL void _dmod_mat_init(dmod_mat_t A, slong m, slong n, dmod_t mod);
-#ifdef __cplusplus
-}
-#endif
-
-#endif
-
