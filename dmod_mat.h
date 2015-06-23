@@ -43,6 +43,7 @@ typedef struct
     slong nrows;
     slong ncols;
     double *rows;
+    double **entry;
     dmod_t mod;
 }dmod_mat_struct;
 
@@ -55,8 +56,7 @@ typedef dmod_mat_struct dmod_mat_t[1];
 #define dmod_mat_entry(mat,i,j) ((mat)->rows[ MATRIX_IDX( dmod_mat_cols(mat) , i, j) ])
 
 static __inline__
-void
-_dmod_mat_set_mod(dmod_mat_t mat, double n)
+void _dmod_mat_set_mod(dmod_mat_t mat, double n)
 {
     mat->mod.n = n;
     mat->mod.ninv = (double)1/n;
@@ -64,8 +64,14 @@ _dmod_mat_set_mod(dmod_mat_t mat, double n)
 }
 
 static __inline__
-void
-_dmod_mat_print(dmod_mat_t mat)
+void _dmod_mat_set(dmod_mat_t mat, slong i, slong j, double val)
+{
+    mat->rows[ MATRIX_IDX( mat->ncols , i, j) ] = val;
+    mat->entry[i][j] = val;
+}
+
+static __inline__
+void _dmod_mat_print(dmod_mat_t mat)
 {
     slong i, j, m, n; 
     m = dmod_mat_nrows(mat);

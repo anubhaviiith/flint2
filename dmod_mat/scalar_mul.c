@@ -19,30 +19,37 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2010 William Hart
+    Copyright (C) 2010 Fredrik Johansson
 
 ******************************************************************************/
 
-#include <gmp.h>
 #include <stdlib.h>
-#include <float.h>
+#include <gmp.h>
 #include "flint.h"
-#include "ulong_extras.h"
-#include "dmod_vec.h"
-#include "dmod_mat.h"
+#include "nmod_mat.h"
+#include "nmod_vec.h"
 
-void _dmod_mat_randtest(dmod_mat_t A, flint_rand_t state)
+void nmod_mat_scalar_mul(nmod_mat_t B, const nmod_mat_t A, mp_limb_t c)
 {
-    slong i, j;
-    slong m = A->nrows;
-    slong n = A->ncols;
-
-    for (i = 0; i < m; i++)
+    if (c == 0)
     {
-        for (j = 0; j < n; j++)
-        {
-            double val = n_randint(state, A->mod.n);
-            _dmod_mat_set(A, i, j, 1);
-        }
+        nmod_mat_zero(B);
+    }
+    else if (c == UWORD(1))
+    {
+        nmod_mat_set(B, A);
+    }
+    else if (c == A->mod.n - UWORD(1))
+    {
+        nmod_mat_neg(B, A);
+    }
+    else
+    {
+        slong i, j;
+
+        for (i = 0; i < A->r; i++)
+            for (j = 0; j < A->c; j++)
+                nmod_mat_entry(B, i, j) = n_mulmod2_preinv(
+                    nmod_mat_entry(A, i, j), c, A->mod.n, A->mod.ninv);
     }
 }

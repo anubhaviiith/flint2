@@ -19,30 +19,22 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2010 William Hart
+    Copyright (C) 2010 Fredrik Johansson
 
 ******************************************************************************/
 
-#include <gmp.h>
 #include <stdlib.h>
-#include <float.h>
+#include <gmp.h>
 #include "flint.h"
-#include "ulong_extras.h"
-#include "dmod_vec.h"
 #include "dmod_mat.h"
+#include "dmod_vec.h"
 
-void _dmod_mat_randtest(dmod_mat_t A, flint_rand_t state)
+void _dmod_mat_add(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
 {
-    slong i, j;
-    slong m = A->nrows;
-    slong n = A->ncols;
+    slong i;
 
-    for (i = 0; i < m; i++)
+    for (i = 0; i < C->nrows; i++)
     {
-        for (j = 0; j < n; j++)
-        {
-            double val = n_randint(state, A->mod.n);
-            _dmod_mat_set(A, i, j, 1);
-        }
+        _dmod_vec_add(C->entry[i], A->entry[i], B->entry[i], C->ncols, C->mod);
     }
 }

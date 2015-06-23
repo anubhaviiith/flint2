@@ -31,7 +31,7 @@
 #include "dmod_vec.h"
 #include "dmod_mat.h"
 
-void _dmod_mat_mul(dmod_mat_t C, dmod_mat_t A, dmod_mat_t B, dmod_t mod)
+void _dmod_mat_mul(dmod_mat_t C, dmod_mat_t A, dmod_mat_t B)
 {
     slong m, n, k;
     m = A->nrows;
@@ -42,5 +42,4 @@ void _dmod_mat_mul(dmod_mat_t C, dmod_mat_t A, dmod_mat_t B, dmod_t mod)
         return;
 
     cblas_dgemm(101, 111, 111, m, n, k, 1.0, A->rows, k, B->rows, n, 0.0, C->rows, n);
-    
 }

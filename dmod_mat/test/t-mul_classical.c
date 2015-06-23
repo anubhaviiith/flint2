@@ -50,7 +50,14 @@ main(void)
         n = n_randint(state, 50);
         k = n_randint(state, 50);
         rand = n_randint(state, 50);
-            
+        while (m==0 || n==0 || k ==0 || rand == 0)
+        {
+            m = n_randint(state, 50);
+            n = n_randint(state, 50);
+            k = n_randint(state, 50);
+            rand = n_randint(state, 50);
+
+        }
         dmod_t mod;
 
         dmod_init(&mod, rand); 
@@ -58,12 +65,10 @@ main(void)
         _dmod_mat_init(C, m, n, mod);
         _dmod_mat_init(A, m, k, mod);
         _dmod_mat_init(B, k, n, mod);
-         
-        _dmod_mat_randtest(A, state, m, k, mod);
-        _dmod_mat_randtest(B, state, k, n, mod);
         
-        _dmod_mat_mul(C, A, B, mod); 
-        
+        _dmod_mat_randtest(A, state);
+        _dmod_mat_randtest(B, state);
+        _dmod_mat_mul(C, A, B); 
         
         _dmod_mat_clear(A);
         _dmod_mat_clear(B);

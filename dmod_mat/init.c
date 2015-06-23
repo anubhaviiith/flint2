@@ -29,7 +29,13 @@
 
 void _dmod_mat_init(dmod_mat_t A, slong m, slong n, dmod_t mod)
 {
-    A->rows = (double *) flint_malloc((m*n) * sizeof(double));
+    slong i;
+    A->rows = flint_calloc((m*n), sizeof(double));
+   
+    A->entry = flint_malloc(m * sizeof(double *));
+    for (i = 0; i < m; i++)
+            A->entry[i] = A->rows + i * n;
+    
     A->nrows = m;
     A->ncols = n;
     _dmod_mat_set_mod(A, mod.n);
