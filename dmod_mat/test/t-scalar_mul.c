@@ -40,15 +40,15 @@ main(void)
     FLINT_TEST_INIT(state);
     
 
-    flint_printf("add ....");
+    flint_printf("scalar_mul ....");
     fflush(stdout);
 
     for (rep = 0; rep < 100 * flint_test_multiplier(); rep++)
     {
-        nmod_mat_t A, B, result;
-        dmod_mat_t A_d, B_d, result_d;
+        nmod_mat_t A, result;
+        dmod_mat_t A_d, result_d;
         
-        ulong limit_dbl;
+        ulong limit_dbl, alpha;
 
         m = n_randint(state, 100);
         n = n_randint(state, 100);
@@ -59,7 +59,7 @@ main(void)
             n = n_randint(state, 100);
         }
 
-        limit_dbl = (1UL << (FLINT_D_BITS - 1));
+        limit_dbl = (1UL << (FLINT_D_BITS/2));
         rand = n_randint(state, limit_dbl);
 
         while (rand == 0)
@@ -67,54 +67,48 @@ main(void)
             rand = n_randint(state, limit_dbl);
         }
 
+        alpha = n_randint(state, limit_dbl);
+        
         dmod_t mod;
         nmod_t modn;
         dmod_init(&mod, rand); 
         nmod_init(&modn, rand); 
         
         _dmod_mat_init(A_d, m, n, mod);
-        _dmod_mat_init(B_d, m, n, mod);
         _dmod_mat_init(result_d, m, n, mod);
        
         nmod_mat_init(A, m, n, modn.n);
-        nmod_mat_init(B, m, n, modn.n);
         nmod_mat_init(result, m, n, modn.n);
-       
-
+         
         nmod_mat_randtest(A, state);
-        nmod_mat_randtest(B, state);
         
         for (i = 0; i < m; i++)
         {
             for (j = 0; j < n; j++)
             {
-                _dmod_mat_set(A_d, i, j, (double)A->rows[i][j]);
-                _dmod_mat_set(B_d, i, j, (double)B->rows[i][j]);
+                A_d->rows[MATRIX_IDX(n, i, j)] = (double)A->rows[i][j];
             }
         }
 
-        nmod_mat_add(result, A, B); 
-        _dmod_mat_add(result_d, A_d, B_d);
-        
+        nmod_mat_scalar_mul(result, A, alpha); 
+        _dmod_mat_scalar_mul(result_d, A_d, (double)alpha);
 
         for (i = 0; i < m; i++)
-        {
+        { 
             for (j = 0; j < n; j++)
             {
-                if (result_d->entry[i][j] != (double)result->rows[i][j])
+                if (result_d->rows[MATRIX_IDX(n, i, j)] != (double)result->rows[i][j])
                 {
                     flint_printf("FAIL\n");
                     abort();
                 }
             }
-        }
 
-        nmod_mat_clear(B);
+        }
         nmod_mat_clear(result);
         nmod_mat_clear(A);
-
+        
         _dmod_mat_clear(A_d);
-        _dmod_mat_clear(B_d);
         _dmod_mat_clear(result_d);
     }
 

@@ -53,7 +53,7 @@ typedef dmod_mat_struct dmod_mat_t[1];
 #define dmod_mat_nrows(mat) ((mat)->nrows)
 #define dmod_mat_ncols(mat) ((mat)->ncols)
 #define MATRIX_IDX(n, i, j) (i*n + j)
-#define dmod_mat_entry(mat,i,j) ((mat)->rows[ MATRIX_IDX( dmod_mat_cols(mat) , i, j) ])
+#define dmod_mat_entry(mat,i,j) ((mat)->rows[ MATRIX_IDX( dmod_mat_ncols(mat) , i, j) ])
 
 static __inline__
 void _dmod_mat_set_mod(dmod_mat_t mat, double n)

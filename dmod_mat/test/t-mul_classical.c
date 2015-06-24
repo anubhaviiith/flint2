@@ -50,14 +50,15 @@ main(void)
         n = n_randint(state, 50);
         k = n_randint(state, 50);
         rand = n_randint(state, 50);
+        
         while (m==0 || n==0 || k ==0 || rand == 0)
         {
             m = n_randint(state, 50);
             n = n_randint(state, 50);
             k = n_randint(state, 50);
             rand = n_randint(state, 50);
-
         }
+
         dmod_t mod;
 
         dmod_init(&mod, rand); 

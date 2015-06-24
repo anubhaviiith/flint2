@@ -26,30 +26,25 @@
 #include <stdlib.h>
 #include <gmp.h>
 #include "flint.h"
-#include "nmod_mat.h"
-#include "nmod_vec.h"
+#include "dmod_mat.h"
+#include "dmod_vec.h"
 
-void nmod_mat_scalar_mul(nmod_mat_t B, const nmod_mat_t A, mp_limb_t c)
+void _dmod_mat_scalar_mul(dmod_mat_t B, const dmod_mat_t A, double c)
 {
-    if (c == 0)
+    if (c == 1)
     {
-        nmod_mat_zero(B);
-    }
-    else if (c == UWORD(1))
-    {
-        nmod_mat_set(B, A);
-    }
-    else if (c == A->mod.n - UWORD(1))
-    {
-        nmod_mat_neg(B, A);
+        _dmod_mat_copy(B, A);
     }
     else
     {
         slong i, j;
 
-        for (i = 0; i < A->r; i++)
-            for (j = 0; j < A->c; j++)
-                nmod_mat_entry(B, i, j) = n_mulmod2_preinv(
-                    nmod_mat_entry(A, i, j), c, A->mod.n, A->mod.ninv);
+        for (i = 0; i < A->nrows; i++)
+        {
+            for (j = 0; j < A->ncols; j++)
+            {
+                _dmod_mat_set(B, i, j, dmod_mul(dmod_mat_entry(A, i, j), c, A->mod));
+            }
+        }
     }
 }

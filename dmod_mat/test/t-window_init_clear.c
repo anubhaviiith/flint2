@@ -36,24 +36,23 @@
 int
 main(void)
 {
-    slong m, n, i, j, k, rep, rand;
+    slong i, j, k, rep, rand;
     FLINT_TEST_INIT(state);
     
 
-    flint_printf("add ....");
+    flint_printf("window init/clear ....");
     fflush(stdout);
 
-    for (rep = 0; rep < 100 * flint_test_multiplier(); rep++)
+    for (rep = 0; rep < 1000 * flint_test_multiplier(); rep++)
     {
-        nmod_mat_t A, B, result;
-        dmod_mat_t A_d, B_d, result_d;
-        
+        dmod_mat_t A_d, result_d, window;
         ulong limit_dbl;
+        mp_limb_t r1, r2, c1, c2, m, n;
 
         m = n_randint(state, 100);
         n = n_randint(state, 100);
         
-        while (m == 0 || n == 0)
+        while (m <= 2 || n <= 2)
         {
             m = n_randint(state, 100);
             n = n_randint(state, 100);
@@ -66,56 +65,51 @@ main(void)
         {
             rand = n_randint(state, limit_dbl);
         }
+ 
+        
+        r2 = n_randint(state, m);
+        while (r2 <= 1)
+            r2 = n_randint(state, m);
+        
+        r1 = n_randint(state, r2);
+        while (r1 == 0)
+            r1 = n_randint(state, r2);
+        
+        c2 = n_randint(state, n);
+        while (c2 <= 1)
+            c2 = n_randint(state, n);
+        
+        c1 = n_randint(state, c2);
+        while (c1 == 0)
+            c1 = n_randint(state, c2);
+
 
         dmod_t mod;
-        nmod_t modn;
         dmod_init(&mod, rand); 
-        nmod_init(&modn, rand); 
-        
+       
         _dmod_mat_init(A_d, m, n, mod);
-        _dmod_mat_init(B_d, m, n, mod);
-        _dmod_mat_init(result_d, m, n, mod);
-       
-        nmod_mat_init(A, m, n, modn.n);
-        nmod_mat_init(B, m, n, modn.n);
-        nmod_mat_init(result, m, n, modn.n);
+ 
+        _dmod_mat_randtest(A_d, state);
+
+        _dmod_mat_window_init(window, A_d, r1, c1, r2, c2);
        
 
-        nmod_mat_randtest(A, state);
-        nmod_mat_randtest(B, state);
-        
-        for (i = 0; i < m; i++)
+        for (i = 0; i < r2 - r1; i++)
         {
-            for (j = 0; j < n; j++)
+            for (j = 0; j < c2 - c1; j++)
             {
-                _dmod_mat_set(A_d, i, j, (double)A->rows[i][j]);
-                _dmod_mat_set(B_d, i, j, (double)B->rows[i][j]);
-            }
-        }
-
-        nmod_mat_add(result, A, B); 
-        _dmod_mat_add(result_d, A_d, B_d);
-        
-
-        for (i = 0; i < m; i++)
-        {
-            for (j = 0; j < n; j++)
-            {
-                if (result_d->entry[i][j] != (double)result->rows[i][j])
+                if (window->entry[i][j] != A_d->entry[i + r1][j + c1])
                 {
                     flint_printf("FAIL\n");
                     abort();
                 }
             }
         }
-
-        nmod_mat_clear(B);
-        nmod_mat_clear(result);
-        nmod_mat_clear(A);
-
+        
+        _dmod_mat_window_clear(window);
         _dmod_mat_clear(A_d);
-        _dmod_mat_clear(B_d);
-        _dmod_mat_clear(result_d);
+        break;
+
     }
 
     FLINT_TEST_CLEANUP(state);

@@ -19,30 +19,40 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2010 William Hart
+    Copyright (C) 2008, 2009 William Hart.
+    Copyright (C) 2008, Richard Howell-Peak
+    Copyright (C) 2008, Martin Albrecht
+    Copyright (C) 2010, Fredrik Johansson
 
 ******************************************************************************/
 
-#include <gmp.h>
 #include <stdlib.h>
-#include <float.h>
+#include <gmp.h>
 #include "flint.h"
-#include "ulong_extras.h"
-#include "dmod_vec.h"
 #include "dmod_mat.h"
 
-void _dmod_mat_randtest(dmod_mat_t A, flint_rand_t state)
+void _dmod_mat_window_init(dmod_mat_t window, const dmod_mat_t mat, slong r1, slong c1, slong r2, slong c2)
 {
     slong i, j;
-    slong m = A->nrows;
-    slong n = A->ncols;
-
+    slong m = r2 -r1, n = c2 -c1; 
+    
+    
+    window->rows = flint_calloc((m * n), sizeof(double));
+    window->entry = flint_malloc(m * sizeof(double *));
+    
     for (i = 0; i < m; i++)
+        window->entry[i] = window->rows + i * n;
+    
+     
+    for (i = r1; i < r2; i++)
     {
-        for (j = 0; j < n; j++)
+        for (j = c1; j < c2; j++)
         {
-            double val = n_randint(state, A->mod.n);
-            _dmod_mat_set(A, i, j, val);
+            window->entry[i - r1][j - c1] = mat->rows[MATRIX_IDX(mat->ncols, i, j)]; 
         }
     }
+
+    window->nrows = m;
+    window->ncols = n;
+    window->mod = mat->mod;
 }

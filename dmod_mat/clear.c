@@ -31,5 +31,5 @@
 
 void _dmod_mat_clear(dmod_mat_t mat)
 {
-    flint_free(mat->rows);
+    flint_free(mat->entry);
 }
