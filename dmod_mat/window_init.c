@@ -41,9 +41,10 @@ void _dmod_mat_window_init(dmod_mat_t window, const dmod_mat_t mat, slong r1, sl
     window->entry = flint_malloc(m * sizeof(double *));
     
     for (i = 0; i < m; i++)
+    {
         window->entry[i] = window->rows + i * n;
+    }
     
-     
     for (i = r1; i < r2; i++)
     {
         for (j = c1; j < c2; j++)

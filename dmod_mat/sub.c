@@ -31,10 +31,18 @@
 
 void _dmod_mat_sub(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
 {
-    slong i;
+    slong i, j;
 
-    for (i = 0; i < C->nrows; i++)
+    if ((A->nrows != B->nrows) || (A->ncols != B->ncols))
+        return;
+   
+    for (i = 0; i < C->nrows; i++)    
     {
-        _dmod_vec_sub(C->entry[i], A->entry[i], B->entry[i], C->ncols, C->mod);
+        for (j = 0; j < C->ncols; j++)
+        {
+            C->rows[MATRIX_IDX(C->ncols, i, j)] = 
+                dmod_sub(A->rows[MATRIX_IDX(A->ncols, i, j)], B->rows[MATRIX_IDX(B->ncols, i, j)], C->mod);
+        }
     }
+
 }

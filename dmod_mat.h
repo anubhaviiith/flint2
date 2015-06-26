@@ -42,6 +42,7 @@ typedef struct
 {
     slong nrows;
     slong ncols;
+    slong ld;
     double *rows;
     double **entry;
     dmod_t mod;
@@ -85,6 +86,7 @@ void _dmod_mat_print(dmod_mat_t mat)
         }
         flint_printf("\n");
     }
+    flint_printf("\n");
 }
 
 FLINT_DLL void _dmod_mat_init(dmod_mat_t A, slong m, slong n, dmod_t mod);

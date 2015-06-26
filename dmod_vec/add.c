@@ -34,7 +34,7 @@ void _dmod_vec_add(double *result, const double *vec1, const double *vec2, slong
     slong i; 
     for (i = 0; i < len; i++)
     {
-        result[i] = dmod_add(vec1[i], vec2[i], mod);;
+        result[i] = dmod_add(vec1[i], vec2[i], mod);
     }
     #endif
 }

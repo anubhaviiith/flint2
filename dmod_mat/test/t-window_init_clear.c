@@ -93,7 +93,6 @@ main(void)
 
         _dmod_mat_window_init(window, A_d, r1, c1, r2, c2);
        
-
         for (i = 0; i < r2 - r1; i++)
         {
             for (j = 0; j < c2 - c1; j++)
@@ -105,7 +104,6 @@ main(void)
                 }
             }
         }
-        
         _dmod_mat_window_clear(window);
         _dmod_mat_clear(A_d);
         break;

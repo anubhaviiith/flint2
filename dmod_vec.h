@@ -66,6 +66,31 @@ void dmod_init(dmod_t * mod, double n)
 }
 
 static __inline__
+double dmod_reduce(double c, dmod_t mod)
+{
+    ulong quot;
+    double rem;
+    
+    if (c < mod.n)
+        return c;
+
+    quot = (c * mod.ninv);
+    rem  = c - quot * mod.n;
+    
+    if(rem < 0.0)
+    {
+        rem += mod.n;
+    }
+    else if (rem >= mod.n)
+    {
+        rem -= mod.n;
+    }
+    return rem;
+
+}
+
+
+static __inline__
 double dmod_add(double val1, double val2, dmod_t mod)
 {
     double result;
@@ -80,7 +105,6 @@ double dmod_sub(double val1, double val2, dmod_t mod)
 {
     double result;
     result = val1 - val2;
-    
     if (result < 0.0)
         result += mod.n;
     return result;
@@ -110,31 +134,6 @@ double dmod_mul(double c, double d, dmod_t mod)
     }
     return rem;
 }
-
-static __inline__
-double dmod_reduce(double c, dmod_t mod)
-{
-    ulong quot;
-    double rem;
-    
-    if (c < mod.n)
-        return c;
-
-    quot = (c * mod.ninv);
-    rem  = c - quot * mod.n;
-    
-    if(rem < 0.0)
-    {
-        rem += mod.n;
-    }
-    else if (rem >= mod.n)
-    {
-        rem -= mod.n;
-    }
-    return rem;
-
-}
-
 static __inline__
 double dmod_neg(double a, dmod_t mod)
 {
