@@ -31,7 +31,7 @@
 #include "dmod_vec.h"
 #include "dmod_mat.h"
 
-void _dmod_mat_mul_window(dmod_mat_t C, dmod_mat_t A, dmod_mat_t B, slong Cr1, slong Cc1, slong Ar1, slong Ac1, slong Br1, slong Bc1, slong m, slong n, slong k)
+void _dmod_mat_mul_window(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B, slong Cr1, slong Cc1, slong Ar1, slong Ac1, slong Br1, slong Bc1, slong m, slong n, slong k)
 {
     slong i, j;
 

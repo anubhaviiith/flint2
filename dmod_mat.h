@@ -100,13 +100,13 @@ FLINT_DLL void _dmod_mat_clear(dmod_mat_t mat);
 
 FLINT_DLL void _dmod_mat_add_window(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B, slong Cr1, slong Cc1, slong Ar1, slong Ac1, slong Br1, slong Bc1, slong m, slong n);
 
-FLINT_DLL void _dmod_mat_mul_window(dmod_mat_t C, dmod_mat_t A, dmod_mat_t B, slong Cr1, slong Cc1, slong Ar1, slong Ac1, slong Br1, slong Bc1, slong m, slong n, slong k);
+FLINT_DLL void _dmod_mat_mul_window(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B, slong Cr1, slong Cc1, slong Ar1, slong Ac1, slong Br1, slong Bc1, slong m, slong n, slong k);
 
 FLINT_DLL void _dmod_mat_sub_window(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B, slong Cr1, slong Cc1, slong Ar1, slong Ac1, slong Br1, slong Bc1, slong m, slong n);
 
 
 /*  Matrix-Matrix / Matrix-Vector Multiplication   *******************************************************/
-FLINT_DLL void _dmod_mat_mul(dmod_mat_t C, dmod_mat_t A, dmod_mat_t B);
+FLINT_DLL void _dmod_mat_mul(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B);
 
 FLINT_DLL void _dmod_mat_mul_strassen(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B);
 

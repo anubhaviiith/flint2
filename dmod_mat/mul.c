@@ -33,7 +33,7 @@
 #include "dmod_vec.h"
 #include "dmod_mat.h"
 
-void _dmod_mat_mul(dmod_mat_t C, dmod_mat_t A, dmod_mat_t B)
+void _dmod_mat_mul(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
 {
     slong m, n, k, i, j;
     m = A->nrows;
