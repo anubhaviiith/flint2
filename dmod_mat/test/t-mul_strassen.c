@@ -43,7 +43,7 @@ main(void)
     flint_printf("mul-strassen ....");
     fflush(stdout);
 
-    for (rep = 0; rep < 100 * flint_test_multiplier(); rep++)
+    for (rep = 0; rep < 1000 * flint_test_multiplier(); rep++)
     {
         nmod_mat_t A, B, result;
         dmod_mat_t A_d, B_d, result_d;
@@ -61,12 +61,12 @@ main(void)
             n = n_randint(state, 10);
         }
 
-        limit_dbl = (1UL << (FLINT_D_BITS - 1));
-        rand = n_randint(state, 10);
+        limit_dbl = (1UL << (FLINT_D_BITS/2 - FLINT_BIT_COUNT(k) + 1));
+        rand = n_randint(state, limit_dbl);
 
         while (rand == 0)
         {
-            rand = n_randint(state, 10);
+            rand = n_randint(state, limit_dbl);
         }
 
         dmod_t mod;
@@ -104,8 +104,8 @@ main(void)
 
         nmod_mat_mul_strassen(result, A, B); 
         _dmod_mat_mul_strassen(result_d, A_d, B_d);
-
-
+        
+        
         for (i = 0; i < m; i++)
         {
             for (j = 0; j < n; j++)
