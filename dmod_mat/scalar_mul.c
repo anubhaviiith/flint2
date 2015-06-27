@@ -19,7 +19,7 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2010 Fredrik Johansson
+    Copyright (C) 2015 Anubhav Srivastava
 
 ******************************************************************************/
 
@@ -31,20 +31,13 @@
 
 void _dmod_mat_scalar_mul(dmod_mat_t B, const dmod_mat_t A, double c)
 {
-    if (c == 1)
-    {
-        _dmod_mat_copy(B, A);
-    }
-    else
-    {
-        slong i, j;
+    slong i, j;
 
-        for (i = 0; i < A->nrows; i++)
+    for (i = 0; i < A->nrows; i++)
+    {
+        for (j = 0; j < A->ncols; j++)
         {
-            for (j = 0; j < A->ncols; j++)
-            {
-                _dmod_mat_set(B, i, j, dmod_mul(dmod_mat_entry(A, i, j), c, A->mod));
-            }
+            _dmod_mat_set(B, i, j, dmod_mul(dmod_mat_entry(A, i, j), c, A->mod));
         }
     }
 }

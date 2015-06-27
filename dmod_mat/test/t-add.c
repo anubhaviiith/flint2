@@ -19,7 +19,7 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2010 Fredrik Johansson
+    Copyright (C) 2015 Anubhav Srivastava
 
 ******************************************************************************/
 
@@ -36,7 +36,7 @@
 int
 main(void)
 {
-    slong m, n, i, j, k, rep, rand;
+    slong m, n, i, j, rep, rand;
     FLINT_TEST_INIT(state);
     
 
@@ -101,7 +101,7 @@ main(void)
         {
             for (j = 0; j < n; j++)
             {
-                if (result_d->entry[i][j] != (double)result->rows[i][j])
+                if (result_d->rows[MATRIX_IDX(n, i, j)] != (double)result->rows[i][j])
                 {
                     flint_printf("FAIL\n");
                     abort();

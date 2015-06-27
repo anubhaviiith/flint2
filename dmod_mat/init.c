@@ -19,8 +19,7 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2010 William Hart
-    Copyright (C) 2014 Abhinav Baid
+    Copyright (C) 2015 Anubhav Srivastava
 
 ******************************************************************************/
 
@@ -32,11 +31,6 @@ void _dmod_mat_init(dmod_mat_t A, slong m, slong n, dmod_t mod)
     slong i;
 
     A->rows = flint_calloc((m*n), sizeof(double)); 
-    A->entry = flint_malloc(m * sizeof(double *));
-    
-    for (i = 0; i < m; i++)
-        A->entry[i] = A->rows + i * n;
-    
     A->nrows = m;
     A->ncols = n;
     A->ld = n;

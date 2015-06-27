@@ -19,6 +19,8 @@
 =============================================================================*/
 /******************************************************************************
 
+    Copyright (C) 2015 Anubhav Srivastava
+
 ******************************************************************************/
 
 #include <stdlib.h>
@@ -38,7 +40,6 @@ void _dmod_mat_mul_strassen(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B
     a = A->nrows;
     b = A->ncols;
     c = B->ncols;
-
 
     anr = a / 2;
     anc = b / 2;
@@ -83,7 +84,7 @@ void _dmod_mat_mul_strassen(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B
     _dmod_mat_mul_window(C, A, X2, zero, zero, anr, anc, zero, zero, anr, bnc, anc);
     _dmod_mat_sub_window(C, C, C, anr, zero, anr, zero, zero, zero, anr, bnc); 
     _dmod_mat_mul_window(C, A, B, zero, zero, zero, anc, bnr, zero, anr, bnc, bnr);
-    _dmod_mat_add_window(C, X1, C, zero, zero, zero, zero, zero, zero, anr, bnc, anr);
+    _dmod_mat_add_window(C, X1, C, zero, zero, zero, zero, zero, zero, anr, bnc);
 
 
     _dmod_mat_clear(X1);

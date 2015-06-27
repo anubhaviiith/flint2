@@ -19,7 +19,7 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2010 Fredrik Johansson
+    Copyright (C) 2015 Anubhav Srivastava
 
 ******************************************************************************/
 
@@ -35,7 +35,7 @@
 int
 main(void)
 {
-    slong m, n, i, j, k, rep, rand;
+    slong m, n, rep, rand;
     FLINT_TEST_INIT(state);
     
 
@@ -59,7 +59,7 @@ main(void)
         x = _dmod_vec_init(m);  
         y = _dmod_vec_init(m);  
                 
-        _dmod_mat_randtest(A, state, m, n, mod);
+        _dmod_mat_randtest(A, state);
         _dmod_vec_randtest(x, state, m, mod);
         _dmod_vec_randtest(y, state, n, mod);
         

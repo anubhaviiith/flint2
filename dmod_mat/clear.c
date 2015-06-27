@@ -19,8 +19,7 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2010 William Hart
-    Copyright (C) 2010 Fredrik Johansson
+    Copyright (C) 2015 Anubhav Srivastava
 
 ******************************************************************************/
 
@@ -31,5 +30,5 @@
 
 void _dmod_mat_clear(dmod_mat_t mat)
 {
-    flint_free(mat->entry);
+    flint_free(mat->rows);
 }
