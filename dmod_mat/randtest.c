@@ -33,6 +33,7 @@
 
 void _dmod_mat_randtest(dmod_mat_t A, flint_rand_t state)
 {
+    #if HAVE_BLAS
     slong i, j;
     slong m = A->nrows;
     slong n = A->ncols;
@@ -45,4 +46,5 @@ void _dmod_mat_randtest(dmod_mat_t A, flint_rand_t state)
             _dmod_mat_set(A, i, j, val);
         }
     }
+    #endif
 }

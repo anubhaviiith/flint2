@@ -35,6 +35,7 @@
 
 void _dmod_mat_mul(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
 {
+    #if HAVE_BLAS
     slong m, n, k, i, j;
     m = A->nrows;
     n = B->ncols;
@@ -49,5 +50,6 @@ void _dmod_mat_mul(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
         for (j = 0; j < C->ncols; j++)
             C->rows[MATRIX_IDX(C->ncols, i, j)] = dmod_reduce(C->rows[MATRIX_IDX(C->ncols, i, j)], A->mod);
     }
+    #endif
     
 }

@@ -31,6 +31,7 @@
 
 void _dmod_mat_sub(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
 {
+    #if HAVE_BLAS
     slong i, j;
 
     if ((A->nrows != B->nrows) || (A->ncols != B->ncols))
@@ -44,5 +45,6 @@ void _dmod_mat_sub(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
                 dmod_sub(A->rows[MATRIX_IDX(A->ncols, i, j)], B->rows[MATRIX_IDX(B->ncols, i, j)], C->mod);
         }
     }
+    #endif
 
 }

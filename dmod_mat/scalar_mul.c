@@ -31,6 +31,7 @@
 
 void _dmod_mat_scalar_mul(dmod_mat_t B, const dmod_mat_t A, double c)
 {
+    #if HAVE_BLAS
     slong i, j;
 
     for (i = 0; i < A->nrows; i++)
@@ -40,4 +41,5 @@ void _dmod_mat_scalar_mul(dmod_mat_t B, const dmod_mat_t A, double c)
             _dmod_mat_set(B, i, j, dmod_mul(dmod_mat_entry(A, i, j), c, A->mod));
         }
     }
+    #endif
 }

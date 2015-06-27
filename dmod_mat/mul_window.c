@@ -33,6 +33,7 @@
 
 void _dmod_mat_mul_window(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B, slong Cr1, slong Cc1, slong Ar1, slong Ac1, slong Br1, slong Bc1, slong m, slong n, slong k)
 {
+    #if HAVE_BLAS
     slong i, j;
 
     slong sA, sB, sC;
@@ -53,5 +54,6 @@ void _dmod_mat_mul_window(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B, 
                 dmod_reduce(C->rows[sC + MATRIX_IDX(C->ld, i, j)], A->mod);
         }
     }
+    #endif
     
 }

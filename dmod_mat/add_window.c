@@ -31,6 +31,7 @@
 
 void _dmod_mat_add_window(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B, slong Cr1, slong Cc1, slong Ar1, slong Ac1, slong Br1, slong Bc1, slong m, slong n)
 {
+    #if HAVE_BLAS
     slong i, j;
    
     for (i = 0; i < m; i++)
@@ -41,4 +42,5 @@ void _dmod_mat_add_window(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B, 
             dmod_add(A->rows[ MATRIX_IDX(A->ld, Ar1, Ac1) + MATRIX_IDX(A->ld, i, j)], B->rows[MATRIX_IDX(B->ld, Br1, Bc1) + MATRIX_IDX(B->ld, i, j)], C->mod);
         }
     }
+    #endif
 }

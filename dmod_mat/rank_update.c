@@ -34,6 +34,7 @@
 
 void _dmod_mat_rank_update(dmod_mat_t A, const double *x, const double *y, slong lenx, slong leny, dmod_t mod)
 {
+    #if HAVE_BLAS
     slong m, n;
     m = A->nrows;
     n = A->ncols;
@@ -42,4 +43,5 @@ void _dmod_mat_rank_update(dmod_mat_t A, const double *x, const double *y, slong
         return;
 
     cblas_dger (101, m, n, 1, x, 1, y, 1, A->rows, n); 
+    #endif
 }

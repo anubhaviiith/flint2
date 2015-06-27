@@ -32,6 +32,7 @@
 
 void _dmod_mat_mul_strassen(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
 {
+    #if HAVE_BLAS
     slong a, b, c;
     slong anr, anc, bnr, bnc;
 
@@ -110,4 +111,5 @@ void _dmod_mat_mul_strassen(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B
         
         _dmod_mat_clear(temp);
     }
+    #endif
 }

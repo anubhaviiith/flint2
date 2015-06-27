@@ -35,6 +35,7 @@
 int
 main(void)
 {
+    #if HAVE_BLAS
     slong m, n, rep, rand;
     FLINT_TEST_INIT(state);
     
@@ -76,4 +77,5 @@ main(void)
     
     flint_printf("PASS\n");
     return 0;
+    #endif
 }

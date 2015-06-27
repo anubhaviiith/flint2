@@ -34,6 +34,7 @@
 
 void _dmod_mat_mul_vec(double *res, dmod_mat_t A, const double *x, slong lenx, dmod_t mod)
 {
+    #if HAVE_BLAS
     slong m, n, i;
 
     m = A->nrows;
@@ -49,4 +50,5 @@ void _dmod_mat_mul_vec(double *res, dmod_mat_t A, const double *x, slong lenx, d
         res[i] = dmod_reduce(res[i], mod);
     }
 
+    #endif
 }
