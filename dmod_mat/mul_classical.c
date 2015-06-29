@@ -34,7 +34,7 @@ void _dmod_mat_mul_classical(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t 
     #if HAVE_BLAS
     
     slong i, j, z;
-    
+    slong sA, sB, sC;
     slong m, n, k;
 
     m = C->nrows;
@@ -45,69 +45,36 @@ void _dmod_mat_mul_classical(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t 
         return;
 
     slong limit = (1UL << (FLINT_D_BITS - 2*(A->mod).nbits));
-    
-    if (A->iswin == 1 || B->iswin == 1 || C->iswin == 1)
-    {
-        slong sA, sB, sC;
-        
-        sA = MATRIX_IDX(A->ld, A->wr1, A->wc1);
-        sB = MATRIX_IDX(B->ld, B->wr1, B->wc1);
-        sC = MATRIX_IDX(C->ld, C->wr1, C->wc1);
-        
-        if (k < limit)
-            cblas_dgemm(101, 111, 111, m, n, k, 1.0, A->parent + sA, A->ld, B->parent + sB, B->ld, 0.0, C->parent + sC, C->ld);
-       
-        else
-        {
-            double *temp;
-            temp = flint_calloc(k, sizeof(double)); 
-            for (i = 0; i < m; i++)
-            {
-                for (j = 0; j < n; j++)
-                {
-                    for (z = 0; z < k; z++)
-                    {
-                        temp[z] = B->parent[sB + MATRIX_IDX(B->ld, z, j)];
-                    }
-                    C->parent[sC + MATRIX_IDX(C->ld, i, j)] = _dmod_vec_dot(A->parent + sA + MATRIX_IDX(A->ld, i, 0), temp, k, C->mod);
-                }
-            }
-            flint_free(temp);
-        }
-        for (i = 0; i < m; i++)    
-        {
-            for (j = 0; j < n; j++)
-                C->parent[sC + MATRIX_IDX(C->ld, i, j)] = dmod_reduce(C->parent[sC + MATRIX_IDX(C->ld, i, j)], C->mod);
-        }
 
-    }
+    sA = MATRIX_IDX(A->ld, A->wr1, A->wc1);
+    sB = MATRIX_IDX(B->ld, B->wr1, B->wc1);
+    sC = MATRIX_IDX(C->ld, C->wr1, C->wc1);
+
+    if (k < limit)
+        cblas_dgemm(101, 111, 111, m, n, k, 1.0, A->rows + sA, A->ld, B->rows + sB, B->ld, 0.0, C->rows + sC, C->ld);
+
     else
-    { 
-        if (k < limit)
-            cblas_dgemm(101, 111, 111, m, n, k, 1.0, A->rows, A->ld, B->rows, B->ld, 0.0, C->rows, C->ld);
-        else
-        {
-            double *temp;
-            temp = flint_calloc(k, sizeof(double)); 
-            
-            for (i = 0; i < m; i++)
-            {
-                for (j = 0; j < n; j++)
-                {
-                    for (z = 0; z < k; z++)
-                    {
-                        temp[z] = B->rows[MATRIX_IDX(B->ld, z, j)];
-                    }
-                    C->rows[MATRIX_IDX(C->ld, i, j)] = _dmod_vec_dot(A->rows + MATRIX_IDX(A->ld, i, 0), temp, k, C->mod);
-                }
-            }
-            flint_free(temp);
-        }
-        for (i = 0; i < m; i++)    
+    {
+        double *temp;
+        temp = flint_calloc(k, sizeof(double)); 
+        for (i = 0; i < m; i++)
         {
             for (j = 0; j < n; j++)
-                C->rows[MATRIX_IDX(C->ld, i, j)] = dmod_reduce(C->rows[MATRIX_IDX(C->ld, i, j)], C->mod);
+            {
+                for (z = 0; z < k; z++)
+                {
+                    temp[z] = B->rows[sB + MATRIX_IDX(B->ld, z, j)];
+                }
+                C->rows[sC + MATRIX_IDX(C->ld, i, j)] = _dmod_vec_dot(A->rows + sA + MATRIX_IDX(A->ld, i, 0), temp, k, C->mod);
+            }
         }
+        flint_free(temp);
     }
+    for (i = 0; i < m; i++)    
+    {
+        for (j = 0; j < n; j++)
+            C->rows[sC + MATRIX_IDX(C->ld, i, j)] = dmod_reduce(C->rows[sC + MATRIX_IDX(C->ld, i, j)], C->mod);
+    }
+
     #endif
 }

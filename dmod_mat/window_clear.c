@@ -31,6 +31,5 @@
 void _dmod_mat_window_clear(dmod_mat_t mat)
 {
     #if HAVE_BLAS
-    flint_free(mat->rows);
     #endif
 }

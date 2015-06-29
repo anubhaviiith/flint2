@@ -33,33 +33,24 @@ void _dmod_mat_add(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
 {
     #if HAVE_BLAS
     
-    slong i, j;
-    
-    if (A->iswin == 1 || B->iswin == 1 || C->iswin == 1)
-    {
-        slong m = C->nrows;
-        slong n = C->ncols;
+    slong i, j, sA, sB, sC;
 
-        for (i = 0; i < m; i++)
+    slong m = C->nrows;
+    slong n = C->ncols;
+
+    sA = MATRIX_IDX(A->ld, A->wr1, A->wc1);
+    sB = MATRIX_IDX(B->ld, B->wr1, B->wc1);
+    sC = MATRIX_IDX(C->ld, C->wr1, C->wc1);
+
+
+    for (i = 0; i < m; i++)
+    {
+        for (j = 0; j < n; j++)
         {
-            for (j = 0; j < n; j++)
-            {
-                C->parent[C->ld * (i + C->wr1) + j + C->wc1] =  
-                    dmod_add(A->parent[A->ld * (i + A->wr1) + j + A->wc1], B->parent[B->ld * (i + B->wr1) +  j + B->wc1], C->mod);
-            }
+            C->rows[sC + MATRIX_IDX(C->ld, i, j)] =  
+                dmod_add(A->rows[sA + MATRIX_IDX(A->ld, i, j)], B->rows[sB + MATRIX_IDX(B->ld, i, j)], C->mod);
         }
     }
-    else
-    {
-        for (i = 0; i < C->nrows; i++)    
-        {
-            for (j = 0; j < C->ncols; j++)
-            {
-                C->rows[MATRIX_IDX(C->ncols, i, j)] = 
-                    dmod_add(A->rows[MATRIX_IDX(A->ncols, i, j)], B->rows[MATRIX_IDX(B->ncols, i, j)], C->mod);
-            }
-        }
 
-    }
     #endif
 }

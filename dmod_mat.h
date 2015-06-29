@@ -44,9 +44,7 @@ typedef struct
     slong ncols;
     slong wr1;
     slong wc1;
-    double *parent;
     slong ld;
-    slong iswin;
     double *rows;
     dmod_t mod;
 }dmod_mat_struct;
@@ -100,15 +98,17 @@ FLINT_DLL void _dmod_mat_init(dmod_mat_t A, slong m, slong n, dmod_t mod);
 FLINT_DLL void _dmod_mat_clear(dmod_mat_t mat);
 
 
-
 /*  Matrix-Matrix / Matrix-Vector Multiplication   *******************************************************/
 FLINT_DLL void _dmod_mat_mul(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B);
+
+FLINT_DLL void _dmod_mat_mul_classical(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B);
 
 FLINT_DLL void _dmod_mat_mul_strassen(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B);
 
 FLINT_DLL void _dmod_mat_mul_vec(double *res, dmod_mat_t A, const double *x, slong lenx, dmod_t mod);
 
 /*  Matrix Addition/Substraction Multiplication   *******************************************************/
+
 FLINT_DLL void _dmod_mat_add(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B);
 
 FLINT_DLL void _dmod_mat_sub(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B);
@@ -119,6 +119,12 @@ FLINT_DLL void _dmod_mat_randtest(dmod_mat_t A, flint_rand_t state);
 FLINT_DLL void _dmod_mat_rank_update(dmod_mat_t A, const double *x, const double *y, slong lenx, slong leny, dmod_t mod);
 
 FLINT_DLL void _dmod_mat_scalar_mul(dmod_mat_t B, const dmod_mat_t A, double c);
+
+/* Windows *****************************************/
+
+FLINT_DLL void _dmod_mat_window_init(dmod_mat_t window, const dmod_mat_t mat, slong r1, slong c1, slong m, slong n);
+
+FLINT_DLL void _dmod_mat_window_clear(dmod_mat_t window);
 
 
 
