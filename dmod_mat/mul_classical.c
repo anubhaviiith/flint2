@@ -46,12 +46,9 @@ void _dmod_mat_mul_classical(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t 
 
     slong limit = (1UL << (FLINT_D_BITS - 2*(A->mod).nbits));
 
-    sA = MATRIX_IDX(A->ld, A->wr1, A->wc1);
-    sB = MATRIX_IDX(B->ld, B->wr1, B->wc1);
-    sC = MATRIX_IDX(C->ld, C->wr1, C->wc1);
 
     if (k < limit)
-        cblas_dgemm(101, 111, 111, m, n, k, 1.0, A->rows + sA, A->ld, B->rows + sB, B->ld, 0.0, C->rows + sC, C->ld);
+        cblas_dgemm(101, 111, 111, m, n, k, 1.0, A->rows, A->ld, B->rows, B->ld, 0.0, C->rows, C->ld);
 
     else
     {
@@ -63,9 +60,9 @@ void _dmod_mat_mul_classical(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t 
             {
                 for (z = 0; z < k; z++)
                 {
-                    temp[z] = B->rows[sB + MATRIX_IDX(B->ld, z, j)];
+                    temp[z] = B->rows[MATRIX_IDX(B->ld, z, j)];
                 }
-                C->rows[sC + MATRIX_IDX(C->ld, i, j)] = _dmod_vec_dot(A->rows + sA + MATRIX_IDX(A->ld, i, 0), temp, k, C->mod);
+                C->rows[MATRIX_IDX(C->ld, i, j)] = _dmod_vec_dot(A->rows + MATRIX_IDX(A->ld, i, 0), temp, k, C->mod);
             }
         }
         flint_free(temp);
@@ -73,7 +70,7 @@ void _dmod_mat_mul_classical(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t 
     for (i = 0; i < m; i++)    
     {
         for (j = 0; j < n; j++)
-            C->rows[sC + MATRIX_IDX(C->ld, i, j)] = dmod_reduce(C->rows[sC + MATRIX_IDX(C->ld, i, j)], C->mod);
+            C->rows[MATRIX_IDX(C->ld, i, j)] = dmod_reduce(C->rows[MATRIX_IDX(C->ld, i, j)], C->mod);
     }
 
     #endif

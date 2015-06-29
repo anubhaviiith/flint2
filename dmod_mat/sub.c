@@ -38,17 +38,12 @@ void _dmod_mat_sub(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
     slong m = C->nrows;
     slong n = C->ncols;
 
-    sA = MATRIX_IDX(A->ld, A->wr1, A->wc1);
-    sB = MATRIX_IDX(B->ld, B->wr1, B->wc1);
-    sC = MATRIX_IDX(C->ld, C->wr1, C->wc1);
-
-
     for (i = 0; i < m; i++)
     {
         for (j = 0; j < n; j++)
         {
-            C->rows[sC + MATRIX_IDX(C->ld, i, j)] =  
-                dmod_sub(A->rows[sA + MATRIX_IDX(A->ld, i, j)], B->rows[sB + MATRIX_IDX(B->ld, i, j)], C->mod);
+            C->rows[MATRIX_IDX(C->ld, i, j)] =  
+                dmod_sub(A->rows[MATRIX_IDX(A->ld, i, j)], B->rows[MATRIX_IDX(B->ld, i, j)], C->mod);
         }
     }
 

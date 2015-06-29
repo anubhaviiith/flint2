@@ -42,8 +42,6 @@ typedef struct
 {
     slong nrows;
     slong ncols;
-    slong wr1;
-    slong wc1;
     slong ld;
     double *rows;
     dmod_t mod;
@@ -58,7 +56,8 @@ typedef dmod_mat_struct dmod_mat_t[1];
 #define dmod_mat_entry(mat,i,j) ((mat)->rows[ MATRIX_IDX( dmod_mat_ncols(mat) , i, j) ])
 #define DMOD_MAT_MUL_STRASSEN_CUTOFF 256
 
-    static __inline__
+
+static __inline__
 void _dmod_mat_set_mod(dmod_mat_t mat, double n)
 {
     mat->mod.n = n;
