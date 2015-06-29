@@ -152,8 +152,8 @@ nmod_mat_mul_strassen(nmod_mat_t C, const nmod_mat_t A, const nmod_mat_t B)
         nmod_mat_window_init(Ar, A, 2*anr, 0, a, b);
         nmod_mat_window_init(Cr, C, 2*anr, 0, a, c);
         nmod_mat_mul(Cr, Ar, B);
-        nmod_mat_window_clear(Ar);
         nmod_mat_window_clear(Cr);
+        nmod_mat_window_clear(Ar);
     }
 
     if (b > 2*anc) /* last col of A by last row of B -> C */

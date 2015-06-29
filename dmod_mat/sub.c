@@ -32,19 +32,34 @@
 void _dmod_mat_sub(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
 {
     #if HAVE_BLAS
+    
     slong i, j;
-
-    if ((A->nrows != B->nrows) || (A->ncols != B->ncols))
-        return;
-   
-    for (i = 0; i < C->nrows; i++)    
+    
+    if (A->iswin == 1 || B->iswin == 1 || C->iswin == 1)
     {
-        for (j = 0; j < C->ncols; j++)
+        slong m = C->nrows;
+        slong n = C->ncols;
+
+        for (i = 0; i < m; i++)
         {
-            C->rows[MATRIX_IDX(C->ncols, i, j)] = 
-                dmod_sub(A->rows[MATRIX_IDX(A->ncols, i, j)], B->rows[MATRIX_IDX(B->ncols, i, j)], C->mod);
+            for (j = 0; j < n; j++)
+            {
+                C->parent[C->ld * (i + C->wr1) + j + C->wc1] =  
+                    dmod_sub(A->parent[A->ld * (i + A->wr1) + j + A->wc1], B->parent[B->ld * (i + B->wr1) +  j + B->wc1], C->mod);
+            }
         }
     }
-    #endif
+    else
+    {
+        for (i = 0; i < C->nrows; i++)    
+        {
+            for (j = 0; j < C->ncols; j++)
+            {
+                C->rows[MATRIX_IDX(C->ncols, i, j)] = 
+                    dmod_sub(A->rows[MATRIX_IDX(A->ncols, i, j)], B->rows[MATRIX_IDX(B->ncols, i, j)], C->mod);
+            }
+        }
 
+    }
+    #endif
 }

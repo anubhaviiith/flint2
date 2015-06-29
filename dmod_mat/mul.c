@@ -19,37 +19,32 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2015 Anubhav Srivastava
+    Copyright (C) 2010 Fredrik Johansson
 
 ******************************************************************************/
 
-
-
-#include <gmp.h>
 #include <stdlib.h>
-#include <float.h>
+#include <gmp.h>
 #include "flint.h"
-#include "ulong_extras.h"
-#include "dmod_vec.h"
 #include "dmod_mat.h"
+#include "dmod_vec.h"
 
 void _dmod_mat_mul(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
 {
-    #if HAVE_BLAS
-    slong m, n, k, i, j;
+    slong m, k, n;
+
     m = A->nrows;
-    n = B->ncols;
     k = A->ncols;
+    n = B->ncols;
 
-    if (A->ncols != B->nrows)
-        return;
-
-    cblas_dgemm(101, 111, 111, m, n, k, 1.0, A->rows, k, B->rows, n, 0.0, C->rows, n);
-    for (i = 0; i < C->nrows; i++)    
+    if (m < DMOD_MAT_MUL_STRASSEN_CUTOFF ||
+            n < DMOD_MAT_MUL_STRASSEN_CUTOFF ||
+            k < DMOD_MAT_MUL_STRASSEN_CUTOFF)
     {
-        for (j = 0; j < C->ncols; j++)
-            C->rows[MATRIX_IDX(C->ncols, i, j)] = dmod_reduce(C->rows[MATRIX_IDX(C->ncols, i, j)], A->mod);
+        _dmod_mat_mul_classical(C, A, B);
     }
-    #endif
-    
+    else
+    {
+        _dmod_mat_mul_strassen(C, A, B);
+    }
 }

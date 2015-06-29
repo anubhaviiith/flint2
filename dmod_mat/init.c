@@ -34,6 +34,10 @@ void _dmod_mat_init(dmod_mat_t A, slong m, slong n, dmod_t mod)
     A->rows = flint_calloc((m*n), sizeof(double)); 
     A->nrows = m;
     A->ncols = n;
+    A->parent = A->rows;
+    A->wc1 = 0;
+    A->wr1 = 0;
+    A->iswin = 0;
     A->ld = n;
     _dmod_mat_set_mod(A, mod.n);
     #endif

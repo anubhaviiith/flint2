@@ -35,7 +35,7 @@
 void _dmod_mat_mul_vec(double *res, dmod_mat_t A, const double *x, slong lenx, dmod_t mod)
 {
     #if HAVE_BLAS
-    slong m, n, i;
+    slong m, n, i, j;
 
     m = A->nrows;
     n = A->ncols;
@@ -43,8 +43,18 @@ void _dmod_mat_mul_vec(double *res, dmod_mat_t A, const double *x, slong lenx, d
     if (A->ncols != lenx)
         return;
     
-    cblas_dgemv(101, 111, m, n, 1, A->rows, n, x, 1, 0, res, 1); 
+
+    slong limit = (1UL << (FLINT_D_BITS - 2*(A->mod.nbits)));
     
+    if (lenx < limit)
+        cblas_dgemv(101, 111, m, n, 1, A->rows, n, x, 1, 0, res, 1); 
+    else
+    {
+        for (i = 0; i < m; i++)
+        {
+            res[i] = _dmod_vec_dot(A->rows + MATRIX_IDX(n, i, 0), x, lenx, A->mod); 
+        }
+    }
     for (i = 0; i < m; i++)
     {
         res[i] = dmod_reduce(res[i], mod);
