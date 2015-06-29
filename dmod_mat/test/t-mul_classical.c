@@ -42,7 +42,7 @@ main(void)
     FLINT_TEST_INIT(state);
     
 
-    flint_printf("mul ....");
+    flint_printf("mul-classical ....");
     fflush(stdout);
 
     for (rep = 0; rep < 100 * flint_test_multiplier(); rep++)
@@ -105,7 +105,7 @@ main(void)
         }
 
         nmod_mat_mul(result, A, B); 
-        _dmod_mat_mul(result_d, A_d, B_d);
+        _dmod_mat_mul_classical(result_d, A_d, B_d);
         
         
         for (i = 0; i < m; i++)
