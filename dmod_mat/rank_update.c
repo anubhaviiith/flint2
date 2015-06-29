@@ -42,6 +42,6 @@ void _dmod_mat_rank_update(dmod_mat_t A, const double *x, const double *y, slong
     if (A->nrows != lenx || A->ncols != leny)
         return;
 
-    cblas_dger (101, m, n, 1, x, 1, y, 1, A->rows, n); 
+    cblas_dger (101, m, n, 1, x, 1, y, 1, dmod_mat_entry_ptr(A, 0, 0), n); 
     #endif
 }

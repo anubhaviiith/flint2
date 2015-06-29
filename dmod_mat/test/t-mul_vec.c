@@ -90,7 +90,7 @@ main(void)
         {
             for (j = 0; j < n; j++)
             {
-                A_d->rows[MATRIX_IDX(n, i, j)] = (double)A->rows[i][j];
+                dmod_mat_entry(A_d, i, j) = (double)A->rows[i][j];
             }
         }
 

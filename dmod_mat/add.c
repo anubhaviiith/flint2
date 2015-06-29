@@ -33,7 +33,7 @@ void _dmod_mat_add(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
 {
     #if HAVE_BLAS
     
-    slong i, j, sA, sB, sC;
+    slong i, j;
 
     slong m = C->nrows;
     slong n = C->ncols;
@@ -42,8 +42,7 @@ void _dmod_mat_add(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
     {
         for (j = 0; j < n; j++)
         {
-            C->rows[MATRIX_IDX(C->ld, i, j)] =  
-                dmod_add(A->rows[MATRIX_IDX(A->ld, i, j)], B->rows[MATRIX_IDX(B->ld, i, j)], C->mod);
+            dmod_mat_entry(C, i, j) = dmod_add(dmod_mat_entry(A, i, j), dmod_mat_entry(B, i, j), C->mod);
         }
     }
 

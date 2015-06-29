@@ -32,7 +32,7 @@ void _dmod_mat_window_init(dmod_mat_t window, const dmod_mat_t A, slong r1, slon
     #if HAVE_BLAS
     slong i;
 
-    window->rows = A->rows + MATRIX_IDX(A->ld, r1, c1);
+    window->rows = dmod_mat_entry_ptr(A, r1, c1);
     window->nrows = m;
     window->ncols = n;
     window->ld = A->ld;

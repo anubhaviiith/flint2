@@ -52,10 +52,13 @@ typedef dmod_mat_struct dmod_mat_t[1];
 
 #define dmod_mat_nrows(mat) ((mat)->nrows)
 #define dmod_mat_ncols(mat) ((mat)->ncols)
-#define MATRIX_IDX(n, i, j) (i*n + j)
-#define dmod_mat_entry(mat,i,j) ((mat)->rows[ MATRIX_IDX( dmod_mat_ncols(mat) , i, j) ])
-#define DMOD_MAT_MUL_STRASSEN_CUTOFF 256
+#define dmod_mat_ld(mat) ((mat)->ld)
 
+#define dmod_mat_entry(mat, i, j) ((mat)->rows[ (( (dmod_mat_ld(mat)) * (i)) +  (j)) ])
+#define dmod_mat_entry_ptr(mat, i, j) ( &dmod_mat_entry(mat, i, j) )
+
+#define DMOD_MAT_MUL_STRASSEN_CUTOFF 256
+#define NMOD_MAT_MUL_TRANSPOSE_CUTOFF 20
 
 static __inline__
 void _dmod_mat_set_mod(dmod_mat_t mat, double n)
@@ -68,7 +71,7 @@ void _dmod_mat_set_mod(dmod_mat_t mat, double n)
 static __inline__
 void _dmod_mat_set(dmod_mat_t mat, slong i, slong j, double val)
 {
-    mat->rows[ MATRIX_IDX( mat->ncols , i, j) ] = val;
+    dmod_mat_entry(mat, i, j) = val;
 }
 
 static __inline__
@@ -82,7 +85,7 @@ void _dmod_mat_print(dmod_mat_t mat)
     {
         for (j = 0; j < n; j++)
         {
-            flint_printf("%lf ", (mat->rows[ MATRIX_IDX(n, i, j) ]));
+            flint_printf("%lf ", dmod_mat_entry(mat, i, j) );
         }
         flint_printf("\n");
     }
