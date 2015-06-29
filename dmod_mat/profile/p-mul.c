@@ -73,10 +73,10 @@ void sample(void * arg, ulong count)
 
     if (algorithm == 1)
         for (i = 0; i < count; i++)
-            _dmod_mat_mul(C_d, A_d, B_d);
+            nmod_mat_mul(C, A, B);
     else if (algorithm == 2)
         for (i = 0; i < count; i++)
-            nmod_mat_mul(C, A, B);
+            _dmod_mat_mul(C_d, A_d, B_d);
 
     prof_stop();
 

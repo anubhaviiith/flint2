@@ -50,7 +50,7 @@ void _dmod_mat_mul_classical(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t 
         cblas_dgemm(101, 111, 111, m, n, k, 1.0, dmod_mat_entry_ptr(A, 0, 0), A->ld, dmod_mat_entry_ptr(B, 0, 0), B->ld, 0.0, dmod_mat_entry_ptr(C, 0, 0), C->ld);
 
     else
-    {
+    {        
         double *temp;
         temp = flint_calloc(k, sizeof(double)); 
         for (i = 0; i < m; i++)
