@@ -26,8 +26,8 @@
 #include <stdlib.h>
 #include "profiler.h"
 #include "flint.h"
-#include "nmod_mat.h"
 #include "dmod_mat.h"
+#include "nmod_mat.h"
 #include "dmod_vec.h"
 #include "ulong_extras.h"
 
@@ -52,31 +52,36 @@ void sample(void * arg, ulong count)
     nmod_mat_init(B, dim, dim, n);
     nmod_mat_init(C, dim, dim, n);
     
+    
     dmod_t mod;
     dmod_init(&mod, n);
 
     _dmod_mat_init(A_d, dim, dim, mod);
     _dmod_mat_init(B_d, dim, dim, mod);
     _dmod_mat_init(C_d, dim, dim, mod);
-    
-    for (i = 0; i < dim; i++)
+
+    FLINT_TEST_INIT(state);
+
+    nmod_mat_randtest(A, state);
+    nmod_mat_randtest(B, state);
+
+    for (i = 0; i < A_d->nrows; i++)
     {
-        for (j = 0; j < dim; j++)
+        for (j = 0; j < A_d->ncols; j++)
         {
             _dmod_mat_set(A_d, i, j, (double)A->rows[i][j]);
             _dmod_mat_set(B_d, i, j, (double)B->rows[i][j]);
-            _dmod_mat_set(C_d, i, j, (double)C->rows[i][j]);
         }
     }
-   
+
     prof_start();
 
     if (algorithm == 1)
         for (i = 0; i < count; i++)
-            nmod_mat_mul(C, A, B);
+            _dmod_mat_mul(C_d, A_d, B_d);
     else if (algorithm == 2)
         for (i = 0; i < count; i++)
-            _dmod_mat_mul(C_d, A_d, B_d);
+            nmod_mat_mul(C, A, B);
 
     prof_stop();
 
@@ -98,7 +103,7 @@ int main(void)
 
     flint_printf("dmod_mat_mul:\n");
     
-    params.modulus = 4000000;
+    params.modulus = 400000;
 
     for (dim = 2; dim <= 1200; dim = (slong) ((double) dim * 1.1) + 1)
     {

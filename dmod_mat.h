@@ -58,7 +58,6 @@ typedef dmod_mat_struct dmod_mat_t[1];
 #define dmod_mat_entry_ptr(mat, i, j) ( &dmod_mat_entry(mat, i, j) )
 
 #define DMOD_MAT_MUL_STRASSEN_CUTOFF 256
-#define MUL_CUTOFF (1UL << (FLINT_D_BITS/2))
 
 static __inline__
 void _dmod_mat_set_mod(dmod_mat_t mat, double n)
@@ -100,7 +99,9 @@ FLINT_DLL void _dmod_mat_init(dmod_mat_t A, slong m, slong n, dmod_t mod);
 FLINT_DLL void _dmod_mat_clear(dmod_mat_t mat);
 
 
+
 /*  Matrix-Matrix / Matrix-Vector Multiplication   *******************************************************/
+
 FLINT_DLL void _dmod_mat_mul(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B);
 
 FLINT_DLL void _dmod_mat_mul_classical(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B);
