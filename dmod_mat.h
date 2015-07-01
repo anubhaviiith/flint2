@@ -104,6 +104,8 @@ FLINT_DLL void _dmod_mat_clear(dmod_mat_t mat);
 
 FLINT_DLL void _dmod_mat_mul(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B);
 
+FLINT_DLL void _dmod_mat_mul_dp(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B);
+
 FLINT_DLL void _dmod_mat_mul_classical(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B);
 
 FLINT_DLL void _dmod_mat_mul_strassen(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B);

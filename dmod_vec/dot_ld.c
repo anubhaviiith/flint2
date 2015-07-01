@@ -19,30 +19,43 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2010 Fredrik Johansson
+    Copyright (C) 2015 Anubhav Srivastava
 
 ******************************************************************************/
 
-#include <stdlib.h>
-#include <gmp.h>
-#include "flint.h"
-#include "dmod_mat.h"
+
+#include <cblas.h>
 #include "dmod_vec.h"
+#include "nmod_vec.h"
+#include <stdio.h>
+#include "fmpz.h"
+#include "ulong_extras.h"
+#include <math.h>
 
-void _dmod_mat_mul(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
+double _dmod_vec_dot_ld(const double *vec1, const double *vec2, slong ld, slong len, dmod_t mod)
 {
-    slong m, k, n;
-
-    m = A->nrows;
-    k = A->ncols;
-    n = B->ncols;
+    double res1 = 0.0;
+    #if HAVE_BLAS
+    slong i;
+    double val = 0;
+    slong window = (1UL << (FLINT_D_BITS - 2*mod.nbits));
     
-    if (m < DMOD_MAT_MUL_STRASSEN_CUTOFF || n < DMOD_MAT_MUL_STRASSEN_CUTOFF || k < DMOD_MAT_MUL_STRASSEN_CUTOFF)
+    for (i = 0; i < (len - window); i += window)
     {
-        _dmod_mat_mul_classical(C, A, B);
+        val = cblas_ddot(window, vec1 + i, 1, vec2 + i*ld, ld);
+
+        val = dmod_reduce(val, mod);
+
+        res1 = dmod_add(res1, val, mod);
     }
-    else
+    if (i < len)
     {
-        _dmod_mat_mul_strassen(C, A, B);
+        val = cblas_ddot(len - i, vec1 + i, 1, vec2 + i*ld, ld);  
+        val = dmod_reduce(val, mod);
+
+        res1 = dmod_add(res1, val, mod);
+        
     }
+    #endif
+    return res1;
 }

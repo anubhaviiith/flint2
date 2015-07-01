@@ -47,30 +47,25 @@ void _dmod_mat_mul_classical(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t 
 
 
     if (k < limit)
+    {
         cblas_dgemm(101, 111, 111, m, n, k, 1.0, dmod_mat_entry_ptr(A, 0, 0), A->ld, dmod_mat_entry_ptr(B, 0, 0), B->ld, 0.0, dmod_mat_entry_ptr(C, 0, 0), C->ld);
-
-    else
-    {        
-        double *temp;
-        temp = flint_calloc(k, sizeof(double)); 
-        for (i = 0; i < m; i++)
+        for (i = 0; i < m; i++)    
         {
             for (j = 0; j < n; j++)
-            {
-                for (z = 0; z < k; z++)
-                {
-                    temp[z] = dmod_mat_entry(B, z, j);
-                }
-                dmod_mat_entry(C, i, j) = _dmod_vec_dot(dmod_mat_entry_ptr(A, i, 0), temp, k, C->mod);
-            }
+                dmod_mat_entry(C, i, j) = dmod_reduce(dmod_mat_entry(C, i, j), C->mod);
         }
-        flint_free(temp);
     }
-    for (i = 0; i < m; i++)    
-    {
-        for (j = 0; j < n; j++)
-            dmod_mat_entry(C, i, j) = dmod_reduce(dmod_mat_entry(C, i, j), C->mod);
+    else
+    { 
+        if (k <= 4 || m <= 4 || n <= 4)
+        {
+            _dmod_mat_mul_dp(C, A, B);
+        }
+        else
+        {
+            _dmod_mat_mul_strassen(C, A, B);
+        }
     }
-
+    
     #endif
 }

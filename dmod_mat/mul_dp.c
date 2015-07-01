@@ -29,20 +29,27 @@
 #include "dmod_mat.h"
 #include "dmod_vec.h"
 
-void _dmod_mat_mul(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
+void _dmod_mat_mul_dp(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
 {
-    slong m, k, n;
-
-    m = A->nrows;
-    k = A->ncols;
-    n = B->ncols;
+    #if HAVE_BLAS
     
-    if (m < DMOD_MAT_MUL_STRASSEN_CUTOFF || n < DMOD_MAT_MUL_STRASSEN_CUTOFF || k < DMOD_MAT_MUL_STRASSEN_CUTOFF)
+    slong i, j, z;
+    slong m, n, k;
+
+    m = C->nrows;
+    n = C->ncols;
+    k = A->ncols;
+
+    if (A->ncols != B->nrows)
+        return;
+   
+    for (i = 0; i < m; i++)
     {
-        _dmod_mat_mul_classical(C, A, B);
-    }
-    else
-    {
-        _dmod_mat_mul_strassen(C, A, B);
-    }
+        for (j = 0; j < n; j++)
+        {
+            dmod_mat_entry(C, i, j) = _dmod_vec_dot_ld(dmod_mat_entry_ptr(A, i, 0), dmod_mat_entry_ptr(B, 0, j), B->ld,  k, C->mod);
+        }
+    } 
+
+    #endif
 }

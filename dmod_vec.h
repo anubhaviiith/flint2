@@ -157,6 +157,8 @@ FLINT_DLL void _dmod_vec_randtest(double *f, flint_rand_t state, slong len, dmod
 
 FLINT_DLL double _dmod_vec_dot(const double * vec1, const double * vec2, slong len2, dmod_t mod);
 
+FLINT_DLL double _dmod_vec_dot_ld(const double * vec1, const double * vec2, slong ld, slong len2, dmod_t mod);
+
 /* Arithematic Operations**************************************/
 
 FLINT_DLL void  _dmod_vec_sub(double * result, const double *vec1, const double * vec2, slong len2, dmod_t mod);

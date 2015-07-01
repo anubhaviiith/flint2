@@ -56,7 +56,7 @@ main(void)
         k = n_randint(state, 500);
         n = n_randint(state, 100);
 
-        while (m == 0 || k ==0 || n == 0)
+        while (m == 0 || k == 0 || n == 0)
         {
             m = n_randint(state, 100);
             k = n_randint(state, 500);

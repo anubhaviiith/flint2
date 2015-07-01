@@ -103,7 +103,7 @@ int main(void)
 
     flint_printf("dmod_mat_mul:\n");
     
-    params.modulus = 400000;
+    params.modulus = 40000;
 
     for (dim = 2; dim <= 1200; dim = (slong) ((double) dim * 1.1) + 1)
     {
