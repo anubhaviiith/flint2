@@ -70,7 +70,7 @@ double dmod_reduce(double c, dmod_t mod)
 {
     ulong quot;
     double rem;
-    
+
     if (c < mod.n)
         return c;
 
