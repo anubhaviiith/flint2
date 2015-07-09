@@ -44,21 +44,22 @@ void sample(void * arg, ulong count)
     mp_limb_t n = params->modulus;
     ulong i, j, dim = params->dim;
     int algorithm = params->algorithm;
+    slong M = 2000, N = 2000; 
 
     nmod_mat_t A, B, C;
     dmod_mat_t A_d, B_d, C_d;
 
-    nmod_mat_init(A, dim, dim, n);
-    nmod_mat_init(B, dim, dim, n);
-    nmod_mat_init(C, dim, dim, n);
+    nmod_mat_init(A, M, dim, n);
+    nmod_mat_init(B, dim, N, n);
+    nmod_mat_init(C, M, N, n);
     
     
     dmod_t mod;
     dmod_init(&mod, n);
 
-    _dmod_mat_init(A_d, dim, dim, mod);
-    _dmod_mat_init(B_d, dim, dim, mod);
-    _dmod_mat_init(C_d, dim, dim, mod);
+    _dmod_mat_init(A_d, M, dim, mod);
+    _dmod_mat_init(B_d, dim, N, mod);
+    _dmod_mat_init(C_d, M, N, mod);
 
     FLINT_TEST_INIT(state);
 
@@ -70,10 +71,16 @@ void sample(void * arg, ulong count)
         for (j = 0; j < A_d->ncols; j++)
         {
             _dmod_mat_set(A_d, i, j, (double)A->rows[i][j]);
-            _dmod_mat_set(B_d, i, j, (double)B->rows[i][j]);
         }
     }
 
+    for (i = 0; i < B_d->nrows; i++)
+    {
+        for (j = 0; j < B_d->ncols; j++)
+        {
+            _dmod_mat_set(B_d, i, j, (double)B->rows[i][j]);
+        }
+    }
     prof_start();
 
     if (algorithm == 3)
@@ -104,9 +111,9 @@ int main(void)
 
     flint_printf("dmod_mat_mul:\n");
     
-    params.modulus = 400000;
+    params.modulus = 400;
 
-    for (dim = 2; dim <= 5000; dim = (slong) ((double) dim*1.5) + 2)
+    for (dim = 2; dim <= 6000; dim = (slong) ((double) dim) + 300)
     {
         params.dim = dim;
 
