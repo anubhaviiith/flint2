@@ -49,7 +49,7 @@ void _dmod_mat_addmul(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
     {
         cblas_dgemm(101, 111, 111, m, n, k, 1.0, dmod_mat_entry_ptr(A, 0, 0), A->ld, dmod_mat_entry_ptr(B, 0, 0), B->ld, 1.0, dmod_mat_entry_ptr(C, 0, 0), C->ld);
         
-        for (i = 0; i < m; i++)    
+        for (i = 0; i < m; i++) 
         {
             for (j = 0; j < n; j++)
                 dmod_mat_entry(C, i, j) = dmod_reduce(dmod_mat_entry(C, i, j), C->mod);
@@ -57,14 +57,25 @@ void _dmod_mat_addmul(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
 
     }
     else
-    { 
-        for (i = 0; i < m; i++)
+    {
+        if (k <= 4 || m <= 4 || n <= 4)
         {
-            for (j = 0; j < n; j++)
+            for (i = 0; i < m; i++)
             {
-               dmod_mat_entry(C, i, j) = dmod_add(dmod_mat_entry(C, i, j), _dmod_vec_dot_ld(dmod_mat_entry_ptr(A, i, 0), dmod_mat_entry_ptr(B, 0, j), B->ld, k, C->mod), C->mod);
-            }
-        } 
+                for (j = 0; j < n; j++)
+                {
+                    dmod_mat_entry(C, i, j) = dmod_add(dmod_mat_entry(C, i, j), _dmod_vec_dot_ld(dmod_mat_entry_ptr(A, i, 0), dmod_mat_entry_ptr(B, 0, j), B->ld, k, C->mod), C->mod);
+                }
+            } 
+        }
+        else
+        {
+            dmod_mat_t temp;
+            _dmod_mat_init(temp, m, n, A->mod);
+            _dmod_mat_mul_strassen(temp, A, B);
+            _dmod_mat_add(C, C, temp);
+            _dmod_mat_clear(temp);
+        }
     }
     #endif
 }
