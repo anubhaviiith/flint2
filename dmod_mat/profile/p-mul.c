@@ -44,22 +44,21 @@ void sample(void * arg, ulong count)
     mp_limb_t n = params->modulus;
     ulong i, j, dim = params->dim;
     int algorithm = params->algorithm;
-    slong M = 2000, N = 2000; 
 
     nmod_mat_t A, B, C;
     dmod_mat_t A_d, B_d, C_d;
 
-    nmod_mat_init(A, M, dim, n);
-    nmod_mat_init(B, dim, N, n);
-    nmod_mat_init(C, M, N, n);
+    nmod_mat_init(A, dim, dim, n);
+    nmod_mat_init(B, dim, dim, n);
+    nmod_mat_init(C, dim, dim, n);
     
     
     dmod_t mod;
     dmod_init(&mod, n);
 
-    _dmod_mat_init(A_d, M, dim, mod);
-    _dmod_mat_init(B_d, dim, N, mod);
-    _dmod_mat_init(C_d, M, N, mod);
+    _dmod_mat_init(A_d, dim, dim, mod);
+    _dmod_mat_init(B_d, dim, dim, mod);
+    _dmod_mat_init(C_d, dim, dim, mod);
 
     FLINT_TEST_INIT(state);
 
@@ -71,26 +70,27 @@ void sample(void * arg, ulong count)
         for (j = 0; j < A_d->ncols; j++)
         {
             _dmod_mat_set(A_d, i, j, (double)A->rows[i][j]);
-        }
-    }
-
-    for (i = 0; i < B_d->nrows; i++)
-    {
-        for (j = 0; j < B_d->ncols; j++)
-        {
             _dmod_mat_set(B_d, i, j, (double)B->rows[i][j]);
         }
     }
     prof_start();
 
-    if (algorithm == 3)
+    if (algorithm == 1)
         for (i = 0; i < count; i++)
-            _dmod_mat_mul_classical(C_d, A_d, B_d);
+            nmod_mat_mul(C, A, B);
+    else if (algorithm == 2)
+        for (i = 0; i < count; i++)
+            _dmod_mat_mul(C_d, A_d, B_d);
+    else if (algorithm == 3)
+        for (i = 0; i < count; i++)
+            nmod_mat_mul_strassen(C, A, B);
+
     else if (algorithm == 4)
         for (i = 0; i < count; i++)
+            _dmod_mat_mul_classical(C_d, A_d, B_d);
+    else if (algorithm == 5)
+        for (i = 0; i < count; i++)
             _dmod_mat_mul_strassen(C_d, A_d, B_d);
-
-
     prof_stop();
 
     nmod_mat_clear(A);
@@ -105,26 +105,70 @@ void sample(void * arg, ulong count)
 
 int main(void)
 {
-    double min_blas, min_noblas, max, classical, strassen, dp;
+    double nmodmul, dmodmul, nmodstrassen, dmodclassical, dmodstrassen, max;
     mat_mul_t params;
     slong dim;
 
     flint_printf("dmod_mat_mul:\n");
     
-    params.modulus = 400;
+    params.modulus = 3;
 
-    for (dim = 2; dim <= 6000; dim = (slong) ((double) dim) + 300)
+    while(params.modulus < 30000000)
     {
-        params.dim = dim;
+        for (dim = 2; dim <= 5000; dim = (slong) ((double) dim * 1.5) + 1)
+        {
+            params.dim = dim;
 
-        params.algorithm = 3;
-        prof_repeat(&classical, &max, sample, &params);
-   
-        params.algorithm = 4;
-        prof_repeat(&strassen, &max, sample, &params);
+            params.algorithm = 1;
+            prof_repeat(&nmodmul, &max, sample, &params);
 
-        flint_printf("dim = %wd, mul_classical %.2f,  mul_strassen %.2f \n", dim, classical, strassen);
+            params.algorithm = 2;
+            prof_repeat(&dmodmul, &max, sample, &params);
+
+            params.algorithm = 3;
+            prof_repeat(&nmodstrassen, &max, sample, &params);
+
+            params.algorithm = 4;
+            prof_repeat(&dmodclassical, &max, sample, &params);
+
+            params.algorithm = 5;
+            prof_repeat(&dmodstrassen, &max, sample, &params);
+
+
+            flint_printf("%wd %.2f %.2f %.2f %.2f %.2f\n", dim, nmodmul, dmodmul, nmodstrassen, dmodclassical, dmodstrassen);
+        }
+        params.modulus *= 100;
     }
+    
+    params.modulus = 3;
+    
+    while(params.modulus < 30000000)
+    {
+        for (dim = 2; dim <= 5000; dim = (slong) ((double) dim ) + 200)
+        {
+            params.dim = dim;
+
+            params.algorithm = 1;
+            prof_repeat(&nmodmul, &max, sample, &params);
+
+            params.algorithm = 2;
+            prof_repeat(&dmodmul, &max, sample, &params);
+
+            params.algorithm = 3;
+            prof_repeat(&nmodstrassen, &max, sample, &params);
+
+            params.algorithm = 4;
+            prof_repeat(&dmodclassical, &max, sample, &params);
+
+            params.algorithm = 5;
+            prof_repeat(&dmodstrassen, &max, sample, &params);
+
+
+            flint_printf("%wd %.2f %.2f %.2f %.2f %.2f\n", dim, nmodmul, dmodmul, nmodstrassen, dmodclassical, dmodstrassen);
+        }
+        params.modulus *= 100;
+    }
+
 
     return 0;
 }

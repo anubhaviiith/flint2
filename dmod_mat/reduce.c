@@ -19,7 +19,7 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2010 Fredrik Johansson
+    Copyright (C) 2015 Anubhav Srivastava
 
 ******************************************************************************/
 
@@ -29,39 +29,22 @@
 #include "dmod_mat.h"
 #include "dmod_vec.h"
 
-void _dmod_mat_mul_classical(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
+void _dmod_mat_reduce(dmod_mat_t C)
 {
     #if HAVE_BLAS
     
-    slong i, j, z;
-    slong m, n, k;
+    slong i, j;
 
-    m = C->nrows;
-    n = C->ncols;
-    k = A->ncols;
+    slong m = C->nrows;
+    slong n = C->ncols;
 
-    if (A->ncols != B->nrows)
-        return;
-
-    slong limit = (1UL << (FLINT_D_BITS - 2*(A->mod).nbits));
-
-
-    if (k < limit)
+    for (i = 0; i < m; i++)
     {
-        cblas_dgemm(101, 111, 111, m, n, k, 1.0, dmod_mat_entry_ptr(A, 0, 0), A->ld, dmod_mat_entry_ptr(B, 0, 0), B->ld, 0.0, dmod_mat_entry_ptr(C, 0, 0), C->ld);
-        _dmod_mat_reduce(C);
-    }
-    else
-    { 
-        if (m < DMOD_MAT_MUL_STRASSEN_CUTOFF || n < DMOD_MAT_MUL_STRASSEN_CUTOFF || k < DMOD_MAT_MUL_STRASSEN_CUTOFF)
+        for (j = 0; j < n; j++)
         {
-            _dmod_mat_mul_dp(C, A, B);
-        }
-        else
-        {
-            _dmod_mat_mul_strassen(C, A, B);
+            dmod_mat_entry(C, i, j) = dmod_reduce(dmod_mat_entry(C, i, j), C->mod);
         }
     }
-    
+
     #endif
 }

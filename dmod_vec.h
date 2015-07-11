@@ -68,9 +68,9 @@ void dmod_init(dmod_t * mod, double n)
 static __inline__
 double dmod_reduce(double c, dmod_t mod)
 {
-    ulong quot;
+    ulong quot, flag = 0;
     double rem;
-
+    
     if (c < mod.n)
         return c;
 

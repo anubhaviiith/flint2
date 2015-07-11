@@ -45,7 +45,7 @@ void _dmod_mat_mul_strassen(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B
     b = A->ncols;
     c = B->ncols;
 
-    if (a < 4 || b < 4 || c < 4)
+    if (a < DMOD_MAT_MUL_STRASSEN_CUTOFF || b < DMOD_MAT_MUL_STRASSEN_CUTOFF || c < DMOD_MAT_MUL_STRASSEN_CUTOFF)
     {
         _dmod_mat_mul(C, A, B);
         return;
@@ -77,8 +77,6 @@ void _dmod_mat_mul_strassen(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B
     X1->ncols = anc;
     X1->ld = anc;
 
-    ulong zero = 0;
-
     _dmod_mat_sub(X1, A11, A21); 
     _dmod_mat_sub(X2, B22, B12);
     _dmod_mat_mul(C21, X1, X2);
@@ -93,12 +91,13 @@ void _dmod_mat_mul_strassen(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B
 
     _dmod_mat_sub(X1, A12, X1); 
 
-    _dmod_mat_addmul(C12, A11, B11);
-    _dmod_mat_add(C21, C12, C21);
-
+    _dmod_mat_addmul(C12, A11, B11, C11);
+    
+    _dmod_mat_add(C21, C21, C12);
     _dmod_mat_add(C12, C12, C22);
-    _dmod_mat_add(C22, C21, C22);
-    _dmod_mat_addmul(C12, X1, B22);
+    _dmod_mat_add(C22, C22, C21);
+
+    _dmod_mat_addmul(C12, X1, B22, C11);
     
     _dmod_mat_sub(X2, X2, B21);
 
@@ -109,36 +108,17 @@ void _dmod_mat_mul_strassen(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B
     _dmod_mat_sub(C21, C21, X1);
 
     _dmod_mat_mul(C11, A12, B21);
-    _dmod_mat_addmul(C11, A11, B11);
-
+    _dmod_mat_addmul(C11, A11, B11, X1);
 
     _dmod_mat_clear(X1);
     _dmod_mat_clear(X2);
-
-    _dmod_mat_window_clear(A11);
-    _dmod_mat_window_clear(A12);
-    _dmod_mat_window_clear(A21);
-    _dmod_mat_window_clear(A22);
-
-    _dmod_mat_window_clear(B11);
-    _dmod_mat_window_clear(B12);
-    _dmod_mat_window_clear(B21);
-    _dmod_mat_window_clear(B22);
-
-    _dmod_mat_window_clear(C11);
-    _dmod_mat_window_clear(C12);
-    _dmod_mat_window_clear(C21);
-    _dmod_mat_window_clear(C22);
-
-
+    
     if (c > 2*bnc) 
     {
         dmod_mat_t Bc, Cc;
         _dmod_mat_window_init(Bc, B, 0, 2*bnc, b, c - 2*bnc);
         _dmod_mat_window_init(Cc, C, 0, 2*bnc, a, c - 2*bnc);
         _dmod_mat_mul(Cc, A, Bc);
-        _dmod_mat_window_clear(Bc);
-        _dmod_mat_window_clear(Cc);
     }
 
     if (a > 2*anr) 
@@ -147,8 +127,6 @@ void _dmod_mat_mul_strassen(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B
         _dmod_mat_window_init(Ar, A, 2*anr, 0, a - 2*anr, b);
         _dmod_mat_window_init(Cr, C, 2*anr, 0, a - 2*anr, c);
         _dmod_mat_mul(Cr, Ar, B);
-        _dmod_mat_window_clear(Ar);
-        _dmod_mat_window_clear(Cr);
     }
 
     if (b > 2*anc) 
@@ -158,13 +136,11 @@ void _dmod_mat_mul_strassen(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B
         _dmod_mat_window_init(Ac, A, 0, 2*anc, 2*anr, b - 2*anc);
         _dmod_mat_window_init(Br, B, 2*bnr, 0, b - 2*bnr, 2*bnc);
         _dmod_mat_window_init(Cb, C, 0, 0, 2*anr, 2*bnc);
-
-        _dmod_mat_addmul(Cb, Ac, Br);
-
-        _dmod_mat_window_clear(Ac);
-        _dmod_mat_window_clear(Br);
-        _dmod_mat_window_clear(Cb);
-
+        
+        dmod_mat_t temp;
+        _dmod_mat_init(temp, 2*anr, 2*bnc, C->mod);
+        _dmod_mat_addmul(Cb, Ac, Br, temp);
+        _dmod_mat_clear(temp);
    }
    #endif
 }
