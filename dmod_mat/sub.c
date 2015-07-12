@@ -28,6 +28,7 @@
 #include "flint.h"
 #include "dmod_mat.h"
 #include "dmod_vec.h"
+#include <omp.h>
 
 void _dmod_mat_sub(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
 {
@@ -37,7 +38,6 @@ void _dmod_mat_sub(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
 
     slong m = C->nrows;
     slong n = C->ncols;
-
     for (i = 0; i < m; i++)
     {
         for (j = 0; j < n; j++)

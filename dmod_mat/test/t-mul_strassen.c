@@ -104,7 +104,7 @@ main(void)
             }
         }
         nmod_mat_mul_strassen(result, A, B); 
-        _dmod_mat_mul_strassen(result_d, A_d, B_d);
+        _dmod_mat_mul_strassen_p(result_d, A_d, B_d);
         
         for (i = 0; i < m; i++)
         {

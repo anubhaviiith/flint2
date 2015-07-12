@@ -30,7 +30,7 @@
 #include "dmod_vec.h"
 #include <omp.h>
 
-void _dmod_mat_add(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
+void _dmod_mat_add_p(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
 {
     #if HAVE_BLAS
     
@@ -39,6 +39,7 @@ void _dmod_mat_add(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
     slong m = C->nrows;
     slong n = C->ncols;
     
+    #pragma omp for private(j)
     for (i = 0; i < m; i++)
     {
         for (j = 0; j < n; j++)

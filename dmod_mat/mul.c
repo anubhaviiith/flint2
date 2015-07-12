@@ -43,6 +43,6 @@ void _dmod_mat_mul(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
     }
     else
     {
-        _dmod_mat_mul_strassen(C, A, B);
+        _dmod_mat_mul_strassen_p(C, A, B);
     }
 }

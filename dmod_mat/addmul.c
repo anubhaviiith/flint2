@@ -49,12 +49,7 @@ void _dmod_mat_addmul(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B, dmod
     {
         cblas_dgemm(101, 111, 111, m, n, k, 1.0, dmod_mat_entry_ptr(A, 0, 0), A->ld, dmod_mat_entry_ptr(B, 0, 0), B->ld, 1.0, dmod_mat_entry_ptr(C, 0, 0), C->ld);
         
-        for (i = 0; i < m; i++) 
-        {
-            for (j = 0; j < n; j++)
-                dmod_mat_entry(C, i, j) = dmod_reduce(dmod_mat_entry(C, i, j), C->mod);
-        }
-
+        _dmod_mat_reduce(C);
     }
     else
     {
