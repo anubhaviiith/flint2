@@ -120,7 +120,7 @@ void _dmod_mat_mul_strassen_p(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t
     
     _dmod_mat_mul(C12, X1, X2);
 
-    _dmod_mat_addmul(C12, A11, B11, C11);
+    _dmod_mat_addmul(C12, A11, B11, C12);
 
     
     _dmod_mat_add_p(C21, C21, C12);
@@ -141,7 +141,7 @@ void _dmod_mat_mul_strassen_p(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t
             _dmod_mat_sub_p(X1, A12, X1); 
         }
     }
-    _dmod_mat_addmul(C12, X1, B22, C11);
+    _dmod_mat_addmul(C12, X1, B22, C12);
 
     
     X1->ncols = bnc;
@@ -151,7 +151,7 @@ void _dmod_mat_mul_strassen_p(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t
     _dmod_mat_sub_p(C21, C21, X1);
 
     _dmod_mat_mul(C11, A12, B21);
-    _dmod_mat_addmul(C11, A11, B11, X1);
+    _dmod_mat_addmul(C11, A11, B11, C11);
 
     _dmod_mat_clear(X1);
     _dmod_mat_clear(X2);

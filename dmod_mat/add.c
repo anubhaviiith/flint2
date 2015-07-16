@@ -41,10 +41,7 @@ void _dmod_mat_add(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
     
     for (i = 0; i < m; i++)
     {
-        for (j = 0; j < n; j++)
-        {
-            dmod_mat_entry(C, i, j) = dmod_add(dmod_mat_entry(A, i, j), dmod_mat_entry(B, i, j), C->mod);
-        }
+        _dmod_vec_add(dmod_mat_entry_ptr(C, i, 0), dmod_mat_entry_ptr(A, i, 0), dmod_mat_entry_ptr(B, i, 0), n, C->mod);
     }
     
     #endif
