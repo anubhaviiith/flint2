@@ -90,7 +90,7 @@ void sample(void * arg, ulong count)
             _dmod_mat_mul_classical(C_d, A_d, B_d);
     else if (algorithm == 5)
         for (i = 0; i < count; i++)
-            _dmod_mat_mul_strassen_p(C_d, A_d, B_d);
+            _dmod_mat_mul_strassen(C_d, A_d, B_d);
     prof_stop();
 
     nmod_mat_clear(A);

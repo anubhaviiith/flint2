@@ -53,7 +53,7 @@ void _dmod_mat_mul_classical(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t 
     }
     else
     { 
-        if (m < DMOD_MAT_MUL_STRASSEN_CUTOFF || n < DMOD_MAT_MUL_STRASSEN_CUTOFF || k < DMOD_MAT_MUL_STRASSEN_CUTOFF)
+        if (m < 4 || n < 4 || k < 4)
         {
             _dmod_mat_mul_dp(C, A, B);
         }

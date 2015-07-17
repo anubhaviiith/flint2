@@ -76,7 +76,7 @@ void sample(void * arg, ulong count)
     prof_start();
     if (algorithm == 4)
         for (i = 0; i < count; i++)
-            _dmod_mat_mul_strassen_p(C_d, A_d, B_d);
+            _dmod_mat_mul_classical(C_d, A_d, B_d);
     else if (algorithm == 5)
         for (i = 0; i < count; i++)
             _dmod_mat_mul_strassen(C_d, A_d, B_d);

@@ -42,7 +42,7 @@ main(void)
     FLINT_TEST_INIT(state);
     
 
-    flint_printf("mul-strassen ....");
+    flint_printf("pow ....");
     fflush(stdout);
 
     for (rep = 0; rep < 100 * flint_test_multiplier(); rep++)
@@ -52,63 +52,50 @@ main(void)
         
         ulong limit_dbl;
 
-        m = n_randint(state, 100);
-        k = n_randint(state, 500);
-        n = n_randint(state, 100);
-        
-        while (m == 0 || k ==0 || n == 0)
+        m = n_randint(state, 50);
+
+        while (m == 0 || k == 0 || n == 0)
         {
-            m = n_randint(state, 100);
-            k = n_randint(state, 500);
-            n = n_randint(state, 100);
+            m = n_randint(state, 50);
         }
 
         limit_dbl = (1UL << (FLINT_D_BITS/2));
         rand = n_randint(state, limit_dbl);
-
+    
         while (rand == 0)
         {
             rand = n_randint(state, limit_dbl);
         }
-
         dmod_t mod;
         nmod_t modn;
         dmod_init(&mod, rand); 
         nmod_init(&modn, rand); 
         
-        _dmod_mat_init(A_d, m, k, mod);
-        _dmod_mat_init(B_d, k, n, mod);
-        _dmod_mat_init(result_d, m, n, mod);
+        _dmod_mat_init(A_d, m, m, mod);
+        _dmod_mat_init(result_d, m, m, mod);
        
-        nmod_mat_init(A, m, k, modn.n);
-        nmod_mat_init(B, k, n, modn.n);
-        nmod_mat_init(result, m, n, modn.n);
+        nmod_mat_init(A, m, m, modn.n);
+        nmod_mat_init(result, m, m, modn.n);
        
 
         nmod_mat_randtest(A, state);
-        nmod_mat_randtest(B, state);
         
         for (i = 0; i < m; i++)
         {
-            for (j = 0; j < k; j++)
+            for (j = 0; j < m; j++)
             {
                 _dmod_mat_set(A_d, i, j, (double)A->rows[i][j]);
             }
         }
  
-        for (i = 0; i < k; i++)
-        {
-            for (j = 0; j < n; j++)
-            {
-                _dmod_mat_set(B_d, i, j, (double)B->rows[i][j]);
-            }
-        }
-        nmod_mat_mul_strassen(result, A, B); 
-        _dmod_mat_mul_strassen(result_d, A_d, B_d);
+        ulong pow = n_randint(state, 20);
         
+        nmod_mat_pow(result, A, pow); 
+        dmod_mat_pow(result_d, A_d, pow);
+
         for (i = 0; i < m; i++)
         {
-            for (j = 0; j < n; j++)
+            for (j = 0; j < m; j++)
             {
                 if (dmod_mat_entry(result_d, i, j) != (double)result->rows[i][j])
                 {
@@ -118,12 +105,10 @@ main(void)
             }
         }
 
-        nmod_mat_clear(B);
         nmod_mat_clear(result);
         nmod_mat_clear(A);
 
         _dmod_mat_clear(A_d);
-        _dmod_mat_clear(B_d);
         _dmod_mat_clear(result_d);
     }
 

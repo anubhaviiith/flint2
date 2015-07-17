@@ -19,23 +19,19 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2015 Anubhav Srivastava
+    Copyright (C) 2014 Ashish Kedia
 
 ******************************************************************************/
 
+#include <stdlib.h>
+#include <gmp.h>
+#include "flint.h"
 #include "dmod_mat.h"
-#include "dmod_vec.h"
 
-void _dmod_mat_concat_horizontal(dmod_mat_t res, const dmod_mat_t mat1, const dmod_mat_t mat2)
+void _dmod_mat_swap(dmod_mat_t mat1, dmod_mat_t mat2)
 {
-    slong i;
-    slong r = mat1->nrows;
-    slong c1 = mat1->ncols;
-    slong c2 = mat2->ncols;
-    
-    for (i = 0; i < r; i++)
-    {
-        _dmod_vec_copy(dmod_mat_entry_ptr(mat1, i, 0), dmod_mat_entry_ptr(res, i, 0), c1);
-        _dmod_vec_copy(dmod_mat_entry_ptr(mat2, i, 0), dmod_mat_entry_ptr(res, i, c1), c2);
-    }
+    dmod_mat_t temp;
+    *temp = *mat1;
+    *mat1 = *mat2;
+    *mat2 = *temp;
 }

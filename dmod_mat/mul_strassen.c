@@ -19,7 +19,6 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2015 Anubhav Srivastava
 
 ******************************************************************************/
 
@@ -32,20 +31,19 @@
 
 void _dmod_mat_mul_strassen(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
 {
-    #if HAVE_BLAS
     slong a, b, c;
     slong anr, anc, bnr, bnc;
 
     dmod_mat_t A11, A12, A21, A22;
     dmod_mat_t B11, B12, B21, B22;
-    dmod_mat_t C11, C12, C21, C22; 
+    dmod_mat_t C11, C12, C21, C22;
     dmod_mat_t X1, X2;
 
     a = A->nrows;
     b = A->ncols;
     c = B->ncols;
 
-    if (a < DMOD_MAT_MUL_STRASSEN_CUTOFF || b < DMOD_MAT_MUL_STRASSEN_CUTOFF || c < DMOD_MAT_MUL_STRASSEN_CUTOFF)
+    if (a < 4 || b < 4 || c < 4)
     {
         _dmod_mat_mul(C, A, B);
         return;
@@ -55,7 +53,7 @@ void _dmod_mat_mul_strassen(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B
     anc = b / 2;
     bnr = anc;
     bnc = c / 2;
-    
+
     _dmod_mat_window_init(A11, A, 0, 0, anr, anc);
     _dmod_mat_window_init(A12, A, 0, anc, anr, anc);
     _dmod_mat_window_init(A21, A, anr, 0, anr, anc);
@@ -77,10 +75,11 @@ void _dmod_mat_mul_strassen(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B
     X1->ncols = anc;
     X1->ld = anc;
     
-    _dmod_mat_sub(X1, A11, A21); 
-    _dmod_mat_sub(X2, B22, B12);
 
+    _dmod_mat_sub(X1, A11, A21);
+    _dmod_mat_sub(X2, B22, B12);
     _dmod_mat_mul(C21, X1, X2);
+    
 
     _dmod_mat_add(X1, A21, A22);
     _dmod_mat_sub(X2, B12, B11);
@@ -90,30 +89,33 @@ void _dmod_mat_mul_strassen(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B
     _dmod_mat_sub(X2, B22, X2);
     _dmod_mat_mul(C12, X1, X2);
 
-    _dmod_mat_sub(X1, A12, X1); 
+    _dmod_mat_sub(X1, A12, X1);
+    _dmod_mat_mul(C11, X1, B22);
 
-    _dmod_mat_addmul(C12, A11, B11, C11);
-    
-    _dmod_mat_add(C21, C21, C12);
-    _dmod_mat_add(C12, C12, C22);
-    _dmod_mat_add(C22, C22, C21);
-
-    _dmod_mat_addmul(C12, X1, B22, C11);
-    
-    _dmod_mat_sub(X2, X2, B21);
 
     X1->ncols = bnc;
     X1->ld = bnc;
+    
 
-    _dmod_mat_mul(X1, A22, X2);
-    _dmod_mat_sub(C21, C21, X1);
+    _dmod_mat_mul(X1, A11, B11);
+    
+    _dmod_mat_add(C12, X1, C12);
+    _dmod_mat_add(C21, C12, C21);
+    _dmod_mat_add(C12, C12, C22);
+    _dmod_mat_add(C22, C21, C22);
+    _dmod_mat_add(C12, C12, C11);
+    _dmod_mat_sub(X2, X2, B21);
+    _dmod_mat_mul(C11, A22, X2);
 
+    _dmod_mat_clear(X2);
+
+    _dmod_mat_sub(C21, C21, C11);
     _dmod_mat_mul(C11, A12, B21);
-    _dmod_mat_addmul(C11, A11, B11, X1);
+
+    _dmod_mat_add(C11, X1, C11);
 
     _dmod_mat_clear(X1);
-    _dmod_mat_clear(X2);
-    
+ 
     if (c > 2*bnc) 
     {
         dmod_mat_t Bc, Cc;
@@ -138,10 +140,7 @@ void _dmod_mat_mul_strassen(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B
         _dmod_mat_window_init(Br, B, 2*bnr, 0, b - 2*bnr, 2*bnc);
         _dmod_mat_window_init(Cb, C, 0, 0, 2*anr, 2*bnc);
         
-        dmod_mat_t temp;
-        _dmod_mat_init(temp, 2*anr, 2*bnc, C->mod);
-        _dmod_mat_addmul(Cb, Ac, Br, temp);
-        _dmod_mat_clear(temp);
-   }
-   #endif
+        _dmod_mat_addmul(Cb, Ac, Br, Cb);
+    }
+
 }

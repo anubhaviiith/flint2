@@ -19,23 +19,29 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2015 Anubhav Srivastava
 
 ******************************************************************************/
 
+#include <stdlib.h>
+#include <gmp.h>
+#include "flint.h"
 #include "dmod_mat.h"
-#include "dmod_vec.h"
 
-void _dmod_mat_concat_horizontal(dmod_mat_t res, const dmod_mat_t mat1, const dmod_mat_t mat2)
+void _dmod_mat_one(dmod_mat_t A)
 {
-    slong i;
-    slong r = mat1->nrows;
-    slong c1 = mat1->ncols;
-    slong c2 = mat2->ncols;
-    
-    for (i = 0; i < r; i++)
+    #if HAVE_BLAS
+    slong i, j;
+
+    for (i = 0; i < A->nrows; i++)
     {
-        _dmod_vec_copy(dmod_mat_entry_ptr(mat1, i, 0), dmod_mat_entry_ptr(res, i, 0), c1);
-        _dmod_vec_copy(dmod_mat_entry_ptr(mat2, i, 0), dmod_mat_entry_ptr(res, i, c1), c2);
+        for (j = 0; j < A->ncols; j++)
+        {
+            if (i == j)
+                dmod_mat_entry(A, i, j) = 1;
+            else
+                dmod_mat_entry(A, i, j) = 0;
+        }
     }
+    #endif
+
 }
