@@ -38,11 +38,11 @@ void _dmod_mat_add(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
 
     slong m = C->nrows;
     slong n = C->ncols;
-    
+
+    #pragma omp parallel for
     for (i = 0; i < m; i++)
     {
         _dmod_vec_add(dmod_mat_entry_ptr(C, i, 0), dmod_mat_entry_ptr(A, i, 0), dmod_mat_entry_ptr(B, i, 0), n, C->mod);
     }
-    
     #endif
 }

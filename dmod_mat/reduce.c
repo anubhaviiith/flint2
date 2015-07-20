@@ -38,7 +38,6 @@ void _dmod_mat_reduce(dmod_mat_t C)
 
     slong m = C->nrows;
     slong n = C->ncols;
-    
     for (i = 0; i < m; i++)
     {
         for (j = 0; j < n; j++)
@@ -46,6 +45,5 @@ void _dmod_mat_reduce(dmod_mat_t C)
             dmod_mat_entry(C, i, j) = dmod_reduce(dmod_mat_entry(C, i, j), C->mod);
         }
     }
-
     #endif
 }

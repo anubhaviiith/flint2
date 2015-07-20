@@ -75,12 +75,10 @@ void _dmod_mat_mul_strassen(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B
     X1->ncols = anc;
     X1->ld = anc;
     
-
     _dmod_mat_sub(X1, A11, A21);
     _dmod_mat_sub(X2, B22, B12);
     _dmod_mat_mul(C21, X1, X2);
     
-
     _dmod_mat_add(X1, A21, A22);
     _dmod_mat_sub(X2, B12, B11);
     _dmod_mat_mul(C22, X1, X2);

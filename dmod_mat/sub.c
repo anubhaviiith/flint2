@@ -38,13 +38,11 @@ void _dmod_mat_sub(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
 
     slong m = C->nrows;
     slong n = C->ncols;
+
+    #pragma omp parallel for 
     for (i = 0; i < m; i++)
     {
-        for (j = 0; j < n; j++)
-        {
-            dmod_mat_entry(C, i, j) = dmod_sub(dmod_mat_entry(A, i, j), dmod_mat_entry(B, i, j), C->mod);
-        }
+        _dmod_vec_sub(dmod_mat_entry_ptr(C, i, 0), dmod_mat_entry_ptr(A, i, 0), dmod_mat_entry_ptr(B, i, 0), n, C->mod);
     }
-
     #endif
 }

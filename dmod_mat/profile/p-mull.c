@@ -102,22 +102,18 @@ int main(void)
     
     params.modulus = 3;
 
-    while(params.modulus < 30000000)
+    for (dim = 2; dim <= 100000; dim = (slong) ((double) dim * 1.5) + 1)
     {
-        for (dim = 2; dim <= 5000; dim = (slong) ((double) dim * 1.5) + 1)
-        {
-            params.dim = dim;
+        params.dim = dim;
 
-            params.algorithm = 4;
-            prof_repeat(&dmodclassical, &max, sample, &params);
+        params.algorithm = 4;
+        prof_repeat(&dmodclassical, &max, sample, &params);
 
-            params.algorithm = 5;
-            prof_repeat(&dmodstrassen, &max, sample, &params);
+        params.algorithm = 5;
+        prof_repeat(&dmodstrassen, &max, sample, &params);
 
 
-            flint_printf("%wd %.2f %.2f\n", dim, dmodclassical, dmodstrassen);
-        }
-        params.modulus *= 100;
+        flint_printf("%wd %.2f %.2f\n", dim, dmodclassical, dmodstrassen);
     }
      
     return 0;
