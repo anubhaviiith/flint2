@@ -132,17 +132,16 @@ main(void)
             nmod_mat_init(A, m, n, mod);
             nmod_mat_randrank(A, state, r);
 
-            if (n_randint(state, 2))
+            if (1)/*n_randint(state, 2))*/
             {
                 d = n_randint(state, 2*m*n + 1);
                 nmod_mat_randops(A, d, state);
             }
-
             nmod_mat_init_set(LU, A);
+
             P = flint_malloc(sizeof(slong) * m);
-
             rank = nmod_mat_lu_classical(P, LU, 0);
-
+            
             if (r != rank)
             {
                 flint_printf("FAIL:\n");
