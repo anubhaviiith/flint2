@@ -42,26 +42,23 @@ main(void)
     FLINT_TEST_INIT(state);
     
 
-    flint_printf("pow ....");
+    flint_printf("det ....");
     fflush(stdout);
 
-    for (rep = 0; rep < 100 * flint_test_multiplier(); rep++)
+    for (rep = 0; rep < 1000 * flint_test_multiplier(); rep++)
     {
-        nmod_mat_t A, B, result;
-        dmod_mat_t A_d, B_d, result_d;
-        
+        nmod_mat_t A;
+        dmod_mat_t A_d;
+
+        slong result1;
+        double result2;
         ulong limit_dbl;
 
         m = n_randint(state, 50);
 
-        while (m == 0)
-        {
-            m = n_randint(state, 50);
-        }
-
         limit_dbl = (1UL << (FLINT_D_BITS/2));
         rand = n_randint(state, limit_dbl);
-    
+        
         while (rand == 0)
         {
             rand = n_randint(state, limit_dbl);
@@ -72,12 +69,9 @@ main(void)
         nmod_init(&modn, rand); 
         
         _dmod_mat_init(A_d, m, m, mod);
-        _dmod_mat_init(result_d, m, m, mod);
        
         nmod_mat_init(A, m, m, modn.n);
-        nmod_mat_init(result, m, m, modn.n);
        
-
         nmod_mat_randtest(A, state);
         
         for (i = 0; i < m; i++)
@@ -88,28 +82,21 @@ main(void)
             }
         }
  
-        ulong pow = n_randint(state, 20);
-        
-        nmod_mat_pow(result, A, pow); 
-        dmod_mat_pow(result_d, A_d, pow);
+        result1 = _nmod_mat_det(A); 
+        result2 = dmod_mat_det(A_d);
+         
+        /*flint_printf("%lf %lf\n", (double)result1, result2);
+        */
 
-        for (i = 0; i < m; i++)
+        if((double)result1 != result2)
         {
-            for (j = 0; j < m; j++)
-            {
-                if (dmod_mat_entry(result_d, i, j) != (double)result->rows[i][j])
-                {
-                    flint_printf("FAIL\n");
-                    abort();
-                }
-            }
+            printf("FAIL\n");
+            abort();
         }
 
-        nmod_mat_clear(result);
         nmod_mat_clear(A);
 
         _dmod_mat_clear(A_d);
-        _dmod_mat_clear(result_d);
     }
 
     FLINT_TEST_CLEANUP(state);
