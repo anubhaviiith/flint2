@@ -28,24 +28,14 @@
 #include "dmod_mat.h"
 #include "dmod_vec.h"
 
-void _dmod_mat_mul(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
+void _dmod_mat_solve_triu(dmod_mat_t X, const dmod_mat_t L, const dmod_mat_t B, int unit)
 {
-    slong m, k, n;
-
-    m = A->nrows;
-    k = A->ncols;
-    n = B->ncols;
-    
-    if (n == 0 || m == 0 || k == 0)
-        return;
-
-
-    if (m < DMOD_MAT_MUL_STRASSEN_CUTOFF || n < DMOD_MAT_MUL_STRASSEN_CUTOFF || k < DMOD_MAT_MUL_STRASSEN_CUTOFF)
+    if (B->nrows < DMOD_MAT_SOLVE_TRI_ROWS_CUTOFF || B->ncols < DMOD_MAT_SOLVE_TRI_COLS_CUTOFF)
     {
-        _dmod_mat_mul_classical(C, A, B);
+        _dmod_mat_solve_triu_classical(X, L, B, unit);
     }
     else
     {
-        _dmod_mat_mul_strassen(C, A, B);
+        _dmod_mat_solve_triu_recursive(X, L, B, unit);
     }
 }

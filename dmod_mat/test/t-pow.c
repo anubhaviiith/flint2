@@ -54,11 +54,6 @@ main(void)
 
         m = n_randint(state, 50);
 
-        while (m == 0)
-        {
-            m = n_randint(state, 50);
-        }
-
         limit_dbl = (1UL << (FLINT_D_BITS/2));
         rand = n_randint(state, limit_dbl);
     

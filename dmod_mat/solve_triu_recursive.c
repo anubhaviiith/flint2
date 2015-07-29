@@ -28,24 +28,39 @@
 #include "dmod_mat.h"
 #include "dmod_vec.h"
 
-void _dmod_mat_mul(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
+void _dmod_mat_solve_triu_recursive(dmod_mat_t X, const dmod_mat_t U, const dmod_mat_t B, int unit)
 {
-    slong m, k, n;
+    dmod_mat_t UA, UB, UD, XX, XY, BX, BY, tmp;
+    slong r, n, m;
 
-    m = A->nrows;
-    k = A->ncols;
-    n = B->ncols;
-    
-    if (n == 0 || m == 0 || k == 0)
+    n = U->nrows;
+    m = B->ncols;
+    r = n / 2;
+
+    if (n == 0 || m == 0)
         return;
 
+    _dmod_mat_window_init(UA, U, 0, 0, r, r);
+    _dmod_mat_window_init(UB, U, 0, r, r, n - r);
+    _dmod_mat_window_init(UD, U, r, r, n - r, n - r);
+    _dmod_mat_window_init(BX, B, 0, 0, r, m);
+    _dmod_mat_window_init(BY, B, r, 0, n - r, m);
+    _dmod_mat_window_init(XX, X, 0, 0, r, m);
+    _dmod_mat_window_init(XY, X, r, 0, n - r, m);
 
-    if (m < DMOD_MAT_MUL_STRASSEN_CUTOFF || n < DMOD_MAT_MUL_STRASSEN_CUTOFF || k < DMOD_MAT_MUL_STRASSEN_CUTOFF)
-    {
-        _dmod_mat_mul_classical(C, A, B);
-    }
-    else
-    {
-        _dmod_mat_mul_strassen(C, A, B);
-    }
+    _dmod_mat_solve_triu(XY, UD, BY, unit);
+    
+    _dmod_mat_init(tmp, r, m, X->mod);
+    _dmod_mat_mul(tmp, UB, XY);
+    _dmod_mat_sub(XX, BX, tmp);
+
+    _dmod_mat_solve_triu(XX, UA, XX, unit);
+
+    _dmod_mat_window_clear(UA);
+    _dmod_mat_window_clear(UB);
+    _dmod_mat_window_clear(UD);
+    _dmod_mat_window_clear(BX);
+    _dmod_mat_window_clear(BY);
+    _dmod_mat_window_clear(XX);
+    _dmod_mat_window_clear(XY);
 }

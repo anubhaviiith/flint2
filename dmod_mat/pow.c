@@ -88,6 +88,10 @@ void _dmod_mat_pow(dmod_mat_t dest, const dmod_mat_t mat, ulong pow)
 void dmod_mat_pow(dmod_mat_t dest, const dmod_mat_t mat, ulong pow)
 {
     dmod_mat_t temp;
+    
+    if (mat->ncols == 0 || mat->nrows == 0)
+        return;
+
     if (mat == dest)
     {
         _dmod_mat_init(temp, mat->nrows, mat->ncols, mat->mod);

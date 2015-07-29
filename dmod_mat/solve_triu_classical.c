@@ -28,24 +28,48 @@
 #include "dmod_mat.h"
 #include "dmod_vec.h"
 
-void _dmod_mat_mul(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
+void _dmod_mat_solve_triu_classical(dmod_mat_t X, const dmod_mat_t U, const dmod_mat_t B, int unit)
 {
-    slong m, k, n;
-
-    m = A->nrows;
-    k = A->ncols;
-    n = B->ncols;
+    slong i, j, n, m;
     
-    if (n == 0 || m == 0 || k == 0)
-        return;
+    double *inv, *tmp;
 
+    n = U->nrows;
+    m = B->ncols;
 
-    if (m < DMOD_MAT_MUL_STRASSEN_CUTOFF || n < DMOD_MAT_MUL_STRASSEN_CUTOFF || k < DMOD_MAT_MUL_STRASSEN_CUTOFF)
+    if (!unit)
     {
-        _dmod_mat_mul_classical(C, A, B);
+        inv = _dmod_vec_init(n);
+        for (i = 0; i < n; i++)
+            inv[i] = dmod_inv(dmod_mat_entry(U, i, i), U->mod);
     }
     else
+        inv = NULL;
+
+    tmp = _dmod_vec_init(n);
+
+    for (i = 0; i < m; i++)
     {
-        _dmod_mat_mul_strassen(C, A, B);
+        for (j = 0; j < n; j++)
+            tmp[j] = dmod_mat_entry(X, j, i);
+
+        for (j = n - 1; j >= 0; j--)
+        {
+            double s;
+            s = _dmod_vec_dot(dmod_mat_entry_ptr(U, j, j + 1), tmp + j + 1, n - j - 1, U->mod);
+            s = dmod_sub(dmod_mat_entry(B, j, i), s, U->mod);
+
+            if (!unit)
+                s = dmod_mul(s, inv[j], U->mod);
+            tmp[j] = s;
+        }
+
+        for (j = 0; j < n; j++)
+            dmod_mat_entry(X, j, i) = tmp[j];
     }
+
+    _dmod_vec_clear(tmp);
+    
+    if (!unit)
+        _dmod_vec_clear(inv);
 }

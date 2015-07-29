@@ -22,30 +22,59 @@
 
 ******************************************************************************/
 
+#include <stdio.h>
 #include <stdlib.h>
-#include <gmp.h>
 #include "flint.h"
-#include "dmod_mat.h"
+#include "ulong_extras.h"
 #include "dmod_vec.h"
+#include "dmod_mat.h"
 
-void _dmod_mat_mul(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
+
+int _dmod_mat_solve(dmod_mat_t X, const dmod_mat_t A, const dmod_mat_t B)
 {
-    slong m, k, n;
+    slong i, j, rank, *perm;
+    dmod_mat_t LU;
+    int result;
 
-    m = A->nrows;
-    k = A->ncols;
-    n = B->ncols;
+    if (A->nrows == 0 || B->ncols == 0)
+        return 1;
+
+    _dmod_mat_init(LU, A->nrows, A->ncols, A->mod);
+    _dmod_mat_copy(LU, A);
+
+    perm = flint_malloc(sizeof(slong) * A->nrows);
     
-    if (n == 0 || m == 0 || k == 0)
-        return;
+    for (i = 0; i < A->nrows; i++)
+        perm[i] = i;
 
+    rank = _dmod_mat_lu_classical(perm, LU, 1);
 
-    if (m < DMOD_MAT_MUL_STRASSEN_CUTOFF || n < DMOD_MAT_MUL_STRASSEN_CUTOFF || k < DMOD_MAT_MUL_STRASSEN_CUTOFF)
+    if (rank == A->nrows)
     {
-        _dmod_mat_mul_classical(C, A, B);
+        dmod_mat_t PB;
+        _dmod_mat_window_init(PB, B, 0, 0, B->nrows, B->ncols);
+
+        for (i = 0; i < A->nrows; i++)
+        {
+            for (j = 0; j < A->ncols; j++)
+            {
+                dmod_mat_entry(PB, i, j) = dmod_mat_entry(B, perm[i], j);
+            }
+        }
+
+        _dmod_mat_solve_tril(X, LU, PB, 1);
+        _dmod_mat_solve_triu(X, LU, X, 0);
+
+        _dmod_mat_window_clear(PB);
+        result = 1;
     }
     else
     {
-        _dmod_mat_mul_strassen(C, A, B);
+        result = 0;
     }
+
+    _dmod_mat_clear(LU);
+    flint_free(perm);
+
+    return result;
 }

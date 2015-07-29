@@ -53,13 +53,7 @@ main(void)
 
         m = n_randint(state, 100);
         n = n_randint(state, 100);
-        
-        while (m == 0 || n == 0)
-        {
-            m = n_randint(state, 100);
-            n = n_randint(state, 100);
-        }
-
+  
         limit_dbl = (1UL << (FLINT_D_BITS - 1));
         rand = n_randint(state, limit_dbl);
 
