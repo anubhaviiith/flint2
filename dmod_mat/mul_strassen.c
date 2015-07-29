@@ -43,6 +43,9 @@ void _dmod_mat_mul_strassen(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B
     b = A->ncols;
     c = B->ncols;
 
+    if (a == 0 || b == 0 || c == 0)
+        return;
+
     if (a < 4 || b < 4 || c < 4)
     {
         _dmod_mat_mul(C, A, B);

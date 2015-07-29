@@ -43,6 +43,9 @@ void _dmod_mat_mul_classical(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t 
     if (A->ncols != B->nrows)
         return;
 
+    if (n == 0 || m == 0 || k == 0)
+        return;
+    
     slong limit = (1UL << (FLINT_D_BITS - 2*(A->mod).nbits));
 
 

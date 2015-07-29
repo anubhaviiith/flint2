@@ -58,6 +58,8 @@ typedef dmod_mat_struct dmod_mat_t[1];
 #define dmod_mat_entry_ptr(mat, i, j) ( &dmod_mat_entry(mat, i, j) )
 
 #define DMOD_MAT_MUL_STRASSEN_CUTOFF 300
+#define DMOD_MAT_SOLVE_TRI_ROWS_CUTOFF 64
+#define DMOD_MAT_SOLVE_TRI_COLS_CUTOFF 64
 
 static __inline__
 void _dmod_mat_set_mod(dmod_mat_t mat, double n)

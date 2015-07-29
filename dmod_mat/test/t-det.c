@@ -82,7 +82,7 @@ main(void)
             }
         }
  
-        result1 = _nmod_mat_det(A); 
+        result1 = nmod_mat_det(A); 
         result2 = dmod_mat_det(A_d);
          
         /*flint_printf("%lf %lf\n", (double)result1, result2);

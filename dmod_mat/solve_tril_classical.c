@@ -19,7 +19,7 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2010 Fredrik Johansson
+    Copyright (C) 2010,2011 Fredrik Johansson
 
 ******************************************************************************/
 
@@ -29,24 +29,48 @@
 #include "dmod_mat.h"
 #include "dmod_vec.h"
 
-void _dmod_mat_mul(dmod_mat_t C, const dmod_mat_t A, const dmod_mat_t B)
+void _dmod_mat_solve_tril_classical(dmod_mat_t X, const dmod_mat_t L, const dmod_mat_t B, int unit)
 {
-    slong m, k, n;
-
-    m = A->nrows;
-    k = A->ncols;
-    n = B->ncols;
+    slong i, j, n, m;
     
-    if (n == 0 || m == 0 || k == 0)
-        return;
+    double *inv, *tmp;
 
+    n = L->nrows;
+    m = B->ncols;
 
-    if (m < DMOD_MAT_MUL_STRASSEN_CUTOFF || n < DMOD_MAT_MUL_STRASSEN_CUTOFF || k < DMOD_MAT_MUL_STRASSEN_CUTOFF)
+    if (!unit)
     {
-        _dmod_mat_mul_classical(C, A, B);
+        inv = _dmod_vec_init(n);
+        for (i = 0; i < n; i++)
+            inv[i] = dmod_inv(dmod_mat_entry(L, i, i), L->mod);
     }
     else
+        inv = NULL;
+
+    tmp = _dmod_vec_init(n);
+
+    for (i = 0; i < m; i++)
     {
-        _dmod_mat_mul_strassen(C, A, B);
+        for (j = 0; j < n; j++)
+            tmp[j] = dmod_mat_entry(X, j, i);
+
+        for (j = 0; j < n; j++)
+        {
+            double s;
+            s = _dmod_vec_dot(dmod_mat_entry_ptr(L, j, 0), tmp, j, L->mod);
+            s = dmod_sub(dmod_mat_entry(B, j, i), s, L->mod);
+
+            if (!unit)
+                s = dmod_mul(s, inv[j], L->mod);
+            tmp[j] = s;
+        }
+
+        for (j = 0; j < n; j++)
+            dmod_mat_entry(X, j, i) = tmp[j];
     }
+
+    _dmod_vec_clear(tmp);
+    
+    if (!unit)
+        _dmod_vec_clear(inv);
 }
