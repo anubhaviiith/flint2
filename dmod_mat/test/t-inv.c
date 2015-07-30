@@ -42,22 +42,17 @@ main(void)
     FLINT_TEST_INIT(state);
     
 
-    flint_printf("pow ....");
+    flint_printf("inv ....");
     fflush(stdout);
 
     for (rep = 0; rep < 100 * flint_test_multiplier(); rep++)
     {
-        nmod_mat_t A, B, result;
-        dmod_mat_t A_d, B_d, result_d;
+        nmod_mat_t A, result;
+        dmod_mat_t A_d, result_d;
         
         ulong limit_dbl;
 
         m = n_randint(state, 50);
-
-        while (m == 0 || k == 0 || n == 0)
-        {
-            m = n_randint(state, 50);
-        }
 
         limit_dbl = (1UL << (FLINT_D_BITS/2));
         rand = n_randint(state, limit_dbl);
@@ -66,6 +61,7 @@ main(void)
         {
             rand = n_randint(state, limit_dbl);
         }
+
         dmod_t mod;
         nmod_t modn;
         dmod_init(&mod, rand); 
@@ -76,10 +72,15 @@ main(void)
        
         nmod_mat_init(A, m, m, modn.n);
         nmod_mat_init(result, m, m, modn.n);
-       
-
-        nmod_mat_randtest(A, state);
+ 
         
+        nmod_mat_randrank(A, state, m);
+        /* Dense or sparse? */
+        if (n_randint(state, 2))
+            nmod_mat_randops(A, 1+n_randint(state, 1+m*m), state);
+
+              
+
         for (i = 0; i < m; i++)
         {
             for (j = 0; j < m; j++)
@@ -88,11 +89,10 @@ main(void)
             }
         }
  
-        ulong pow = n_randint(state, 20);
+        nmod_mat_inv(result, A);
         
-        nmod_mat_pow(result, A, pow); 
-        dmod_mat_pow(result_d, A_d, pow);
-
+        _dmod_mat_inv(result_d, A_d);
+    
         for (i = 0; i < m; i++)
         {
             for (j = 0; j < m; j++)

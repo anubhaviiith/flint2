@@ -19,7 +19,6 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2015 Anubhav Srivastava
 
 ******************************************************************************/
 
@@ -30,74 +29,76 @@
 #include "flint.h"
 #include "dmod_mat.h"
 #include "nmod_mat.h"
-#include "dmod_vec.h"
 #include "ulong_extras.h"
 
 int
 main(void)
 {
-    #if HAVE_BLAS
-    
-    slong m, n, i, j, k, rep, rand;
+    slong i, j, z;
     FLINT_TEST_INIT(state);
     
 
-    flint_printf("pow ....");
+    flint_printf("solve....");
     fflush(stdout);
 
-    for (rep = 0; rep < 100 * flint_test_multiplier(); rep++)
+    for (z = 0; z < 100 * flint_test_multiplier(); z++)
     {
-        nmod_mat_t A, B, result;
-        dmod_mat_t A_d, B_d, result_d;
+        nmod_mat_t A, B, Y;
+        dmod_mat_t A_d, B_d, Y_d;
         
-        ulong limit_dbl;
+        mp_limb_t m;
+        slong row, col;
 
-        m = n_randint(state, 50);
-
-        while (m == 0 || k == 0 || n == 0)
-        {
-            m = n_randint(state, 50);
-        }
-
-        limit_dbl = (1UL << (FLINT_D_BITS/2));
-        rand = n_randint(state, limit_dbl);
-    
-        while (rand == 0)
-        {
-            rand = n_randint(state, limit_dbl);
-        }
+        ulong limit_dbl;    
+        limit_dbl = (1UL << (FLINT_D_BITS/2 ) );
+        m = n_randint(state, limit_dbl);
         dmod_t mod;
-        nmod_t modn;
-        dmod_init(&mod, rand); 
-        nmod_init(&modn, rand); 
+        dmod_init(&mod, m); 
+ 
+        row = n_randint(state, 100);
+        col = n_randint(state, 100);
         
-        _dmod_mat_init(A_d, m, m, mod);
-        _dmod_mat_init(result_d, m, m, mod);
-       
-        nmod_mat_init(A, m, m, modn.n);
-        nmod_mat_init(result, m, m, modn.n);
-       
+        nmod_mat_init(A, row, row, m);
+        nmod_mat_init(B, row, col, m);
+        nmod_mat_init(Y, row, col, m);
+    
+        _dmod_mat_init(A_d, row, row, mod);
+        _dmod_mat_init(B_d, row, col, mod);
+        _dmod_mat_init(Y_d, row, col, mod);
 
-        nmod_mat_randtest(A, state);
+
+        nmod_mat_randrank(A, state, row);
+        nmod_mat_randtest(B, state);
         
-        for (i = 0; i < m; i++)
+        if (n_randint(state, 2))
+            nmod_mat_randops(A, 1+n_randint(state, 1+row*row), state);
+
+        for (i = 0; i < row; i++)
         {
-            for (j = 0; j < m; j++)
+            for (j = 0; j < row; j++)
             {
                 _dmod_mat_set(A_d, i, j, (double)A->rows[i][j]);
             }
         }
- 
-        ulong pow = n_randint(state, 20);
-        
-        nmod_mat_pow(result, A, pow); 
-        dmod_mat_pow(result_d, A_d, pow);
 
-        for (i = 0; i < m; i++)
+        for (i = 0; i < row; i++)
         {
-            for (j = 0; j < m; j++)
+            for (j = 0; j < col; j++)
             {
-                if (dmod_mat_entry(result_d, i, j) != (double)result->rows[i][j])
+                _dmod_mat_set(B_d, i, j, (double)B->rows[i][j]);
+            }
+        }
+
+        nmod_mat_solve(Y, A, B);
+        
+        _dmod_mat_solve(Y_d, A_d, B_d);
+        
+
+        for (i = 0; i < row; i++)
+        {
+            for (j = 0; j < col; j++)
+            {
+                if (dmod_mat_entry(Y_d, i, j) != (double)Y->rows[i][j])
                 {
                     flint_printf("FAIL\n");
                     abort();
@@ -105,16 +106,18 @@ main(void)
             }
         }
 
-        nmod_mat_clear(result);
+         
         nmod_mat_clear(A);
-
+        nmod_mat_clear(B);
+        nmod_mat_clear(Y);
+        
         _dmod_mat_clear(A_d);
-        _dmod_mat_clear(result_d);
+        _dmod_mat_clear(B_d);
+        _dmod_mat_clear(Y_d);
     }
 
     FLINT_TEST_CLEANUP(state);
     
     flint_printf("PASS\n");
     return 0;
-    #endif
 }

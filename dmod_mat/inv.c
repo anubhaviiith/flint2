@@ -30,49 +30,39 @@
 #include "dmod_mat.h"
 
 
-int _dmod_mat_solve(dmod_mat_t X, const dmod_mat_t A, const dmod_mat_t B)
+int _dmod_mat_inv(dmod_mat_t B, const dmod_mat_t A)
 {
-    slong i, j, rank, *perm;
-    dmod_mat_t LU;
+    dmod_mat_t I;
+    slong i, dim;
     int result;
 
-    if (A->nrows == 0 || B->ncols == 0)
-        return 1;
+    dim = A->nrows;
 
-    _dmod_mat_init(LU, A->nrows, A->ncols, A->mod);
-    _dmod_mat_copy(LU, A);
-
-    perm = flint_malloc(sizeof(slong) * A->nrows);
-    
-    for (i = 0; i < A->nrows; i++)
-        perm[i] = i;
-
-    rank = _dmod_mat_lu_classical(perm, LU, 1);
-
-    if (rank == A->nrows)
+    switch (dim)
     {
-        dmod_mat_t PB;
-        _dmod_mat_init(PB, B->nrows, B->ncols, B->mod);
-        
-        for (i = 0; i < A->nrows; i++)
-        {
-            for (j = 0; j < B->ncols; j++)
-                dmod_mat_entry(PB, i, j) = dmod_mat_entry(B, perm[i], j);
-        }
+        case 0:
+            result = 1;
+            break;
 
-        _dmod_mat_solve_tril(X, LU, PB, 1);
-        _dmod_mat_solve_triu(X, LU, X, 0);
+        case 1:
+            if (dmod_mat_entry(A, 0, 0) == 0)
+            {
+                result = 0;
+            }
+            else
+            {
+                dmod_mat_entry(B, 0, 0) = dmod_inv(dmod_mat_entry(A, 0, 0), B->mod);
+                result = 1;
+            }
+            break;
 
-        _dmod_mat_clear(PB);
-        result = 1;
+        default:
+            _dmod_mat_init(I, dim, dim, B->mod);
+            for (i = 0; i < dim; i++)
+                dmod_mat_entry(I, i, i) = 1;
+            result = _dmod_mat_solve(B, A, I);
+            _dmod_mat_clear(I);
     }
-    else
-    {
-        result = 0;
-    }
-
-    _dmod_mat_clear(LU);
-    flint_free(perm);
 
     return result;
 }
