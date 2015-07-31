@@ -70,7 +70,14 @@ double dmod_reduce(double c, dmod_t mod)
 {
     ulong quot, flag = 0;
     double rem;
-    
+    if (c < 0)
+    {
+        ulong val = dmod_reduce(-c, mod);
+        if (val == 0)
+            return 0;
+        else
+            return (mod.n - val);
+    }
     if (c < mod.n)
         return c;
 
