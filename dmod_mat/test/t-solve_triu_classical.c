@@ -53,15 +53,12 @@ main(void)
         ulong limit_dbl;    
         limit_dbl = (1UL << (FLINT_D_BITS/2));
         m = n_randint(state, limit_dbl);
-        m = 3;
         dmod_t mod;
         dmod_init(&mod, m); 
  
         row = n_randint(state, 100);
         col = n_randint(state, 100);
         unit = n_randint(state, 2);
-        row = 100;
-        col = 100;
         nmod_mat_init(A, row, row, m);
         nmod_mat_init(B, row, col, m);
         nmod_mat_init(Y, row, col, m);

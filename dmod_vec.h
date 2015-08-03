@@ -72,7 +72,7 @@ double dmod_reduce(double c, dmod_t mod)
     double rem;
     if (c < 0)
     {
-        ulong val = dmod_reduce(-c, mod);
+        double val = dmod_reduce(-c, mod);
         if (val == 0)
             return 0;
         else
