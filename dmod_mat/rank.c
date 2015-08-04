@@ -19,29 +19,36 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2015 Anubhav Srivastava
 
 ******************************************************************************/
 
-#include <gmp.h>
 #include <stdlib.h>
-#include <float.h>
 #include "flint.h"
 #include "ulong_extras.h"
 #include "dmod_vec.h"
-#include <cblas.h>
 #include "dmod_mat.h"
 
-void _dmod_mat_rank_update(dmod_mat_t A, const double *x, const double *y, slong lenx, slong leny, dmod_t mod)
+
+slong _dmod_mat_rank(const dmod_mat_t A)
 {
-    #if HAVE_BLAS
-    slong m, n;
+    slong m, n, rank;
+    slong * perm;
+    dmod_mat_t tmp;
+
     m = A->nrows;
     n = A->ncols;
-    
-    if (A->nrows != lenx || A->ncols != leny)
-        return;
 
-    cblas_dger (101, m, n, 1, x, 1, y, 1, dmod_mat_entry_ptr(A, 0, 0), n); 
-    #endif
+    if (m == 0 || n == 0)
+        return 0;
+
+    _dmod_mat_init(tmp, m, n, A->mod);
+    _dmod_mat_copy(tmp, A);
+
+    perm = flint_malloc(sizeof(slong) * m);
+
+    rank = _dmod_mat_lu(perm, tmp, 0);
+
+    flint_free(perm);
+    _dmod_mat_clear(tmp);
+    return rank;
 }

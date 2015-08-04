@@ -19,7 +19,6 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2011 Fredrik Johansson
 
     Loosely based on the recursive PLS implementation in M4RI,
     Copyright (C) 2008 Clement Pernet.
@@ -89,7 +88,7 @@ slong _dmod_mat_lu_recursive(slong * P, dmod_mat_t A_d, int rank_check)
     _dmod_mat_window_init(A0, A_d, 0, 0, m, n1);
     _dmod_mat_window_init(A1, A_d, 0, n1, m, n - n1);
 
-    r1 = _dmod_mat_lu_classical(P1, A0, rank_check);
+    r1 = _dmod_mat_lu(P1, A0, rank_check);
 
 
     if (rank_check && (r1 != n1))
@@ -125,7 +124,7 @@ slong _dmod_mat_lu_recursive(slong * P, dmod_mat_t A_d, int rank_check)
     }
     
     
-    r2 = _dmod_mat_lu_classical(P1, A11, rank_check);
+    r2 = _dmod_mat_lu(P1, A11, rank_check);
     
     if (rank_check && (r1 + r2 < FLINT_MIN(m, n)))
     {
