@@ -30,24 +30,19 @@
 #include <stdlib.h>
 #include "flint.h"
 #include "ulong_extras.h"
-#include "nmod_vec.h"
 #include "dmod_vec.h"
-#include "nmod_mat.h"
 #include "dmod_mat.h"
 
-/*
 static void _apply_permutation(slong * AP, dmod_mat_t A, slong * P, slong n, slong offset)
 {
     if (n != 0)
     {
-        double **Atmp;
         slong * APtmp;
         slong i,j;
 
         dmod_mat_t Atemp;
         _dmod_mat_init(Atemp, n, A->ncols, A->mod);
 
-        Atmp = flint_malloc(sizeof(double *) * n);
         APtmp = flint_malloc(sizeof(slong) * n);
 
         for (i = 0; i < n; i++) 
@@ -61,33 +56,6 @@ static void _apply_permutation(slong * AP, dmod_mat_t A, slong * P, slong n, slo
     
 
         _dmod_mat_clear(Atemp); 
-        flint_free(Atmp);
-        flint_free(APtmp);
-    }
-}
-
-*/
-
-static void _apply_permutation(slong * AP, nmod_mat_t A, slong * P,
-    slong n, slong offset)
-{
-    if (n != 0)
-    {
-        mp_ptr * Atmp;
-        slong * APtmp;
-        slong i;
-
-        Atmp = flint_malloc(sizeof(mp_ptr) * n);
-        APtmp = flint_malloc(sizeof(slong) * n);
-
-        for (i = 0; i < n; i++) Atmp[i] = A->rows[P[i] + offset];
-        for (i = 0; i < n; i++) A->rows[i + offset] = Atmp[i];
-
-        for (i = 0; i < n; i++) APtmp[i] = AP[P[i] + offset];
-        for (i = 0; i < n; i++) AP[i + offset] = APtmp[i];
-        
-
-        flint_free(Atmp);
         flint_free(APtmp);
     }
 }
@@ -99,29 +67,14 @@ slong _dmod_mat_lu_recursive(slong * P, dmod_mat_t A_d, int rank_check)
     m = A_d->nrows;
     n = A_d->ncols;
 
-
-    nmod_mat_t A;
-    nmod_mat_init(A, m, n, A_d->mod.n);
-
-    dmod_mat_t A00, A01, A10, A11;
-    dmod_mat_t A0, A1;
+    dmod_mat_t A00, A01, A10, A11, A0, A1, A_temp;
 
     slong * P1;
    
-    dmod_mat_t A_temp;
     _dmod_mat_init(A_temp, m, n, A_d->mod);
-
     _dmod_mat_copy(A_temp, A_d);
 
-    for (i = 0; i < m; i++)
-    {
-        for (j = 0; j < n; j++)
-        {
-            A->rows[i][j] = (mp_limb_t) dmod_mat_entry(A_d, i, j);
-        }
-    }
-
-    if (m < NMOD_MAT_LU_RECURSIVE_CUTOFF || n < NMOD_MAT_LU_RECURSIVE_CUTOFF)
+    if (m < DMOD_MAT_LU_RECURSIVE_CUTOFF || n < DMOD_MAT_LU_RECURSIVE_CUTOFF)
     {
         r1 = _dmod_mat_lu_classical(P, A_d, rank_check);
         return r1;
@@ -149,17 +102,12 @@ slong _dmod_mat_lu_recursive(slong * P, dmod_mat_t A_d, int rank_check)
 
     if (r1 != 0)
     {
-        _apply_permutation(P, A, P1, m, 0);
+        _apply_permutation(P, A_temp, P1, m, 0);
+   
     }
 
-    for (i = 0; i < m; i++)
-    {
-        for (j = 0; j < n; j++)
-        {
-             dmod_mat_entry(A_d, i, j) = (double) A->rows[i][j];
-        }
-    }
-
+    _dmod_mat_copy(A_d, A_temp);
+    
     _dmod_mat_window_init(A00, A_d, 0, 0, r1, r1);
     _dmod_mat_window_init(A10, A_d, r1, 0, m - r1, r1);
     _dmod_mat_window_init(A01, A_d, 0, n1, r1, n - n1);
@@ -185,7 +133,7 @@ slong _dmod_mat_lu_recursive(slong * P, dmod_mat_t A_d, int rank_check)
     }
     else
     {
-        _apply_permutation(P, A, P1, m - r1, r1);
+        _apply_permutation(P, A_temp, P1, m - r1, r1);
 
         if (r1 != n1)
         {
@@ -202,15 +150,7 @@ slong _dmod_mat_lu_recursive(slong * P, dmod_mat_t A_d, int rank_check)
 
         
     }
-
-    for (i = 0; i < m; i++)
-    {
-        for (j = 0; j < n; j++)
-        {
-             dmod_mat_entry(A_d, i, j) = (double) A->rows[i][j];
-        }
-    }
-
+   
     flint_free(P1);
     _dmod_mat_window_clear(A00);
     _dmod_mat_window_clear(A01);
@@ -218,7 +158,6 @@ slong _dmod_mat_lu_recursive(slong * P, dmod_mat_t A_d, int rank_check)
     _dmod_mat_window_clear(A11);
     _dmod_mat_window_clear(A0);
     _dmod_mat_window_clear(A1);
-   _dmod_mat_clear(A_temp); 
-    nmod_mat_clear(A);
+    _dmod_mat_clear(A_temp); 
     return r1 + r2;
 }

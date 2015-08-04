@@ -53,12 +53,10 @@ main(void)
 
         m = n_randint(state, 20);
         n = n_randint(state, 20);
-        m = 5;
-        n = 5;
-        
+    
         limit_dbl = (1UL << (FLINT_D_BITS/2));
-        rand = n_randint(state, limit_dbl);
-        rand = 7;
+        rand = n_randint(state, 10000000);
+
         dmod_t mod;
         dmod_init(&mod, rand); 
         
@@ -88,13 +86,9 @@ main(void)
             flint_free(P);
     
             P = flint_malloc(sizeof(slong) * m);
-            rank_nmod = nmod_mat_lu_recursive(P, LU, 0);
+            rank_nmod = nmod_mat_lu_classical(P, LU, 0);
             flint_free(P);
             
-            _dmod_mat_print(LU_d);
-            nmod_mat_print_pretty(LU);
-
-            printf("#######################\n");
             if (rank_dmod != rank_nmod || r != rank_dmod)
             {
                 flint_printf("FAIL:\n");
@@ -105,7 +99,8 @@ main(void)
                 _dmod_mat_print(LU_d);
                 abort();
             }
-            
+           
+
             for (q = 0; q < m; q++)
             {
                 for (w = 0; w < n; w++)
@@ -123,7 +118,6 @@ main(void)
             
             _dmod_mat_clear(A_d);
             _dmod_mat_clear(LU_d);
-            
 
         }
     }

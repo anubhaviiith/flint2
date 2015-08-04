@@ -52,7 +52,6 @@ _apply_permutation(slong * AP, nmod_mat_t A, slong * P,
 
         for (i = 0; i < n; i++) APtmp[i] = AP[P[i] + offset];
         for (i = 0; i < n; i++) AP[i + offset] = APtmp[i];
-        
 
         flint_free(Atmp);
         flint_free(APtmp);
@@ -70,9 +69,6 @@ nmod_mat_lu_recursive(slong * P, nmod_mat_t A, int rank_check)
     m = A->r;
     n = A->c;
 
-    printf("NMOD\n");
-    nmod_mat_print_pretty(A);
-    
     if (m < NMOD_MAT_LU_RECURSIVE_CUTOFF || n < NMOD_MAT_LU_RECURSIVE_CUTOFF)
     {
         r1 = nmod_mat_lu_classical(P, A, rank_check);
@@ -87,13 +83,9 @@ nmod_mat_lu_recursive(slong * P, nmod_mat_t A, int rank_check)
     P1 = flint_malloc(sizeof(slong) * m);
     nmod_mat_window_init(A0, A, 0, 0, m, n1);
     nmod_mat_window_init(A1, A, 0, n1, m, n);
-    
-    nmod_mat_print_pretty(A);
 
-    r1 = nmod_mat_lu_classical(P1, A0, rank_check);
+    r1 = nmod_mat_lu(P1, A0, rank_check);
 
-    nmod_mat_print_pretty(A);
-    
     if (rank_check && (r1 != n1))
     {
         flint_free(P1);
@@ -117,13 +109,9 @@ nmod_mat_lu_recursive(slong * P, nmod_mat_t A, int rank_check)
         nmod_mat_solve_tril(A01, A00, A01, 1);
         nmod_mat_submul(A11, A11, A10, A01);
     }
-    
-    nmod_mat_print_pretty(A);
-    
-    r2 = nmod_mat_lu_classical(P1, A11, rank_check);
-    
-    nmod_mat_print_pretty(A);
-    
+
+    r2 = nmod_mat_lu(P1, A11, rank_check);
+
     if (rank_check && (r1 + r2 < FLINT_MIN(m, n)))
     {
         r1 = r2 = 0;
