@@ -87,7 +87,7 @@ main(void)
             P = flint_malloc(sizeof(slong) * m);
             rank_nmod = nmod_mat_lu_classical(P, LU, 0);
             flint_free(P);
-            
+           
             if (rank_dmod != rank_nmod || r != rank_dmod)
             {
                 flint_printf("FAIL:\n");
