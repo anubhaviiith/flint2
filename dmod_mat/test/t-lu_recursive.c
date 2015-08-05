@@ -43,7 +43,7 @@ main(void)
     flint_printf("lu_recursive....");
     fflush(stdout);
 
-    for (i = 0; i < 100 * flint_test_multiplier(); i++)
+    for (i = 0; i < 10 * flint_test_multiplier(); i++)
     {
         nmod_mat_t A, LU;
         dmod_mat_t A_d, LU_d;
@@ -53,9 +53,8 @@ main(void)
 
         m = n_randint(state, 20);
         n = n_randint(state, 20);
-    
         limit_dbl = (1UL << (FLINT_D_BITS/2));
-        rand = n_randint(state, 10000000);
+        rand = n_randint(state, limit_dbl);
 
         dmod_t mod;
         dmod_init(&mod, rand); 
@@ -100,7 +99,6 @@ main(void)
                 abort();
             }
            
-
             for (q = 0; q < m; q++)
             {
                 for (w = 0; w < n; w++)

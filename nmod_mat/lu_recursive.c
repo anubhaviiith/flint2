@@ -118,6 +118,7 @@ nmod_mat_lu_recursive(slong * P, nmod_mat_t A, int rank_check)
     }
     else
     {
+        
         _apply_permutation(P, A, P1, m - r1, r1);
 
         /* Compress L */

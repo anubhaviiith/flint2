@@ -66,12 +66,10 @@ slong _dmod_mat_lu_recursive(slong * P, dmod_mat_t A_d, int rank_check)
     m = A_d->nrows;
     n = A_d->ncols;
 
-    dmod_mat_t A00, A01, A10, A11, A0, A1, A_temp;
+    dmod_mat_t A00, A01, A10, A11, A0, A1;
 
     slong * P1;
-   
-    _dmod_mat_init(A_temp, m, n, A_d->mod);
-    _dmod_mat_copy(A_temp, A_d);
+  
 
     if (m < DMOD_MAT_LU_RECURSIVE_CUTOFF || n < DMOD_MAT_LU_RECURSIVE_CUTOFF)
     {
@@ -98,33 +96,34 @@ slong _dmod_mat_lu_recursive(slong * P, dmod_mat_t A_d, int rank_check)
         _dmod_mat_window_clear(A1);
         return 0;
     }
-
+   
     if (r1 != 0)
     {
-        _apply_permutation(P, A_temp, P1, m, 0);
-   
+        _apply_permutation(P, A1, P1, m, 0);
     }
 
-    _dmod_mat_copy(A_d, A_temp);
-    
     _dmod_mat_window_init(A00, A_d, 0, 0, r1, r1);
     _dmod_mat_window_init(A10, A_d, r1, 0, m - r1, r1);
     _dmod_mat_window_init(A01, A_d, 0, n1, r1, n - n1);
     _dmod_mat_window_init(A11, A_d, r1, n1, m - r1, n - n1);
-
+    
+    dmod_mat_t tmp;
+    _dmod_mat_init(tmp, m - r1, n - n1, A_d->mod);
+        
     if (r1 != 0)
     {
         _dmod_mat_solve_tril(A01, A00, A01, 1);
-        dmod_mat_t tmp;
-        _dmod_mat_init(tmp, m, n, A_d->mod);
         _dmod_mat_mul(tmp, A10, A01);
         _dmod_mat_sub(A11, A11, tmp);
-        _dmod_mat_clear(tmp);
-    
     }
     
-    
+    _dmod_mat_copy(tmp, A11);
+
     r2 = _dmod_mat_lu(P1, A11, rank_check);
+
+    _dmod_mat_copy(A11, tmp);
+    _dmod_mat_clear(tmp); 
+
     
     if (rank_check && (r1 + r2 < FLINT_MIN(m, n)))
     {
@@ -132,8 +131,8 @@ slong _dmod_mat_lu_recursive(slong * P, dmod_mat_t A_d, int rank_check)
     }
     else
     {
-        _apply_permutation(P, A_temp, P1, m - r1, r1);
-
+        _apply_permutation(P, A_d, P1, m - r1, r1);
+        
         if (r1 != n1)
         {
             for (i = 0; i < m - r1; i++)
@@ -157,6 +156,6 @@ slong _dmod_mat_lu_recursive(slong * P, dmod_mat_t A_d, int rank_check)
     _dmod_mat_window_clear(A11);
     _dmod_mat_window_clear(A0);
     _dmod_mat_window_clear(A1);
-    _dmod_mat_clear(A_temp); 
+    
     return r1 + r2;
 }
