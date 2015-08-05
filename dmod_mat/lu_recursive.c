@@ -151,6 +151,7 @@ slong _dmod_mat_lu_recursive(slong * P, dmod_mat_t A_d, int rank_check)
     }
    
     flint_free(P1);
+    flint_free(P2);
     _dmod_mat_window_clear(A00);
     _dmod_mat_window_clear(A01);
     _dmod_mat_window_clear(A10);
