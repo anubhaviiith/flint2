@@ -39,7 +39,7 @@ main(void)
 {
     nmod_mat_t A;
     dmod_mat_t A_d;
-    slong i, m, n, d, r, q, w, rand, rank1, rank2;
+    slong i, m, n, d, r, q, w, rand, rank1, rank2, bits;
     FLINT_TEST_INIT(state);
     
     dmod_t mod;
@@ -53,12 +53,11 @@ main(void)
     {
         m = n_randint(state, 20);
         n = n_randint(state, 20);
-        
-        rand = n_randint(state, limit_dbl);
-        while (rand == 0)
-        {
-            rand = n_randint(state, limit_dbl);
-        }
+         
+        bits = n_randint(state, 27);
+        if (bits < 2)
+            bits = 2;
+        rand = n_randprime(state, bits, 0);
         dmod_init(&mod, rand); 
         
 
@@ -92,17 +91,15 @@ main(void)
     
     /* Dense */
 
-    /*r != (dmod_mat_rank == nmod_mat_rank) for dense Matrices : CHECK Later*/
     for (i = 0; i < 10 * flint_test_multiplier(); i++)
     {
         m = n_randint(state, 20);
         n = n_randint(state, 20);
         
-        rand = n_randint(state, limit_dbl);
-        while (rand == 0)
-        {
-            rand = n_randint(state, limit_dbl);
-        } 
+        bits = n_randint(state, 27);
+        if (bits < 2)
+            bits = 2;
+        rand = n_randprime(state, bits, 0);
         dmod_init(&mod, rand); 
         
         for (r = 0; r <= FLINT_MIN(m,n); r++)
@@ -125,7 +122,7 @@ main(void)
             rank1 = nmod_mat_rank(A);
             rank2 = _dmod_mat_rank(A_d);
     
-            if (rank1 != rank2)
+            if (rank1 != rank2 || r != rank2)
             {
                 gmp_printf("%Mu %Mu %Mu\n", rank1, r, rank2);
                 flint_printf("wrong rank!\n");

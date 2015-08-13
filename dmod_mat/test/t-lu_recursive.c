@@ -53,12 +53,14 @@ main(void)
 
         m = n_randint(state, 20);
         n = n_randint(state, 20);
-        limit_dbl = (1UL << (FLINT_D_BITS/2));
-        rand = n_randint(state, limit_dbl);
-
-        dmod_t mod;
-        dmod_init(&mod, rand); 
         
+        slong bits = n_randint(state, 27);
+        if (bits < 2)
+            bits = 2;
+        rand = n_randprime(state, bits, 0);
+        dmod_t mod;
+        dmod_init(&mod, rand);  
+
         for (r = 0; r <= FLINT_MIN(m, n); r++)
         {
 

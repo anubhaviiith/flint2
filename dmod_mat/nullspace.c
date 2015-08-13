@@ -43,9 +43,9 @@ slong _dmod_mat_nullspace(dmod_mat_t X, const dmod_mat_t A)
     _dmod_mat_init(tmp, m, n, A->mod);
     _dmod_mat_copy(tmp, A);
 
-    rank = _dmod_mat_rref(tmp);
+    rank = dmod_mat_rref(tmp);
     nullity = n - rank;
-
+    
     _dmod_mat_zero(X);
 
     if (rank == 0)

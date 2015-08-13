@@ -38,7 +38,7 @@ slong _dmod_mat_rref(dmod_mat_t A, slong * pivots_nonpivots, slong * P)
 
     n = A->ncols;
 
-    rank = _dmod_mat_lu(P, A, 0);
+    rank = _dmod_mat_lu_classical(P, A, 0);
 
     if (rank == 0)
     {

@@ -52,9 +52,9 @@ main(void)
         
         ulong limit_dbl;
 
-        m = n_randint(state, 100);
-        k = n_randint(state, 500);
-        n = n_randint(state, 100);
+        m = n_randint(state, 50);
+        k = n_randint(state, 50);
+        n = n_randint(state, 50);
         
         limit_dbl = (1UL << (FLINT_D_BITS/2));
         rand = n_randint(state, limit_dbl);

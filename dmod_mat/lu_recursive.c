@@ -37,24 +37,25 @@ static void _apply_permutation(slong * AP, dmod_mat_t A, slong * P, slong n, slo
     if (n != 0)
     {
         slong * APtmp;
+        double **Atmp;
         slong i,j;
 
         dmod_mat_t Atemp;
         _dmod_mat_init(Atemp, n, A->ncols, A->mod);
 
         APtmp = flint_malloc(sizeof(slong) * n);
+        Atmp = flint_malloc(sizeof(double *) * n);
 
         for (i = 0; i < n; i++) 
             _dmod_vec_copy(dmod_mat_entry_ptr(A, P[i] + offset, 0), dmod_mat_entry_ptr(Atemp, i, 0), A->ncols);
-        
         for (i = 0; i < n; i++) 
             _dmod_vec_copy(dmod_mat_entry_ptr(Atemp, i, 0), dmod_mat_entry_ptr(A, i + offset, 0), A->ncols);
-
         for (i = 0; i < n; i++) APtmp[i] = AP[P[i] + offset];
         for (i = 0; i < n; i++) AP[i + offset] = APtmp[i];
 
         _dmod_mat_clear(Atemp); 
         flint_free(APtmp);
+        flint_free(Atmp);
     }
 }
 

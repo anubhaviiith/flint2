@@ -46,7 +46,7 @@ slong _dmod_mat_rank(const dmod_mat_t A)
 
     perm = flint_malloc(sizeof(slong) * m);
 
-    rank = _dmod_mat_lu(perm, tmp, 0);
+    rank = _dmod_mat_lu_classical(perm, tmp, 0);
 
     flint_free(perm);
     _dmod_mat_clear(tmp);
