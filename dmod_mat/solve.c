@@ -47,7 +47,7 @@ int _dmod_mat_solve(dmod_mat_t X, const dmod_mat_t A, const dmod_mat_t B)
     for (i = 0; i < A->nrows; i++)
         perm[i] = i;
 
-    rank = _dmod_mat_lu_classical(perm, LU, 1);
+    rank = _dmod_mat_lu(perm, LU, 1);
 
     if (rank == A->nrows)
     {

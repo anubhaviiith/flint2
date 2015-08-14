@@ -50,6 +50,7 @@ static void _apply_permutation(slong * AP, dmod_mat_t A, slong * P, slong n, slo
             _dmod_vec_copy(dmod_mat_entry_ptr(A, P[i] + offset, 0), dmod_mat_entry_ptr(Atemp, i, 0), A->ncols);
         for (i = 0; i < n; i++) 
             _dmod_vec_copy(dmod_mat_entry_ptr(Atemp, i, 0), dmod_mat_entry_ptr(A, i + offset, 0), A->ncols);
+        
         for (i = 0; i < n; i++) APtmp[i] = AP[P[i] + offset];
         for (i = 0; i < n; i++) AP[i + offset] = APtmp[i];
 
@@ -96,7 +97,6 @@ slong _dmod_mat_lu_recursive(slong * P, dmod_mat_t A_d, int rank_check)
         _dmod_mat_window_clear(A1);
         return 0;
     }
-   
     if (r1 != 0)
     {
         _apply_permutation(P, A1, P1, m, 0);
@@ -124,9 +124,8 @@ slong _dmod_mat_lu_recursive(slong * P, dmod_mat_t A_d, int rank_check)
 
     for (i = 0; i < m - r1; i++)
         P2[P1[i]] = i;
-    
     _apply_permutation(P2, A11, P2, m - r1, 0);
-    
+
     if (rank_check && (r1 + r2 < FLINT_MIN(m, n)))
     {
         r1 = r2 = 0;
@@ -134,7 +133,6 @@ slong _dmod_mat_lu_recursive(slong * P, dmod_mat_t A_d, int rank_check)
     else
     {
         _apply_permutation(P, A_d, P1, m - r1, r1);
-        
         if (r1 != n1)
         {
             for (i = 0; i < m - r1; i++)

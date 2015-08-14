@@ -46,15 +46,16 @@ main(void)
         nmod_mat_t A, B, Y;
         dmod_mat_t A_d, B_d, Y_d;
         
-        mp_limb_t m;
         slong row, col;
 
-        ulong limit_dbl;    
-        limit_dbl = (1UL << (FLINT_D_BITS/2 ) );
-        m = n_randint(state, limit_dbl);
+         
+        ulong bits = n_randint(state, 27);
+        if (bits < 2)
+            bits = 2;
+        slong m = n_randprime(state, bits, 0);
         dmod_t mod;
-        dmod_init(&mod, m); 
- 
+        dmod_init(&mod, m);  
+
         row = n_randint(state, 100);
         col = n_randint(state, 100);
         

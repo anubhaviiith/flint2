@@ -43,74 +43,88 @@ void sample(void * arg, ulong count)
 {
     mat_mul_t * params = (mat_mul_t *) arg;
     mp_limb_t n = params->modulus;
-    ulong i, j, dim = params->dim;
+    ulong i, j, dim = params->dim, rand, q, w;
     int algorithm = params->algorithm;
 
-    nmod_mat_t A, B, C;
-    dmod_mat_t A_d, B_d, C_d;
+    nmod_mat_t A, LU;
+    dmod_mat_t A_d, LU_d;
 
-    nmod_mat_init(A, dim, dim, n);
-    nmod_mat_init(B, dim, dim, n);
-    nmod_mat_init(C, dim, dim, n);
-    
-    
+    slong * P;
+    FLINT_TEST_INIT(state);
+    slong bits = n_randint(state, 27);
+    if (bits < 2)
+        bits = 2;
+    rand = n_randprime(state, bits, 0);
     dmod_t mod;
-    dmod_init(&mod, n);
+    dmod_init(&mod, rand);  
+    
+    ulong r = n_randint(state, dim);
+
+    nmod_mat_init(A, dim, dim, rand);
+    nmod_mat_randrank(A, state, r);
+
+    nmod_mat_init_set(LU, A);
 
     _dmod_mat_init(A_d, dim, dim, mod);
-    _dmod_mat_init(B_d, dim, dim, mod);
-    _dmod_mat_init(C_d, dim, dim, mod);
+    _dmod_mat_init(LU_d, dim, dim, mod);
 
-    FLINT_TEST_INIT(state);
-
-    nmod_mat_randtest(A, state);
-    nmod_mat_randtest(B, state);
-
-    for (i = 0; i < A_d->nrows; i++)
+    for (q = 0; q < dim; q++)
     {
-        for (j = 0; j < A_d->ncols; j++)
+        for (w = 0; w < dim; w++)
         {
-            _dmod_mat_set(A_d, i, j, (double)A->rows[i][j]);
-            _dmod_mat_set(B_d, i, j, (double)B->rows[i][j]);
+            dmod_mat_entry(A_d, q, w) = (double)A->rows[q][w];
         }
     }
+    _dmod_mat_copy(LU_d, A_d);
+
     prof_start();
+ 
     if (algorithm == 1)
     {  
         for (i = 0; i < count; i++)
         {
-            _dmod_mat_add(C_d, A_d, B_d);
+            P = flint_malloc(sizeof(slong) * dim);
+            _dmod_mat_lu_recursive(P, LU_d, 0); 
+            flint_free(P);
         }
     }
     else if (algorithm == 2)
     {
         for (i = 0; i < count; i++)
         {
-            _dmod_mat_add(C_d, A_d, B_d);
+            P = flint_malloc(sizeof(slong) * dim);
+            _dmod_mat_lu_classical(P, LU_d, 0);
+            flint_free(P);
         }
     }
-
+    else if (algorithm == 3)
+    {
+        for (i = 0; i < count; i++)
+        {
+            P = flint_malloc(sizeof(slong) * dim);
+            nmod_mat_lu_recursive(P, LU, 0);
+            flint_free(P);
+        }
+    }
     prof_stop();
 
     nmod_mat_clear(A);
-    nmod_mat_clear(B);
-    nmod_mat_clear(C);
+    nmod_mat_clear(LU);
 
     _dmod_mat_clear(A_d);
-    _dmod_mat_clear(B_d);
-    _dmod_mat_clear(C_d);
+    _dmod_mat_clear(LU_d);
 
 }
 
 int main(void)
 {
-    double nmodmul, dmodmul, nmodstrassen, dmodclassical, dmodstrassen, max;
+    double nmodmul, dmodmul, dmodmul1, nmodstrassen, dmodclassical, dmodstrassen, max;
     mat_mul_t params;
     slong dim;
 
-    flint_printf("dmod_mat_add:\n");
+    flint_printf("dmod_mat_lu:\n");
 
-    params.modulus = 300;
+    params.modulus = 107;
 
     for (dim = 2; dim <= 5000; dim = (slong) ((double) dim * 1.5) + 1)
     {
@@ -121,8 +135,12 @@ int main(void)
 
         params.algorithm = 2;
         prof_repeat(&dmodmul, &max, sample, &params);
+    
+        params.algorithm = 3;
+        prof_repeat(&dmodmul1, &max, sample, &params);
 
-        flint_printf("%wd %.2f %.2f \n", dim, nmodmul, dmodmul);
+
+        flint_printf("%wd %.2f %.2f %0.2f\n", dim, nmodmul, dmodmul, dmodmul1);
     }
 
 
