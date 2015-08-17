@@ -1,0 +1,392 @@
+/*=============================================================================
+
+    This file is part of FLINT.
+
+    FLINT is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    FLINT is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with FLINT; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+
+=============================================================================*/
+/******************************************************************************
+
+
+******************************************************************************/
+
+*******************************************************************************
+
+    Memory management
+
+*******************************************************************************
+
+void _dmod_mat_init(dmod_mat_t mat, slong rows, slong cols, dmod_t mod)
+
+    Initialises \code{mat} to a \code{rows}-by-\code{cols} matrix with 
+    coefficients modulo~$mod.n$ .
+
+void _dmod_mat_clear(dmod_mat_t mat)
+
+    Clears the matrix and releases any memory it used. The matrix 
+    cannot be used again until it is initialised. This function must be
+    called exactly once when finished using an \code{dmod_mat_t} object.
+
+void _dmod_mat_copy(dmod_mat_t mat, dmod_mat_t src)
+
+    Sets \code{mat} to a copy of \code{src}. 
+
+void _dmod_mat_swap(dmod_mat_t mat1, dmod_mat_t mat2)
+
+	Exchanges \code{mat1} and \code{mat2}.
+
+*******************************************************************************
+
+    Basic properties and manipulation
+
+*******************************************************************************
+
+MACRO dmod_mat_entry(dmod_mat_t mat, slong i, slong j)
+
+    Directly accesses the entry in \code{mat} in row $i$ and column $j$,
+    indexed from zero. No bounds checking is performed. This macro can be
+    used both for reading and writing coefficients.
+
+*******************************************************************************
+
+    Printing
+
+*******************************************************************************
+
+void _dmod_mat_print(dmod_mat_t mat)
+
+    Prints \code{mat} to \code{stdout}. 
+
+*******************************************************************************
+
+    Random matrix generation
+
+*******************************************************************************
+
+void _dmod_mat_randtest(dmod_mat_t mat, flint_rand_t state)
+
+    Sets the elements to a random matrix with entries between $0$ and $m-1$
+    inclusive, where $m$ is the modulus of \code{mat}. A sparse matrix is
+    generated with increased probability.
+
+*******************************************************************************
+
+    Comparison
+
+*******************************************************************************
+
+int _dmod_mat_equal(dmod_mat_t mat1, dmod_mat_t mat2)
+
+    Returns $1$ if mat1 and mat2 have the same dimensions and elements,
+    and zero otherwise. The moduli are ignored.
+
+*******************************************************************************
+
+    Transpose
+
+*******************************************************************************
+
+void _dmod_mat_transpose(dmod_mat_t B, dmod_mat_t A)
+
+    Sets $B$ to the transpose of $A$. Dimensions must be compatible.
+    $B$ and $A$ may be the same object if and only if the matrix is square.
+
+
+*******************************************************************************
+
+    Addition and subtraction
+
+*******************************************************************************
+
+void _dmod_mat_add(dmod_mat_t C, dmod_mat_t A, dmod_mat_t B)
+
+    Computes $C = A + B$. Dimensions must be identical.
+
+void _dmod_mat_sub(dmod_mat_t C, dmod_mat_t A, dmod_mat_t B)
+
+    Computes $C = A - B$. Dimensions must be identical.
+
+*******************************************************************************
+
+    Matrix-scalar arithmetic
+
+*******************************************************************************
+
+void _dmod_mat_scalar_mul(dmod_mat_t B, const dmod_mat_t A, double c)
+
+    Sets $B = cA$, where the scalar $c$ is assumed to be reduced
+    modulo the modulus. Dimensions of $A$ and $B$ must be identical.
+
+
+*******************************************************************************
+
+    Matrix multiplication
+
+*******************************************************************************
+
+void _dmod_mat_mul(dmod_mat_t C, dmod_mat_t A, dmod_mat_t B)
+
+    Sets $C = AB$. Dimensions must be compatible for matrix multiplication.
+    $C$ is not allowed to be aliased with $A$ or $B$. This function
+    automatically chooses between classical and Strassen multiplication.
+
+void _dmod_mat_mul_classical(dmod_mat_t C, dmod_mat_t A, dmod_mat_t B)
+
+    Sets $C = AB$. Dimensions must be compatible for matrix multiplication.
+    $C$ is not allowed to be aliased with $A$ or $B$. Uses cblas_dgemm call 
+    matrix multiplication if the modulus is small enough to prevent overflow.
+    Else, uses dot product.
+
+void _dmod_mat_mul_strassen(dmod_mat_t C, dmod_mat_t A, dmod_mat_t B)
+
+    Sets $C = AB$. Dimensions must be compatible for matrix multiplication.
+    $C$ is not allowed to be aliased with $A$ or $B$. Uses Strassen
+    multiplication (the Strassen-Winograd variant).
+
+void _dmod_mat_addmul(dmod_mat_t D, const dmod_mat_t C,
+    const dmod_mat_t A, const dmod_mat_t B)
+
+    Sets $D = C + AB$. $C$ and $D$ may be aliased with each other but
+    not with $A$ or $B$. Automatically selects between classical
+    and Strassen multiplication.
+
+*******************************************************************************
+
+    Matrix Exponentiation
+
+*******************************************************************************
+
+void dmod_mat_pow(dmod_mat_t dest, dmod_mat_t mat, ulong pow)
+
+    Sets $dest = mat^pow$. \code{dest} and \code{mat} may be aliased. Implements
+	exponentiation by squaring.
+
+*******************************************************************************
+
+    Trace
+
+*******************************************************************************
+
+mp_limb_t _dmod_mat_trace(const dmod_mat_t mat)
+
+    Computes the trace of the matrix, i.e. the sum of the entries on
+    the main diagonal. The matrix is required to be square.
+
+*******************************************************************************
+
+    Determinant and rank
+
+*******************************************************************************
+
+mp_limb_t dmod_mat_det(dmod_mat_t A)
+
+    Returns the determinant of $A$. The modulus of $A$ must be a prime number.
+
+slong _dmod_mat_rank(dmod_mat_t A)
+
+    Returns the rank of $A$. The modulus of $A$ must be a prime number.
+
+
+*******************************************************************************
+
+    Inverse
+
+*******************************************************************************
+
+int _dmod_mat_inv(dmod_mat_t B, dmod_mat_t A)
+
+    Sets $B = A^{-1}$ and returns $1$ if $A$ is invertible. 
+    If $A$ is singular, returns $0$ and sets the elements of 
+    $B$ to undefined values.
+
+    $A$ and $B$ must be square matrices with the same dimensions
+    and modulus. The modulus must be prime.
+
+
+*******************************************************************************
+
+    Triangular solving
+
+*******************************************************************************
+
+void _dmod_mat_solve_tril(dmod_mat_t X, const dmod_mat_t L,
+                            const dmod_mat_t B, int unit)
+
+    Sets $X = L^{-1} B$ where $L$ is a full rank lower triangular square
+    matrix. If \code{unit} = 1, $L$ is assumed to have ones on its
+    main diagonal, and the main diagonal will not be read.
+    $X$ and $B$ are allowed to be the same matrix, but no other
+    aliasing is allowed. Automatically chooses between the classical and
+    recursive algorithms.
+
+void _dmod_mat_solve_tril_classical(dmod_mat_t X, const dmod_mat_t L,
+                            const dmod_mat_t B, int unit)
+
+    Sets $X = L^{-1} B$ where $L$ is a full rank lower triangular square
+    matrix. If \code{unit} = 1, $L$ is assumed to have ones on its
+    main diagonal, and the main diagonal will not be read.
+    $X$ and $B$ are allowed to be the same matrix, but no other
+    aliasing is allowed. Uses forward substitution.
+
+void _dmod_mat_solve_tril_recursive(dmod_mat_t X, const dmod_mat_t L,
+                            const dmod_mat_t B, int unit)
+
+    Sets $X = L^{-1} B$ where $L$ is a full rank lower triangular square
+    matrix. If \code{unit} = 1, $L$ is assumed to have ones on its
+    main diagonal, and the main diagonal will not be read.
+    $X$ and $B$ are allowed to be the same matrix, but no other
+    aliasing is allowed.
+
+    Uses the block inversion formula
+
+    $$
+    \begin{pmatrix} A & 0 \\ C & D \end{pmatrix}^{-1}
+    \begin{pmatrix} X \\ Y \end{pmatrix} =
+    \begin{pmatrix} A^{-1} X \\ D^{-1} ( Y - C A^{-1} X ) \end{pmatrix}
+    $$
+
+    to reduce the problem to matrix multiplication and triangular solving
+    of smaller systems.
+
+void _dmod_mat_solve_triu(dmod_mat_t X, const dmod_mat_t U,
+                            const dmod_mat_t B, int unit)
+
+    Sets $X = U^{-1} B$ where $U$ is a full rank upper triangular square
+    matrix. If \code{unit} = 1, $U$ is assumed to have ones on its
+    main diagonal, and the main diagonal will not be read.
+    $X$ and $B$ are allowed to be the same matrix, but no other
+    aliasing is allowed. Automatically chooses between the classical and
+    recursive algorithms.
+
+void _dmod_mat_solve_triu_classical(dmod_mat_t X, const dmod_mat_t U,
+                            const dmod_mat_t B, int unit)
+
+    Sets $X = U^{-1} B$ where $U$ is a full rank upper triangular square
+    matrix. If \code{unit} = 1, $U$ is assumed to have ones on its
+    main diagonal, and the main diagonal will not be read.
+    $X$ and $B$ are allowed to be the same matrix, but no other
+    aliasing is allowed. Uses forward substitution.
+
+void _dmod_mat_solve_triu_recursive(dmod_mat_t X, const dmod_mat_t U,
+                            const dmod_mat_t B, int unit)
+
+    Sets $X = U^{-1} B$ where $U$ is a full rank upper triangular square
+    matrix. If \code{unit} = 1, $U$ is assumed to have ones on its
+    main diagonal, and the main diagonal will not be read.
+    $X$ and $B$ are allowed to be the same matrix, but no other
+    aliasing is allowed.
+
+    Uses the block inversion formula
+
+    $$
+    \begin{pmatrix} A & B \\ 0 & D \end{pmatrix}^{-1}
+    \begin{pmatrix} X \\ Y \end{pmatrix} =
+    \begin{pmatrix} A^{-1} (X - B D^{-1} Y) \\ D^{-1} Y \end{pmatrix}
+    $$
+
+    to reduce the problem to matrix multiplication and triangular solving
+    of smaller systems.
+
+
+*******************************************************************************
+
+    Nonsingular square solving
+
+*******************************************************************************
+
+int _dmod_mat_solve(dmod_mat_t X, dmod_mat_t A, dmod_mat_t B)
+
+    Solves the matrix-matrix equation $AX = B$ over $\Z / p \Z$ where $p$
+    is the modulus of $X$ which must be a prime number. $X$, $A$, and $B$
+    should have the same moduli.
+
+    Returns $1$ if $A$ has full rank; otherwise returns $0$ and sets the
+    elements of $X$ to undefined values.
+
+*******************************************************************************
+
+    LU decomposition
+
+*******************************************************************************
+
+slong _dmod_mat_lu(slong * P, dmod_mat_t A, int rank_check)
+
+    Computes a generalised LU decomposition $LU = PA$ of a given
+    matrix $A$, returning the rank of $A$.
+
+    If $A$ is a nonsingular square matrix, it will be overwritten with
+    a unit diagonal lower triangular matrix $L$ and an upper triangular
+    matrix $U$ (the diagonal of $L$ will not be stored explicitly).
+
+    If $A$ is an arbitrary matrix of rank $r$, $U$ will be in row echelon
+    form having $r$ nonzero rows, and $L$ will be lower triangular
+    but truncated to $r$ columns, having implicit ones on the $r$ first
+    entries of the main diagonal. All other entries will be zero.
+
+    If a nonzero value for \code{rank_check} is passed, the
+    function will abandon the output matrix in an undefined state and
+    return 0 if $A$ is detected to be rank-deficient.
+
+    This function calls \code{_dmod_mat_lu_recursive}.
+
+slong _dmod_mat_lu_classical(slong * P, dmod_mat_t A, int rank_check)
+
+    Computes a generalised LU decomposition $LU = PA$ of a given
+    matrix $A$, returning the rank of $A$. The behavior of this function
+    is identical to that of \code{_dmod_mat_lu}. Uses Gaussian elimination.
+
+slong _dmod_mat_lu_recursive(slong * P, dmod_mat_t A, int rank_check)
+
+    Computes a generalised LU decomposition $LU = PA$ of a given
+    matrix $A$, returning the rank of $A$. The behavior of this function
+    is identical to that of \code{_dmod_mat_lu}. Uses recursive block
+    decomposition, switching to classical Gaussian elimination for
+    sufficiently small blocks.
+
+
+*******************************************************************************
+
+    Reduced row echelon form
+
+*******************************************************************************
+
+slong _dmod_mat_rref(dmod_mat_t A)
+
+    Puts $A$ in reduced row echelon form and returns the rank of $A$.
+
+    The rref is computed by first obtaining an unreduced row echelon
+    form via LU decomposition and then solving an additional
+    triangular system.
+
+
+*******************************************************************************
+
+    Nullspace
+
+*******************************************************************************
+
+slong _dmod_mat_nullspace(dmod_mat_t X, const dmod_mat_t A)
+
+    Computes the nullspace of $A$ and returns the nullity.
+
+    More precisely, this function sets $X$ to a maximum rank matrix
+    such that $AX = 0$ and returns the rank of $X$. The columns of
+    $X$ will form a basis for the nullspace of $A$.
+
+    $X$ must have sufficient space to store all basis vectors
+    in the nullspace.
+
+    This function computes the reduced row echelon form and then reads
+    off the basis vectors.
