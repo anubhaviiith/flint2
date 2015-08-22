@@ -45,7 +45,7 @@ main(void)
     flint_printf("det ....");
     fflush(stdout);
 
-    for (rep = 0; rep < 1000 * flint_test_multiplier(); rep++)
+    for (rep = 0; rep < 100 * flint_test_multiplier(); rep++)
     {
         nmod_mat_t A;
         dmod_mat_t A_d;

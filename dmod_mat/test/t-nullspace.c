@@ -43,13 +43,14 @@ main(void)
     flint_printf("nullspace....");
     fflush(stdout);    
 
-    for (z = 0; z < 100 * flint_test_multiplier(); z++)
-    {
-        dmod_mat_t A, B, ker;
-        nmod_mat_t A_n;
-        dmod_t mod;
-        slong m, n, d, r, nullity, nulrank, rand, bits;
+    dmod_mat_t A, B, ker;
+    nmod_mat_t A_n;
+    dmod_t mod;
+    slong m, n, d, r, nullity, nulrank, rand, bits;
 
+
+    for (z = 0; z < 10 ; z++)
+    {
         m = n_randint(state, 30);
         n = n_randint(state, 30);
 
@@ -91,7 +92,6 @@ main(void)
                 flint_printf("\n");
                 abort();
             }
-
             if (nullity + r != n)
             {
                 flint_printf("FAIL:\n");

@@ -42,7 +42,7 @@ double _dmod_mat_det(dmod_mat_t A)
 
     P = flint_malloc(sizeof(slong) * m);
     
-    rank = _dmod_mat_lu_classical(P, A, 1);
+    rank = _dmod_mat_lu(P, A, 1);
     
     det = 0;
 
