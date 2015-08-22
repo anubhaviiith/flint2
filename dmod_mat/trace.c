@@ -28,7 +28,7 @@
 #include "dmod_mat.h"
 #include "dmod_vec.h"
 
-slong _dmod_mat_trace(const dmod_mat_t mat)
+double _dmod_mat_trace(const dmod_mat_t mat)
 {
     double t;
     slong i, n = mat->nrows;

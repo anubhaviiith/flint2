@@ -390,3 +390,24 @@ slong _dmod_mat_nullspace(dmod_mat_t X, const dmod_mat_t A)
 
     This function computes the reduced row echelon form and then reads
     off the basis vectors.
+
+
+*******************************************************************************
+
+    Windows
+
+*******************************************************************************
+
+void _dmod_mat_window_init(dmod_mat_t window, const dmod_mat_t A, slong r1, slong c1, slong m, slong n);
+
+    Initializes the matrix \code{window} to be an \code{m} by
+    \code{n} submatrix of \code{A} whose \code{(0,0)} entry
+    is the \code{(r1, c1)} entry of \code{A}. The memory for the
+    elements of \code{window} is shared with \code{A}.
+
+
+void _dmod_mat_window_clear(dmod_mat_t mat);
+    Clears the matrix \code{window} and releases any memory that it
+    uses. Note that the memory to the underlying matrix that
+    \code{window} points to is not freed.
+

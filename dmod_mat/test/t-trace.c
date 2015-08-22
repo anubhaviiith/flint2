@@ -79,9 +79,9 @@ main(void)
         }
  
         slong result1 = nmod_mat_trace(A);
-        slong result2 = _dmod_mat_trace(A_d);
+        double result2 = _dmod_mat_trace(A_d);
           
-        if(result1 != result2)
+        if((double)result1 != result2)
         {
             flint_printf("FAIL\n");
             abort();

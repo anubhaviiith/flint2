@@ -102,7 +102,7 @@ void sample(void * arg, ulong count)
         for (i = 0; i < count; i++)
         {
             P = flint_malloc(sizeof(slong) * dim);
-            nmod_mat_lu_recursive(P, LU, 0);
+            _dmod_mat_lu(P, LU_d, 0);
             flint_free(P);
         }
     }
