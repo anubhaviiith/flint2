@@ -3,7 +3,6 @@
 #include "profiler.h"
 #include "flint.h"
 #include "fmpz_mat.h"
-#include "nmod_mat.h"
 #include "fmpz.h"
 #include "ulong_extras.h"
 
@@ -26,11 +25,8 @@ void sample(void * arg, ulong count)
 
     flint_rand_t rnd;
     fmpz_mat_t A, C;
-    nmod_mat_t A_n, C_n;
     FLINT_TEST_INIT(state);
     
-    nmod_mat_init(A_n, n, n, n);
-    nmod_mat_init(C_n, n, n, n);
 
     fmpz_mat_init(A, m, n);
     fmpz_mat_init(C, m, n);
@@ -45,11 +41,7 @@ void sample(void * arg, ulong count)
     else if (algorithm == 1)
         for (i = 0; i < count; i++)
             fmpz_mat_sqr(C, A);
-    else if (algorithm == 2)
-        for (i = 0; i < count; i++)
-            nmod_mat_mul(C_n, A_n, A_n);
     
-
 
     prof_stop();
 
@@ -61,7 +53,7 @@ void sample(void * arg, ulong count)
 
 int main(void)
 {
-    double min_default, min_classical, min_nmod, max;
+    double min_default, min_classical, max;
     mat_mul_t params;
     slong bits, dim;
 
@@ -81,10 +73,6 @@ int main(void)
 
             params.algorithm = 1;
             prof_repeat(&min_classical, &max, sample, &params);
-            
-            params.algorithm = 2;
-            prof_repeat(&min_nmod, &max, sample, &params);
-
 
 
             flint_printf("dim = %wd fmpz_mat_mul : %.2f fmpz_mat_sqr : %.2f         ", dim, min_default, min_classical);

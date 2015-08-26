@@ -88,7 +88,6 @@ nmod_mat_mul_strassen(nmod_mat_t C, const nmod_mat_t A, const nmod_mat_t B)
     nmod_mat_sub(X1, A11, A21);
     nmod_mat_sub(X2, B22, B12);
     nmod_mat_mul(C21, X1, X2);
-    
 
     nmod_mat_add(X1, A21, A22);
     nmod_mat_sub(X2, B12, B11);
@@ -103,7 +102,7 @@ nmod_mat_mul_strassen(nmod_mat_t C, const nmod_mat_t A, const nmod_mat_t B)
 
     X1->c = bnc;
     nmod_mat_mul(X1, A11, B11);
-    
+
     nmod_mat_add(C12, X1, C12);
     nmod_mat_add(C21, C12, C21);
     nmod_mat_add(C12, C12, C22);
@@ -152,8 +151,8 @@ nmod_mat_mul_strassen(nmod_mat_t C, const nmod_mat_t A, const nmod_mat_t B)
         nmod_mat_window_init(Ar, A, 2*anr, 0, a, b);
         nmod_mat_window_init(Cr, C, 2*anr, 0, a, c);
         nmod_mat_mul(Cr, Ar, B);
-        nmod_mat_window_clear(Cr);
         nmod_mat_window_clear(Ar);
+        nmod_mat_window_clear(Cr);
     }
 
     if (b > 2*anc) /* last col of A by last row of B -> C */

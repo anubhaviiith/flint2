@@ -75,6 +75,7 @@ nmod_mat_lu_classical(slong * P, nmod_mat_t A, int rank_check)
 
     for (i = 0; i < m; i++)
         P[i] = i;
+
     while (row < m && col < n)
     {
         if (nmod_mat_pivot(A, P, row, col) == 0)
@@ -90,6 +91,7 @@ nmod_mat_lu_classical(slong * P, nmod_mat_t A, int rank_check)
         d = a[row][col];
         d = n_invmod(d, mod.n);
         length = n - col - 1;
+
         for (i = row + 1; i < m; i++)
         {
             e = n_mulmod2_preinv(a[i][col], d, mod.n, mod.ninv);

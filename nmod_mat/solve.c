@@ -45,17 +45,16 @@ nmod_mat_solve(nmod_mat_t X, const nmod_mat_t A, const nmod_mat_t B)
     perm = flint_malloc(sizeof(slong) * A->r);
     for (i = 0; i < A->r; i++)
         perm[i] = i;
-    
+
     rank = nmod_mat_lu(perm, LU, 1);
 
     if (rank == A->r)
     {
         nmod_mat_t PB;
         nmod_mat_window_init(PB, B, 0, 0, B->r, B->c);
-        
         for (i = 0; i < A->r; i++)
             PB->rows[i] = B->rows[perm[i]];
-        
+
         nmod_mat_solve_tril(X, LU, PB, 1);
         nmod_mat_solve_triu(X, LU, X, 0);
 
